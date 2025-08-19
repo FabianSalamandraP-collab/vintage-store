@@ -1,0 +1,181 @@
+---
+import astroLogo from '../assets/astro.svg';
+import background from '../assets/background.svg';
+---
+
+<div id="container">
+  <img id="background" src={background.src} alt="" fetchpriority="high" />
+  <main>
+    <section id="hero">
+      <a href="https://astro.build">
+        <img src={astroLogo.src} width="115" height="48" alt="Astro Homepage" />
+      </a>
+    </section>
+  </main>
+
+  <!-- Botón WhatsApp flotante (fuera del news-card) -->
+  <a 
+    href="https://wa.me/573XXXXXXXXX?text=Hola, me interesa conocer más sobre Astro 5.0"
+    target="_blank"
+    rel="noopener noreferrer"
+    aria-label="Contactar por WhatsApp sobre Astro 5.0"
+    class="whatsapp-btn"
+  >
+    <div class="wa__btn_popup_icon">
+      <svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor">
+        <path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 01-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 01-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 012.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0012.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 005.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893A11.821 11.821 0 0020.465 3.516z"/>
+      </svg>
+    </div>
+  </a>
+
+  <div id="news-card" class="box">
+    <div class="news-header">
+      <svg width="32" height="32" fill="none" xmlns="http://www.w3.org/2000/svg">
+        <path d="M24.667 12c1.333 1.414 2 3.192 2 5.334 0 4.62-4.934 5.7-7.334 12C18.444 28.567 18 27.456 18 26c0-4.642 6.667-7.053 6.667-14Zm-5.334-5.333c1.6 1.65 2.4 3.43 2.4 5.333 0 6.602-8.06 7.59-6.4 17.334C13.111 27.787 12 25.564 12 22.666c0-4.434 7.333-8 7.333-16Zm-6-5.333C15.111 3.555 16 5.556 16 7.333c0 8.333-11.333 10.962-5.333 22-3.488-.774-6-4-6-8 0-8.667 8.666-10 8.666-20Z" fill="#111827"/>
+      </svg>
+    </div>
+    
+    <h2>What's New in Astro 5.0?</h2>
+    <p>
+      From content layers to server islands, click to learn more about the new features and
+      improvements in Astro 5.0
+    </p>
+  </div>
+</div>
+
+<style>
+  #background {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    z-index: -1;
+    filter: blur(100px);
+  }
+
+  #container {
+    font-family: Inter, Roboto, 'Helvetica Neue', 'Arial Nova', 'Nimbus Sans', Arial, sans-serif;
+    height: 100%;
+    position: relative;
+  }
+
+  main {
+    height: 100%;
+    display: flex;
+    justify-content: center;
+  }
+
+  #hero {
+    display: flex;
+    align-items: start;
+    flex-direction: column;
+    justify-content: center;
+    padding: 16px;
+  }
+
+  /* Estilos para el news-card */
+  .box {
+    padding: 16px;
+    background: rgba(255, 255, 255, 1);
+    border-radius: 16px;
+    border: 1px solid white;
+  }
+
+  #news-card {
+    position: absolute;
+    bottom: 16px;
+    right: 16px;
+    max-width: 300px;
+    backdrop-filter: blur(50px);
+    transition: background 0.2s;
+  }
+
+  #news-card:hover {
+    background: rgba(255, 255, 255, 0.75);
+  }
+
+  .news-header {
+    display: flex;
+    justify-content: flex-start;
+    align-items: flex-start;
+    margin-bottom: 1em;
+  }
+
+  h2 {
+    margin: 0 0 1em;
+    font-weight: normal;
+    color: #111827;
+    font-size: 20px;
+  }
+
+  p {
+    color: #4b5563;
+    font-size: 16px;
+    line-height: 24px;
+    letter-spacing: -0.006em;
+    margin: 0;
+  }
+
+  /* Estilos para el botón de WhatsApp */
+  .whatsapp-btn {
+    position: fixed;
+    bottom: 24px;
+    right: 24px;
+    z-index: 100;
+    text-decoration: none;
+    transition: all 0.3s ease;
+  }
+
+  .wa__btn_popup_icon {
+    width: 56px;
+    height: 56px;
+    border-radius: 50%;
+    background: #25d366;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: white;
+    box-shadow: 0 4px 12px rgba(37, 211, 102, 0.3);
+    transition: all 0.3s ease;
+    animation: pulse 2s infinite;
+  }
+
+  @keyframes pulse {
+    0% { transform: scale(1); }
+    50% { transform: scale(1.1); }
+    100% { transform: scale(1); }
+  }
+
+  .whatsapp-btn:hover .wa__btn_popup_icon {
+    transform: scale(1.1);
+    background: #128C7E;
+    animation: none;
+  }
+
+  /* Responsive */
+  @media screen and (max-width: 768px) {
+    #news-card {
+      right: 16px;
+      left: 16px;
+      bottom: 2.5rem;
+      max-width: 100%;
+    }
+
+    .whatsapp-btn {
+      bottom: 16px;
+      right: 16px;
+    }
+
+    .wa__btn_popup_icon {
+      width: 48px;
+      height: 48px;
+    }
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .wa__btn_popup_icon {
+      animation: none;
+    }
+  }
+</style>

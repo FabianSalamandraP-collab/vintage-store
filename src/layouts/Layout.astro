@@ -1,0 +1,112 @@
+---
+// Layout.astro - Layout principal con Header integrado
+import Header from '../components/Header.astro';
+
+export interface Props {
+	title: string;
+}
+
+const { title } = Astro.props;
+---
+
+<!doctype html>
+<html lang="es">
+	<head>
+		<meta charset="UTF-8" />
+		<meta name="description" content="Vintage Store - Tesoros únicos del pasado" />
+		<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+		<link rel="icon" type="image/svg+xml" href="/favicon.svg" />
+		<title>{title}</title>
+	</head>
+	<body>
+		<Header />
+		<slot />
+	</body>
+</html>
+
+<style is:global>
+	* {
+		box-sizing: border-box;
+		margin: 0;
+		padding: 0;
+	}
+	
+	html {
+		font-family: 'Georgia', 'Times New Roman', serif;
+		/* FONDO BASE: gris muy oscuro con gradiente sutil */
+		background: #0d1117;
+		background-image: radial-gradient(ellipse at top, #1a1f2e, #0d1117);
+	}
+	
+	body {
+		margin: 0;
+		min-height: 100vh;
+		
+		/* GRADIENTE PRINCIPAL DEL BODY */
+		/* #2C1810 = Marrón muy oscuro (inicio del gradiente) */
+		/* #1A1A1A = Gris carbón (final del gradiente) */
+		background: linear-gradient(135deg, #2C1810 0%, #1A1A1A 100%);
+		
+		/* COLOR TEXTO POR DEFECTO: #F5DEB3 = Beige trigo */
+		color: #F5DEB3;
+	}
+	
+	code {
+		font-family: Menlo, Monaco, Lucida Console, Liberation Mono, DejaVu Sans Mono,
+			Bitstream Vera Sans Mono, Courier New, monospace;
+	}
+	
+	/* ESTILOS GLOBALES PARA TEMA VINTAGE */
+	h1, h2, h3, h4, h5, h6 {
+		font-family: 'Georgia', serif;
+		/* COLOR TÍTULOS: #F5DEB3 = Beige trigo */
+		color: #F5DEB3;
+	}
+	
+	p {
+		line-height: 1.6;
+		/* COLOR PÁRRAFOS: #E6D3B5 = Beige más claro que los títulos */
+		color: #E6D3B5;
+	}
+	
+	a {
+		/* COLOR ENLACES: #CD853F = Perú/Dorado viejo */
+		color: #CD853F;
+		transition: color 0.3s ease;
+	}
+	
+	a:hover {
+		/* COLOR ENLACES HOVER: #F5DEB3 = Beige trigo */
+		color: #F5DEB3;
+	}
+</style>
+
+<!-- 
+COLORES DEL LAYOUT GLOBAL:
+
+FONDOS:
+- #0d1117: Gris muy oscuro (base HTML)
+- #1a1f2e: Gris azulado (gradiente radial)
+- #2C1810: Marrón muy oscuro (inicio gradiente body)
+- #1A1A1A: Gris carbón (final gradiente body)
+
+TEXTOS:
+- #F5DEB3: Beige trigo (títulos y texto principal)
+- #E6D3B5: Beige claro (párrafos y texto secundario)
+- #CD853F: Perú/Dorado (enlaces normales)
+- #F5DEB3: Beige trigo (enlaces hover)
+
+TIPOGRAFÍAS:
+- Georgia, Times New Roman, serif (fuente principal vintage)
+- Monospace (para código)
+
+PARA CAMBIAR LA PALETA COMPLETA:
+1. Cambia los fondos (#2C1810, #1A1A1A) por tus colores base
+2. Ajusta los textos (#F5DEB3, #E6D3B5) para mantener contraste
+3. Modifica enlaces (#CD853F) por tu color de acento
+
+PALETAS ALTERNATIVAS SUGERIDAS:
+- Vintage Elegante: #8B0000 + #DAA520 + #2F2F2F
+- Vintage Cálido: #A0522D + #F4A460 + #3E2723
+- Vintage Azul: #2F4F4F + #4682B4 + #1C1C1C
+-->
