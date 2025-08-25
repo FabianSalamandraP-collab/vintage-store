@@ -1,14 +1,30 @@
-# Astro Starter Kit: Basics
+# 👟 Vintage Store - Straight Outta Astro 📻
 
-```sh
-yarn create astro@latest -- --template basics
-```
+<details>
+<summary><strong>Read in English</strong></summary>
 
-> 🧑‍🚀 **Seasoned astronaut?** Delete this file. Have fun!
+Welcome to the **Vintage Store**, where classic style meets fresh code. This project is built with Astro, servin' up the freshest web experience. Straight up.
 
-## 🚀 Project Structure
+</details>
 
-Inside of your Astro project, you'll see the following folders and files:
+<br>
+
+Bienvenido/a a la **Vintage Store**, donde el estilo clásico se encuentra con código fresco. Este proyecto está montado con Astro, sirviendo la experiencia web más pura. Así de claro.
+
+---
+
+## 🗺️ The Lay of the Land / El Mapa del Terreno
+
+<details>
+<summary><strong>Read in English</strong></summary>
+
+Here's how the project is laid out. Peep the structure to understand the flow.
+
+</details>
+
+<br>
+
+Así es como está montado el proyecto. Echa un vistazo a la estructura para entender el flow.
 
 ```text
 /
@@ -26,23 +42,44 @@ Inside of your Astro project, you'll see the following folders and files:
 └── package.json
 ```
 
-To learn more about the folder structure of an Astro project, refer to [our guide on project structure](https://docs.astro.build/en/basics/project-structure/).
+---
 
-## 🧞 Commands
+## 🎛️ Mic Check... 1, 2... / Probando... 1, 2...
 
-All commands are run from the root of the project, from a terminal:
+<details>
+<summary><strong>Read in English</strong></summary>
 
-| Command                   | Action                                           |
-| :------------------------ | :----------------------------------------------- |
-| `yarn install`             | Installs dependencies                            |
-| `yarn dev`             | Starts local dev server at `localhost:4321`      |
-| `yarn build`           | Build your production site to `./dist/`          |
-| `yarn preview`         | Preview your build locally, before deploying     |
-| `yarn astro ...`       | Run CLI commands like `astro add`, `astro check` |
-| `yarn astro -- --help` | Get help using the Astro CLI                     |
+All commands are run from the root of the project. Open your terminal and drop these beats.
 
-## 👀 Want to learn more?
+</details>
 
-Feel free to check [our documentation](https://docs.astro.build) or jump into our [Discord server](https://astro.build/chat).
-# Vintage Store 🛍️
-# Vintage Store 🛍️
+<br>
+
+Todos los comandos se ejecutan desde la raíz del proyecto. Abre tu terminal y suelta estos ritmos.
+
+| Command | Action / Acción |
+| :--- | :--- |
+| `yarn install` | Installs dependencies / Instala las dependencias |
+| `yarn dev` | Starts local dev server at `localhost:4321` / Inicia el servidor local en `localhost:4321` |
+| `yarn build` | Build your production site to `./dist/` / Compila tu sitio para producción en `./dist/` |
+| `yarn preview` | Preview your build locally, before deploying / Previsualiza tu sitio compilado localmente |
+| `yarn astro ...` | Run CLI commands like `astro add`, `astro check` / Ejecuta comandos de Astro como `astro add` |
+| `yarn astro -- --help` | Get help using the Astro CLI / Obtén ayuda con el CLI de Astro |
+
+---
+
+## 🎓 Keep Diggin' / Sigue Explorando
+
+<details>
+<summary><strong>Read in English</strong></summary>
+
+The knowledge don't stop. If you wanna learn more about Astro, check the official spots.
+
+</details>
+
+<br>
+
+El conocimiento no para. Si quieres aprender más sobre Astro, revisa los sitios oficiales.
+
+- [**Astro Documentation**](https://docs.astro.build) - The full breakdown / El desglose completo.
+- [**Astro Discord Server**](https://astro.build/chat) - Join the community / Únete a la comunidad.
