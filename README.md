@@ -1,4 +1,4 @@
-<h1 align="center">V I N T A G E   S T O R E</h1>
+<h1 align="center">S U R   O C C I D E N T E</h1>
 
 <details>
 <summary><strong>Read in English</strong></summary>
