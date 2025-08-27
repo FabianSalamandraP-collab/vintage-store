@@ -1,4 +1,4 @@
-# 👟 Vintage Store - Straight Outta Astro 📻
+<h1 align="center">V I N T A G E   S T O R E</h1>
 
 <details>
 <summary><strong>Read in English</strong></summary>
