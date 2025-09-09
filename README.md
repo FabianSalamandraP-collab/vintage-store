@@ -28,18 +28,29 @@ Así es como está montado el proyecto. Echa un vistazo a la estructura para ent
 
 ```text
 /
+├── .astro/
+├── .vscode/
+├── node_modules/
 ├── public/
-│   └── favicon.svg
-├── src
-│   ├── assets
-│   │   └── astro.svg
-│   ├── components
-│   │   └── Welcome.astro
-│   ├── layouts
-│   │   └── Layout.astro
-│   └── pages
-│       └── index.astro
-└── package.json
+│   ├── clothesSurOccident...
+│   └── favicon.png
+├── src/
+│   ├── assets/
+│   ├── components/
+│   │   ├── Body.astro
+│   │   └── Header.astro
+│   ├── layouts/
+│   │   └── Layout.astro
+│   └── pages/
+│       ├── index.astro
+│       └── productos.astro
+├── .gitignore
+├── astro.config.mjs
+├── package.json
+├── README.md
+├── tsconfig.json
+└── yarn.lock
+
 ```
 
 ---
