@@ -1,7 +1,6 @@
 ---
-// Body.astro: Diseño inspirado en Travis Scott con fondo naranja vibrante
-import astroLogo from '../assets/astro.svg';
-import background from '../assets/background.svg';
+// Body.astro: Diseño completo integrado con Footer
+import Footer from './Footer.astro';
 ---
 
 <main>
@@ -149,17 +148,10 @@ import background from '../assets/background.svg';
         </div>
       </div>
     </section>
-
-    <!-- Footer simple -->
-    <footer id="main-footer">
-      <div class="footer-links">
-        <a href="/contacto">CONTACT CUSTOMER SERVICE</a>
-        <a href="/terminos">TERMS</a>
-        <a href="/privacidad">PRIVACY</a>
-        <a href="/no-sell">DO NOT SELL MY PERSONAL INFORMATION</a>
-      </div>
-    </footer>
   </div>
+
+  <!-- Footer integrado -->
+  <Footer />
 
   <!-- Botón WhatsApp flotante -->
   <a 
@@ -307,36 +299,6 @@ import background from '../assets/background.svg';
     margin: 0;
   }
 
-  /* FOOTER */
-  #main-footer {
-    background: rgba(42, 31, 23, 0.9);
-    padding: 3rem 2rem;
-    margin-top: 4rem;
-  }
-
-  .footer-links {
-    display: flex;
-    justify-content: center;
-    gap: 3rem;
-    flex-wrap: wrap;
-    max-width: 1200px;
-    margin: 0 auto;
-  }
-
-  .footer-links a {
-    color: #ff6b35;
-    text-decoration: none;
-    font-size: 0.9rem;
-    font-weight: 600;
-    text-transform: uppercase;
-    letter-spacing: 0.5px;
-    transition: color 0.3s ease;
-  }
-
-  .footer-links a:hover {
-    color: #fff;
-  }
-
   /* BOTÓN WHATSAPP */
   .whatsapp-btn {
     position: fixed;
@@ -394,12 +356,6 @@ import background from '../assets/background.svg';
 
     .main-title {
       font-size: clamp(2rem, 6vw, 4rem);
-    }
-
-    .footer-links {
-      flex-direction: column;
-      gap: 1rem;
-      text-align: center;
     }
 
     .whatsapp-btn {

@@ -1,5 +1,5 @@
 ---
-// Footer.astro - Footer Publicitario con Eventos y Música
+// Footer.astro - Footer Publicitario con Eventos y Música - VERSIÓN CORREGIDA
 ---
 
 <!-- Footer Publicitario Semántico -->
@@ -24,7 +24,7 @@
               📍 <span itemprop="name">Sur Occidente Store</span>
             </span>
           </div>
-          <button class="cta-button" onclick="showEventModal()">
+          <button class="cta-button" id="eventButton">
             ¡RESERVA TU LUGAR! 🎟️
           </button>
         </div>
@@ -89,9 +89,9 @@
       <div class="music-header">
         <h3 class="music-title">🎶 Ambiente Sur Occidente</h3>
         <div class="music-controls">
-          <button class="control-btn" id="prevTrack" aria-label="Canción anterior">⏮️</button>
-          <button class="control-btn play-pause" id="playPause" aria-label="Reproducir/Pausar">▶️</button>
-          <button class="control-btn" id="nextTrack" aria-label="Siguiente canción">⏭️</button>
+          <button class="control-btn" id="prevTrack" aria-label="Canción anterior" type="button">⏮️</button>
+          <button class="control-btn play-pause" id="playPause" aria-label="Reproducir/Pausar" type="button">▶️</button>
+          <button class="control-btn" id="nextTrack" aria-label="Siguiente canción" type="button">⏭️</button>
         </div>
       </div>
 
@@ -103,7 +103,7 @@
           src="https://open.spotify.com/embed/playlist/37i9dQZF1DX0XUsuxWHRQd?utm_source=generator&theme=0" 
           width="100%" 
           height="152" 
-          frameBorder="0" 
+          frameborder="0" 
           allowfullscreen="" 
           allow="autoplay; clipboard-write; encrypted-media; fullscreen; picture-in-picture" 
           loading="lazy"
@@ -155,16 +155,16 @@
 
 </footer>
 
-<!-- Modal para Eventos (opcional) -->
-<div id="eventModal" class="modal" style="display: none;">
+<!-- Modal para Eventos -->
+<div id="eventModal" class="modal" style="display: none;" role="dialog" aria-labelledby="modal-title" aria-hidden="true">
   <div class="modal-content">
-    <span class="close" onclick="closeEventModal()">&times;</span>
-    <h2>🎵 Reserva tu lugar</h2>
+    <button class="close" id="closeModal" aria-label="Cerrar modal" type="button">&times;</button>
+    <h2 id="modal-title">🎵 Reserva tu lugar</h2>
     <p>¡No te pierdas nuestro evento especial de música vintage!</p>
-    <form class="event-form">
-      <input type="text" placeholder="Tu nombre" required>
-      <input type="email" placeholder="Tu email" required>
-      <input type="tel" placeholder="Tu teléfono" required>
+    <form class="event-form" id="eventForm">
+      <input type="text" name="nombre" placeholder="Tu nombre" required aria-label="Tu nombre completo">
+      <input type="email" name="email" placeholder="Tu email" required aria-label="Tu correo electrónico">
+      <input type="tel" name="telefono" placeholder="Tu teléfono" required aria-label="Tu número de teléfono">
       <button type="submit">Confirmar Reserva 🎟️</button>
     </form>
   </div>
@@ -615,7 +615,6 @@
 
   /* Modal para Eventos */
   .modal {
-    display: none;
     position: fixed;
     z-index: 1000;
     left: 0;
@@ -624,6 +623,10 @@
     height: 100%;
     background: rgba(0, 0, 0, 0.8);
     animation: fadeIn 0.3s ease;
+  }
+
+  .modal[style*="display: none"] {
+    display: none !important;
   }
 
   .modal-content {
@@ -635,6 +638,17 @@
     max-width: 500px;
     position: relative;
     color: white;
+    animation: slideIn 0.3s ease;
+  }
+
+  @keyframes fadeIn {
+    from { opacity: 0; }
+    to { opacity: 1; }
+  }
+
+  @keyframes slideIn {
+    from { transform: translateY(-50px); opacity: 0; }
+    to { transform: translateY(0); opacity: 1; }
   }
 
   .close {
@@ -644,6 +658,20 @@
     font-size: 2rem;
     cursor: pointer;
     color: #CD853F;
+    background: none;
+    border: none;
+    padding: 0;
+    line-height: 1;
+  }
+
+  .close:hover {
+    color: #FF6B35;
+    transform: scale(1.1);
+  }
+
+  #modal-title {
+    margin-bottom: 1rem;
+    color: #F5DEB3;
   }
 
   .event-form {
@@ -659,6 +687,16 @@
     background: rgba(245, 222, 179, 0.05);
     color: white;
     border-radius: 8px;
+    font-size: 1rem;
+  }
+
+  .event-form input::placeholder {
+    color: rgba(245, 222, 179, 0.7);
+  }
+
+  .event-form input:focus {
+    outline: 2px solid #FF6B35;
+    border-color: #FF6B35;
   }
 
   .event-form button {
@@ -669,11 +707,13 @@
     border-radius: 8px;
     font-weight: bold;
     cursor: pointer;
+    font-size: 1rem;
     transition: transform 0.3s ease;
   }
 
   .event-form button:hover {
     transform: translateY(-2px);
+    box-shadow: 0 4px 15px rgba(255, 107, 53, 0.4);
   }
 
   /* Responsive */
@@ -705,6 +745,12 @@
     .rotating-vinyl {
       font-size: 3rem;
     }
+
+    .modal-content {
+      margin: 10% auto;
+      width: 95%;
+      padding: 1.5rem;
+    }
   }
 
   @media (prefers-reduced-motion: reduce) {
@@ -719,39 +765,193 @@
 </style>
 
 <script>
-  // JavaScript para funcionalidad del modal y controles
-  function showEventModal() {
-    document.getElementById('eventModal').style.display = 'block';
-  }
-
-  function closeEventModal() {
-    document.getElementById('eventModal').style.display = 'none';
-  }
-
-  // Cerrar modal al hacer clic fuera
-  window.onclick = function(event) {
-    const modal = document.getElementById('eventModal');
-    if (event.target == modal) {
-      modal.style.display = 'none';
-    }
-  }
-
-  // Controles de música simulados
+  // JavaScript para funcionalidad del modal y controles - VERSION CORREGIDA
   document.addEventListener('DOMContentLoaded', function() {
+    // Referencias a elementos del DOM
+    const eventButton = document.getElementById('eventButton');
+    const modal = document.getElementById('eventModal');
+    const closeModal = document.getElementById('closeModal');
+    const eventForm = document.getElementById('eventForm');
     const playPauseBtn = document.getElementById('playPause');
+    const prevTrackBtn = document.getElementById('prevTrack');
+    const nextTrackBtn = document.getElementById('nextTrack');
+
+    // Variable para controlar el estado de reproducción
     let isPlaying = false;
 
-    playPauseBtn?.addEventListener('click', function() {
-      isPlaying = !isPlaying;
-      this.textContent = isPlaying ? '⏸️' : '▶️';
+    // Funciones para el modal
+    function showEventModal() {
+      if (modal) {
+        modal.style.display = 'block';
+        modal.setAttribute('aria-hidden', 'false');
+        // Focus en el primer input del formulario
+        const firstInput = modal.querySelector('input');
+        if (firstInput) {
+          setTimeout(() => firstInput.focus(), 100);
+        }
+      }
+    }
+
+    function hideEventModal() {
+      if (modal) {
+        modal.style.display = 'none';
+        modal.setAttribute('aria-hidden', 'true');
+      }
+    }
+
+    // Event listeners para el modal
+    if (eventButton) {
+      eventButton.addEventListener('click', showEventModal);
+    }
+
+    if (closeModal) {
+      closeModal.addEventListener('click', hideEventModal);
+    }
+
+    // Cerrar modal al hacer clic fuera de él
+    if (modal) {
+      modal.addEventListener('click', function(event) {
+        if (event.target === modal) {
+          hideEventModal();
+        }
+      });
+    }
+
+    // Cerrar modal con tecla Escape
+    document.addEventListener('keydown', function(event) {
+      if (event.key === 'Escape' && modal && modal.style.display === 'block') {
+        hideEventModal();
+      }
     });
 
-    document.getElementById('prevTrack')?.addEventListener('click', function() {
-      console.log('Canción anterior');
+    // Manejar envío del formulario
+    if (eventForm) {
+      eventForm.addEventListener('submit', function(event) {
+        event.preventDefault();
+        
+        // Obtener datos del formulario
+        const formData = new FormData(eventForm);
+        const nombre = formData.get('nombre');
+        const email = formData.get('email');
+        const telefono = formData.get('telefono');
+
+        // Validación básica
+        if (!nombre || !email || !telefono) {
+          alert('Por favor, completa todos los campos');
+          return;
+        }
+
+        // Simular envío exitoso
+        alert(`¡Gracias ${nombre}! Tu reserva ha sido enviada. Te contactaremos pronto.`);
+        
+        // Limpiar formulario y cerrar modal
+        eventForm.reset();
+        hideEventModal();
+      });
+    }
+
+    // Controles de música
+    if (playPauseBtn) {
+      playPauseBtn.addEventListener('click', function() {
+        isPlaying = !isPlaying;
+        this.textContent = isPlaying ? '⏸️' : '▶️';
+        this.setAttribute('aria-label', isPlaying ? 'Pausar' : 'Reproducir');
+        
+        // Agregar efecto visual
+        this.style.transform = 'scale(0.95)';
+        setTimeout(() => {
+          this.style.transform = 'scale(1)';
+        }, 150);
+      });
+    }
+
+    if (prevTrackBtn) {
+      prevTrackBtn.addEventListener('click', function() {
+        console.log('Canción anterior');
+        // Aquí puedes agregar la lógica para cambiar de canción
+        
+        // Efecto visual
+        this.style.transform = 'scale(0.95)';
+        setTimeout(() => {
+          this.style.transform = 'scale(1)';
+        }, 150);
+      });
+    }
+
+    if (nextTrackBtn) {
+      nextTrackBtn.addEventListener('click', function() {
+        console.log('Siguiente canción');
+        // Aquí puedes agregar la lógica para cambiar de canción
+        
+        // Efecto visual
+        this.style.transform = 'scale(0.95)';
+        setTimeout(() => {
+          this.style.transform = 'scale(1)';
+        }, 150);
+      });
+    }
+
+    // Funcionalidad adicional: cambiar tema del reproductor Spotify
+    function toggleSpotifyTheme() {
+      const iframe = document.querySelector('.spotify-container iframe');
+      if (iframe) {
+        const currentSrc = iframe.src;
+        const newTheme = currentSrc.includes('theme=0') ? '1' : '0';
+        iframe.src = currentSrc.replace(/theme=\d/, `theme=${newTheme}`);
+      }
+    }
+
+    // Agregar listener para cambio de tema (opcional)
+    document.addEventListener('keydown', function(event) {
+      if (event.ctrlKey && event.key === 't') {
+        event.preventDefault();
+        toggleSpotifyTheme();
+      }
     });
 
-    document.getElementById('nextTrack')?.addEventListener('click', function() {
-      console.log('Siguiente canción');
+    // Función para animar las ondas musicales
+    function animateWaves() {
+      const waves = document.querySelectorAll('.wave');
+      waves.forEach((wave, index) => {
+        const randomHeight = Math.random() * 20 + 10;
+        wave.style.height = `${randomHeight}px`;
+      });
+    }
+
+    // Animar ondas cada cierto tiempo si la música está "reproduciéndose"
+    setInterval(() => {
+      if (isPlaying) {
+        animateWaves();
+      }
+    }, 500);
+
+    // Función para manejar errores de carga del iframe de Spotify
+    const spotifyIframe = document.querySelector('.spotify-container iframe');
+    if (spotifyIframe) {
+      spotifyIframe.addEventListener('error', function() {
+        console.log('Error cargando Spotify, mostrando reproductor alternativo');
+        document.querySelector('.spotify-container iframe').style.display = 'none';
+        document.querySelector('.custom-player').style.display = 'block';
+      });
+    }
+
+    // Inicializar tooltips para los controles (opcional)
+    const controlButtons = document.querySelectorAll('.control-btn');
+    controlButtons.forEach(button => {
+      button.addEventListener('mouseenter', function() {
+        const label = this.getAttribute('aria-label');
+        this.setAttribute('title', label);
+      });
     });
+
+    console.log('Footer interactivo cargado correctamente ✅');
   });
+
+  // Función global para WhatsApp (si se necesita integración)
+  function contactWhatsApp() {
+    const message = "¡Hola! Me interesa más información sobre los eventos de Sur Occidente";
+    const phone = "573XXXXXXXXX"; // Reemplazar con tu número real
+    const url = `https://wa.me/${phone}?text=${encodeURIComponent(message)}`;
+    window.open(url, '_blank');
+  }
 </script>
