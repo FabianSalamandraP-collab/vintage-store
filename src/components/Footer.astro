@@ -1,6 +1,63 @@
 ---
-// Footer.astro: Pie de página con información de contacto, redes sociales y copyright.
-// Footer.astro - Footer Publicitario con Eventos y Música - VERSIÓN CORREGIDA
+// Footer.astro - Footer Definitivo con TypeScript - Sin JavaScript
+interface EventData {
+  name: string;
+  description: string;
+  date: string;
+  dateIso: string; // formato ISO para schema.org
+  location: string;
+}
+
+interface ArtistData {
+  name: string;
+  description: string;
+  tag: string;
+  icon: string;
+}
+
+// Datos del evento principal
+const eventData: EventData = {
+  name: "EVENTO ESPECIAL",
+  description: "Noche de Música Vintage - DJ Sets + Ropa Exclusiva",
+  date: "15 Octubre 2025",
+  dateIso: "2025-10-15T20:00:00-05:00", // formato ISO válido
+  location: "Sur Occidente Store"
+};
+
+// Datos de artistas
+const artists: ArtistData[] = [
+  {
+    name: "DJ VINTAGE",
+    description: "Especialista en música de los 80s-90s",
+    tag: "EN VIVO",
+    icon: "🎤"
+  },
+  {
+    name: "RETRO BAND", 
+    description: "Covers clásicos y originales",
+    tag: "PRÓXIMO",
+    icon: "🎸"
+  }
+];
+
+// Datos de la promoción
+const promoData = {
+  title: "OFERTA FLASH",
+  description: "30% OFF en toda la colección vintage",
+  code: "VINTAGE30"
+};
+
+// Datos de redes sociales
+const socialLinks = [
+  { name: "Facebook", icon: "📘", url: "https://facebook.com/suroccidente" },
+  { name: "Instagram", icon: "📷", url: "https://instagram.com/suroccidente" },
+  { name: "TikTok", icon: "🎵", url: "https://tiktok.com/@suroccidente" },
+  { name: "Spotify", icon: "🎧", url: "https://open.spotify.com/user/suroccidente" }
+];
+
+// URL de la playlist de Spotify
+const spotifyPlaylistUrl: string = "https://open.spotify.com/playlist/37i9dQZF1DX0XUsuxWHRQd";
+const whatsappNumber: string = "573XXXXXXXXX"; // Reemplazar con número real
 ---
 
 <!-- Footer Publicitario Semántico -->
@@ -10,72 +67,80 @@
   <section class="promo-section" aria-label="Promociones y eventos">
     
     <!-- Banner Principal de Evento/Artista -->
-    <div class="main-banner" itemscope itemtype="https://schema.org/Event">
-      <div class="banner-content">
-        <div class="banner-text">
-          <h2 class="banner-title" itemprop="name">🎵 EVENTO ESPECIAL</h2>
-          <p class="banner-subtitle" itemprop="description">
-            Noche de Música Vintage - DJ Sets + Ropa Exclusiva
-          </p>
-          <div class="event-details">
-            <span class="event-date" itemprop="startDate" content="2025-10-15">
-              📅 15 Octubre 2025
-            </span>
-            <span class="event-location" itemprop="location" itemscope itemtype="https://schema.org/Place">
-              📍 <span itemprop="name">Sur Occidente Store</span>
-            </span>
-          </div>
-          <button class="cta-button" id="eventButton">
-            ¡RESERVA TU LUGAR! 🎟️
-          </button>
-        </div>
-        <div class="banner-visual">
-          <div class="rotating-vinyl">🎵</div>
-          <div class="music-waves">
-            <div class="wave"></div>
-            <div class="wave"></div>
-            <div class="wave"></div>
-          </div>
-        </div>
+<div class="main-banner" itemscope itemtype="https://schema.org/Event">
+  <div class="banner-content">
+    
+    <!-- Texto del evento -->
+    <div class="banner-text">
+      <h2 class="banner-title" itemprop="name">🎵 EVENTO ESPECIAL</h2>
+
+      <p class="banner-subtitle" itemprop="description">
+        Noche de Música Vintage - DJ Sets + Ropa Exclusiva
+      </p>
+
+      <div class="event-details">
+        <time 
+          class="event-date" 
+          itemprop="startDate" 
+            
+        >
+          📅 15 Octubre 2025
+        </time>
+
+        <span 
+          class="event-location" 
+          itemprop="location" 
+          itemscope 
+          itemtype="https://schema.org/Place"
+        >
+          📍 <span itemprop="name">Sur Occidente Store</span>
+        </span>
       </div>
+
+      <a 
+        href="https://wa.me/573XXXXXXXXX?text=%C2%A1Hola!%20Me%20interesa%20reservar%20un%20lugar%20para%20el%20evento%20especial%20de%20m%C3%BAsica%20vintage"
+        class="cta-button"
+        target="_blank"
+        rel="noopener noreferrer"
+        aria-label="Reservar lugar por WhatsApp"
+      >
+        ¡RESERVA TU LUGAR! 🎟️
+      </a>
     </div>
 
+    <!-- Imagen del evento -->
+    <div class="banner-visual">
+      <!-- ⚠️ Asegúrate de que la imagen esté en la carpeta /public o usa import si está en /assets -->
+      <img src="/event-banner.jpg" alt="Evento Especial - Vintage Store" itemprop="image" />
+    </div>
+  </div>
+</div>
+    <!-- Fin del Banner Principal -->
     <!-- Grid de Artistas/Promociones -->
     <div class="artists-grid">
       
-      <!-- Artista Destacado 1 -->
-      <div class="artist-card" itemscope itemtype="https://schema.org/Person">
-        <div class="artist-image">
-          <div class="placeholder-image">🎤</div>
-          <div class="play-overlay">▶️</div>
+      <!-- Artistas Dinámicos -->
+      {artists.map((artist: ArtistData) => (
+        <div class="artist-card" itemscope itemtype="https://schema.org/Person">
+          <div class="artist-image">
+            <div class="placeholder-image">{artist.icon}</div>
+            <div class="play-overlay">▶️</div>
+          </div>
+          <div class="artist-info">
+            <h3 itemprop="name">{artist.name}</h3>
+            <p itemprop="description">{artist.description}</p>
+            <span class="artist-tag">{artist.tag}</span>
+          </div>
         </div>
-        <div class="artist-info">
-          <h3 itemprop="name">DJ VINTAGE</h3>
-          <p itemprop="description">Especialista en música de los 80s-90s</p>
-          <span class="artist-tag">EN VIVO</span>
-        </div>
-      </div>
-
-      <!-- Artista Destacado 2 -->
-      <div class="artist-card" itemscope itemtype="https://schema.org/Person">
-        <div class="artist-image">
-          <div class="placeholder-image">🎸</div>
-          <div class="play-overlay">▶️</div>
-        </div>
-        <div class="artist-info">
-          <h3 itemprop="name">RETRO BAND</h3>
-          <p itemprop="description">Covers clásicos y originales</p>
-          <span class="artist-tag">PRÓXIMO</span>
-        </div>
-      </div>
+      ))}
 
       <!-- Promoción Especial -->
       <div class="promo-card">
         <div class="promo-icon">🔥</div>
         <div class="promo-content">
-          <h3>OFERTA FLASH</h3>
-          <p>30% OFF en toda la colección vintage</p>
-          <span class="promo-code">Código: VINTAGE30</span>
+          <h3>{promoData.title}</h3>
+          <p>{promoData.description}</p>
+          <span class="promo-code">Código: {promoData.code}</span>
         </div>
       </div>
 
@@ -86,22 +151,16 @@
   <section class="music-section" aria-label="Música ambiental">
     <div class="music-container">
       
-      <!-- Título y Controles -->
+      <!-- Título -->
       <div class="music-header">
         <h3 class="music-title">🎶 Ambiente Sur Occidente</h3>
-        <div class="music-controls">
-          <button class="control-btn" id="prevTrack" aria-label="Canción anterior" type="button">⏮️</button>
-          <button class="control-btn play-pause" id="playPause" aria-label="Reproducir/Pausar" type="button">▶️</button>
-          <button class="control-btn" id="nextTrack" aria-label="Siguiente canción" type="button">⏭️</button>
-        </div>
       </div>
 
       <!-- Reproductor Spotify Embed -->
       <div class="spotify-container">
-        <!-- Playlist por defecto - cambiar por tu playlist real -->
         <iframe 
           style="border-radius:12px" 
-          src="https://open.spotify.com/embed/playlist/37i9dQZF1DX0XUsuxWHRQd?utm_source=generator&theme=0" 
+          src={`${spotifyPlaylistUrl.replace('playlist/', 'embed/playlist/')}?utm_source=generator&theme=0`}
           width="100%" 
           height="152" 
           frameborder="0" 
@@ -110,25 +169,12 @@
           loading="lazy"
           title="Playlist Sur Occidente - Música Vintage">
         </iframe>
-        
-        <!-- Reproductor alternativo personalizado -->
-        <div class="custom-player" style="display: none;">
-          <div class="now-playing">
-            <div class="track-info">
-              <div class="track-title">Vintage Vibes Mix</div>
-              <div class="track-artist">Sur Occidente Playlist</div>
-            </div>
-            <div class="progress-bar">
-              <div class="progress-fill"></div>
-            </div>
-          </div>
-        </div>
       </div>
 
       <!-- Información de Playlist -->
       <div class="playlist-info">
         <p>🎵 <strong>Playlist Oficial:</strong> Música seleccionada para acompañar tu experiencia vintage</p>
-        <a href="https://open.spotify.com/playlist/37i9dQZF1DX0XUsuxWHRQd" class="spotify-link" target="_blank" rel="noopener">
+        <a href={spotifyPlaylistUrl} class="spotify-link" target="_blank" rel="noopener">
           Seguir en Spotify 🔗
         </a>
       </div>
@@ -141,35 +187,26 @@
     <div class="footer-content">
       <div class="footer-left">
         <p>&copy; 2025 Sur Occidente. Todos los derechos reservados.</p>
-        <p>📍 Soacha, Cundinamarca - Colombia</p>
+        <p>📍 Bosa, Bogota - Colombia</p>
       </div>
       <div class="footer-right">
         <div class="social-links">
-          <a href="#" aria-label="Facebook">📘</a>
-          <a href="#" aria-label="Instagram">📷</a>
-          <a href="#" aria-label="TikTok">🎵</a>
-          <a href="#" aria-label="Spotify">🎧</a>
+          {socialLinks.map((social) => (
+            <a 
+              href={social.url} 
+              aria-label={social.name}
+              target="_blank"
+              rel="noopener noreferrer"
+            >
+              {social.icon}
+            </a>
+          ))}
         </div>
       </div>
     </div>
   </div>
 
 </footer>
-
-<!-- Modal para Eventos -->
-<div id="eventModal" class="modal" style="display: none;" role="dialog" aria-labelledby="modal-title" aria-hidden="true">
-  <div class="modal-content">
-    <button class="close" id="closeModal" aria-label="Cerrar modal" type="button">&times;</button>
-    <h2 id="modal-title">🎵 Reserva tu lugar</h2>
-    <p>¡No te pierdas nuestro evento especial de música vintage!</p>
-    <form class="event-form" id="eventForm">
-      <input type="text" name="nombre" placeholder="Tu nombre" required aria-label="Tu nombre completo">
-      <input type="email" name="email" placeholder="Tu email" required aria-label="Tu correo electrónico">
-      <input type="tel" name="telefono" placeholder="Tu teléfono" required aria-label="Tu número de teléfono">
-      <button type="submit">Confirmar Reserva 🎟️</button>
-    </form>
-  </div>
-</div>
 
 <style>
   /* 🎯 FOOTER PUBLICITARIO BASE */
@@ -282,6 +319,8 @@
     transition: all 0.3s ease;
     box-shadow: 0 4px 15px rgba(255, 107, 53, 0.4);
     animation: buttonPulse 2s infinite;
+    text-decoration: none;
+    display: inline-block;
   }
 
   @keyframes buttonPulse {
@@ -468,12 +507,8 @@
   }
 
   .music-header {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
+    text-align: center;
     margin-bottom: 1.5rem;
-    flex-wrap: wrap;
-    gap: 1rem;
   }
 
   .music-title {
@@ -482,82 +517,11 @@
     margin: 0;
   }
 
-  .music-controls {
-    display: flex;
-    gap: 0.5rem;
-  }
-
-  .control-btn {
-    background: rgba(245, 222, 179, 0.1);
-    border: 1px solid rgba(245, 222, 179, 0.3);
-    color: #F5DEB3;
-    padding: 0.5rem;
-    border-radius: 8px;
-    cursor: pointer;
-    transition: all 0.3s ease;
-    font-size: 1.2rem;
-  }
-
-  .control-btn:hover {
-    background: rgba(245, 222, 179, 0.2);
-    transform: translateY(-2px);
-  }
-
-  .play-pause {
-    background: linear-gradient(135deg, #8B4135, #105585);
-    border: none;
-  }
-
   .spotify-container {
     margin-bottom: 1.5rem;
     border-radius: 12px;
     overflow: hidden;
     box-shadow: 0 4px 20px rgba(0, 0, 0, 0.2);
-  }
-
-  .custom-player {
-    background: #191414;
-    padding: 1rem;
-    border-radius: 12px;
-  }
-
-  .now-playing {
-    display: flex;
-    flex-direction: column;
-    gap: 1rem;
-  }
-
-  .track-info {
-    color: white;
-  }
-
-  .track-title {
-    font-weight: bold;
-    margin-bottom: 0.5rem;
-  }
-
-  .track-artist {
-    color: #b3b3b3;
-    font-size: 0.9rem;
-  }
-
-  .progress-bar {
-    height: 4px;
-    background: #4f4f4f;
-    border-radius: 2px;
-    overflow: hidden;
-  }
-
-  .progress-fill {
-    height: 100%;
-    background: #1db954;
-    width: 30%;
-    animation: progressMove 3s linear infinite;
-  }
-
-  @keyframes progressMove {
-    0% { width: 0%; }
-    100% { width: 100%; }
   }
 
   .playlist-info {
@@ -593,366 +557,45 @@
     gap: 1rem;
   }
 
-  .footer-left p {
-    margin: 0.25rem 0;
+  .footer-left {
     color: #CD853F;
     font-size: 0.9rem;
   }
 
-  .social-links {
+  .footer-right {
     display: flex;
     gap: 1rem;
   }
 
   .social-links a {
-    font-size: 1.5rem;
-    text-decoration: none;
-    transition: transform 0.3s ease;
+    color: #F5DEB3;
+    font-size: 1.2rem;
+    transition: transform 0.3s ease, color 0.3s ease;
   }
 
   .social-links a:hover {
+    color: #FFD700;
     transform: scale(1.2);
   }
 
-  /* Modal para Eventos */
-  .modal {
-    position: fixed;
-    z-index: 1000;
-    left: 0;
-    top: 0;
-    width: 100%;
-    height: 100%;
-    background: rgba(0, 0, 0, 0.8);
-    animation: fadeIn 0.3s ease;
-  }
-
-  .modal[style*="display: none"] {
-    display: none !important;
-  }
-
-  .modal-content {
-    background: linear-gradient(135deg, #1a1a1a, #2d2d2d);
-    margin: 15% auto;
-    padding: 2rem;
-    border-radius: 16px;
-    width: 90%;
-    max-width: 500px;
-    position: relative;
-    color: white;
-    animation: slideIn 0.3s ease;
-  }
-
-  @keyframes fadeIn {
-    from { opacity: 0; }
-    to { opacity: 1; }
-  }
-
-  @keyframes slideIn {
-    from { transform: translateY(-50px); opacity: 0; }
-    to { transform: translateY(0); opacity: 1; }
-  }
-
-  .close {
-    position: absolute;
-    right: 1rem;
-    top: 1rem;
-    font-size: 2rem;
-    cursor: pointer;
-    color: #CD853F;
-    background: none;
-    border: none;
-    padding: 0;
-    line-height: 1;
-  }
-
-  .close:hover {
-    color: #FF6B35;
-    transform: scale(1.1);
-  }
-
-  #modal-title {
-    margin-bottom: 1rem;
-    color: #F5DEB3;
-  }
-
-  .event-form {
-    display: flex;
-    flex-direction: column;
-    gap: 1rem;
-    margin-top: 1rem;
-  }
-
-  .event-form input {
-    padding: 0.8rem;
-    border: 1px solid rgba(245, 222, 179, 0.3);
-    background: rgba(245, 222, 179, 0.05);
-    color: white;
-    border-radius: 8px;
-    font-size: 1rem;
-  }
-
-  .event-form input::placeholder {
-    color: rgba(245, 222, 179, 0.7);
-  }
-
-  .event-form input:focus {
-    outline: 2px solid #FF6B35;
-    border-color: #FF6B35;
-  }
-
-  .event-form button {
-    background: linear-gradient(135deg, #FF6B35, #FF4500);
-    color: white;
-    border: none;
-    padding: 1rem;
-    border-radius: 8px;
-    font-weight: bold;
-    cursor: pointer;
-    font-size: 1rem;
-    transition: transform 0.3s ease;
-  }
-
-  .event-form button:hover {
-    transform: translateY(-2px);
-    box-shadow: 0 4px 15px rgba(255, 107, 53, 0.4);
-  }
-
-  /* Responsive */
+  /* 📱 Responsividad */
   @media (max-width: 768px) {
     .banner-content {
       flex-direction: column;
       text-align: center;
     }
 
-    .banner-title {
-      font-size: 2rem;
+    .banner-visual {
+      margin-top: 2rem;
     }
 
-    .artists-grid {
-      grid-template-columns: 1fr;
-    }
-
-    .music-header {
-      flex-direction: column;
-      align-items: center;
-      text-align: center;
+    .event-details {
+      justify-content: center;
     }
 
     .footer-content {
       flex-direction: column;
       text-align: center;
     }
-
-    .rotating-vinyl {
-      font-size: 3rem;
-    }
-
-    .modal-content {
-      margin: 10% auto;
-      width: 95%;
-      padding: 1.5rem;
-    }
-  }
-
-  @media (prefers-reduced-motion: reduce) {
-    *,
-    *::before,
-    *::after {
-      animation-duration: 0.01ms !important;
-      animation-iteration-count: 1 !important;
-      transition-duration: 0.01ms !important;
-    }
   }
 </style>
-
-<script>
-  // JavaScript para funcionalidad del modal y controles - VERSION CORREGIDA
-  document.addEventListener('DOMContentLoaded', function() {
-    // Referencias a elementos del DOM
-    const eventButton = document.getElementById('eventButton');
-    const modal = document.getElementById('eventModal');
-    const closeModal = document.getElementById('closeModal');
-    const eventForm = document.getElementById('eventForm');
-    const playPauseBtn = document.getElementById('playPause');
-    const prevTrackBtn = document.getElementById('prevTrack');
-    const nextTrackBtn = document.getElementById('nextTrack');
-
-    // Variable para controlar el estado de reproducción
-    let isPlaying = false;
-
-    // Funciones para el modal
-    function showEventModal() {
-      if (modal) {
-        modal.style.display = 'block';
-        modal.setAttribute('aria-hidden', 'false');
-        // Focus en el primer input del formulario
-        const firstInput = modal.querySelector('input');
-        if (firstInput) {
-          setTimeout(() => firstInput.focus(), 100);
-        }
-      }
-    }
-
-    function hideEventModal() {
-      if (modal) {
-        modal.style.display = 'none';
-        modal.setAttribute('aria-hidden', 'true');
-      }
-    }
-
-    // Event listeners para el modal
-    if (eventButton) {
-      eventButton.addEventListener('click', showEventModal);
-    }
-
-    if (closeModal) {
-      closeModal.addEventListener('click', hideEventModal);
-    }
-
-    // Cerrar modal al hacer clic fuera de él
-    if (modal) {
-      modal.addEventListener('click', function(event) {
-        if (event.target === modal) {
-          hideEventModal();
-        }
-      });
-    }
-
-    // Cerrar modal con tecla Escape
-    document.addEventListener('keydown', function(event) {
-      if (event.key === 'Escape' && modal && modal.style.display === 'block') {
-        hideEventModal();
-      }
-    });
-
-    // Manejar envío del formulario
-    if (eventForm) {
-      eventForm.addEventListener('submit', function(event) {
-        event.preventDefault();
-        
-        // Obtener datos del formulario
-        const formData = new FormData(eventForm);
-        const nombre = formData.get('nombre');
-        const email = formData.get('email');
-        const telefono = formData.get('telefono');
-
-        // Validación básica
-        if (!nombre || !email || !telefono) {
-          alert('Por favor, completa todos los campos');
-          return;
-        }
-
-        // Simular envío exitoso
-        alert(`¡Gracias ${nombre}! Tu reserva ha sido enviada. Te contactaremos pronto.`);
-        
-        // Limpiar formulario y cerrar modal
-        eventForm.reset();
-        hideEventModal();
-      });
-    }
-
-    // Controles de música
-    if (playPauseBtn) {
-      playPauseBtn.addEventListener('click', function() {
-        isPlaying = !isPlaying;
-        this.textContent = isPlaying ? '⏸️' : '▶️';
-        this.setAttribute('aria-label', isPlaying ? 'Pausar' : 'Reproducir');
-        
-        // Agregar efecto visual
-        this.style.transform = 'scale(0.95)';
-        setTimeout(() => {
-          this.style.transform = 'scale(1)';
-        }, 150);
-      });
-    }
-
-    if (prevTrackBtn) {
-      prevTrackBtn.addEventListener('click', function() {
-        console.log('Canción anterior');
-        // Aquí puedes agregar la lógica para cambiar de canción
-        
-        // Efecto visual
-        this.style.transform = 'scale(0.95)';
-        setTimeout(() => {
-          this.style.transform = 'scale(1)';
-        }, 150);
-      });
-    }
-
-    if (nextTrackBtn) {
-      nextTrackBtn.addEventListener('click', function() {
-        console.log('Siguiente canción');
-        // Aquí puedes agregar la lógica para cambiar de canción
-        
-        // Efecto visual
-        this.style.transform = 'scale(0.95)';
-        setTimeout(() => {
-          this.style.transform = 'scale(1)';
-        }, 150);
-      });
-    }
-
-    // Funcionalidad adicional: cambiar tema del reproductor Spotify
-    function toggleSpotifyTheme() {
-      const iframe = document.querySelector('.spotify-container iframe');
-      if (iframe) {
-        const currentSrc = iframe.src;
-        const newTheme = currentSrc.includes('theme=0') ? '1' : '0';
-        iframe.src = currentSrc.replace(/theme=\d/, `theme=${newTheme}`);
-      }
-    }
-
-    // Agregar listener para cambio de tema (opcional)
-    document.addEventListener('keydown', function(event) {
-      if (event.ctrlKey && event.key === 't') {
-        event.preventDefault();
-        toggleSpotifyTheme();
-      }
-    });
-
-    // Función para animar las ondas musicales
-    function animateWaves() {
-      const waves = document.querySelectorAll('.wave');
-      waves.forEach((wave, index) => {
-        const randomHeight = Math.random() * 20 + 10;
-        wave.style.height = `${randomHeight}px`;
-      });
-    }
-
-    // Animar ondas cada cierto tiempo si la música está "reproduciéndose"
-    setInterval(() => {
-      if (isPlaying) {
-        animateWaves();
-      }
-    }, 500);
-
-    // Función para manejar errores de carga del iframe de Spotify
-    const spotifyIframe = document.querySelector('.spotify-container iframe');
-    if (spotifyIframe) {
-      spotifyIframe.addEventListener('error', function() {
-        console.log('Error cargando Spotify, mostrando reproductor alternativo');
-        document.querySelector('.spotify-container iframe').style.display = 'none';
-        document.querySelector('.custom-player').style.display = 'block';
-      });
-    }
-
-    // Inicializar tooltips para los controles (opcional)
-    const controlButtons = document.querySelectorAll('.control-btn');
-    controlButtons.forEach(button => {
-      button.addEventListener('mouseenter', function() {
-        const label = this.getAttribute('aria-label');
-        this.setAttribute('title', label);
-      });
-    });
-
-    console.log('Footer interactivo cargado correctamente ✅');
-  });
-
-  // Función global para WhatsApp (si se necesita integración)
-  function contactWhatsApp() {
-    const message = "¡Hola! Me interesa más información sobre los eventos de Sur Occidente";
-    const phone = "573XXXXXXXXX"; // Reemplazar con tu número real
-    const url = `https://wa.me/${phone}?text=${encodeURIComponent(message)}`;
-    window.open(url, '_blank');
-  }
-</script>
