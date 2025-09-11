@@ -27,29 +27,22 @@ Here's how the project is laid out. Peep the structure to understand the flow.
 Así es como está montado el proyecto. Echa un vistazo a la estructura para entender el flow.
 
 ```text
+```text
 /
-├── .astro/
-├── .vscode/
-├── node_modules/
 ├── public/
-│   ├── clothesSurOccident...
-│   └── favicon.png
+│   └── ...
 ├── src/
 │   ├── assets/
 │   ├── components/
 │   │   ├── Body.astro
-│   │   └── Header.astro
+│   │   ├── Header.astro
+│   │   └── Footer.astro
 │   ├── layouts/
 │   │   └── Layout.astro
 │   └── pages/
-│       ├── index.astro
-│       └── productos.astro
-├── .gitignore
-├── astro.config.mjs
-├── package.json
-├── README.md
-├── tsconfig.json
-└── yarn.lock
+│       └── index.astro
+└── ...
+```
 
 ```
 
