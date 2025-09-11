@@ -1,0 +1,757 @@
+---
+// Footer.astro - Footer Publicitario con Eventos y Música
+---
+
+<!-- Footer Publicitario Semántico -->
+<footer role="contentinfo" itemscope itemtype="https://schema.org/WPFooter">
+  
+  <!-- Sección Principal de Publicidad -->
+  <section class="promo-section" aria-label="Promociones y eventos">
+    
+    <!-- Banner Principal de Evento/Artista -->
+    <div class="main-banner" itemscope itemtype="https://schema.org/Event">
+      <div class="banner-content">
+        <div class="banner-text">
+          <h2 class="banner-title" itemprop="name">🎵 EVENTO ESPECIAL</h2>
+          <p class="banner-subtitle" itemprop="description">
+            Noche de Música Vintage - DJ Sets + Ropa Exclusiva
+          </p>
+          <div class="event-details">
+            <span class="event-date" itemprop="startDate" content="2025-10-15">
+              📅 15 Octubre 2025
+            </span>
+            <span class="event-location" itemprop="location" itemscope itemtype="https://schema.org/Place">
+              📍 <span itemprop="name">Sur Occidente Store</span>
+            </span>
+          </div>
+          <button class="cta-button" onclick="showEventModal()">
+            ¡RESERVA TU LUGAR! 🎟️
+          </button>
+        </div>
+        <div class="banner-visual">
+          <div class="rotating-vinyl">🎵</div>
+          <div class="music-waves">
+            <div class="wave"></div>
+            <div class="wave"></div>
+            <div class="wave"></div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Grid de Artistas/Promociones -->
+    <div class="artists-grid">
+      
+      <!-- Artista Destacado 1 -->
+      <div class="artist-card" itemscope itemtype="https://schema.org/Person">
+        <div class="artist-image">
+          <div class="placeholder-image">🎤</div>
+          <div class="play-overlay">▶️</div>
+        </div>
+        <div class="artist-info">
+          <h3 itemprop="name">DJ VINTAGE</h3>
+          <p itemprop="description">Especialista en música de los 80s-90s</p>
+          <span class="artist-tag">EN VIVO</span>
+        </div>
+      </div>
+
+      <!-- Artista Destacado 2 -->
+      <div class="artist-card" itemscope itemtype="https://schema.org/Person">
+        <div class="artist-image">
+          <div class="placeholder-image">🎸</div>
+          <div class="play-overlay">▶️</div>
+        </div>
+        <div class="artist-info">
+          <h3 itemprop="name">RETRO BAND</h3>
+          <p itemprop="description">Covers clásicos y originales</p>
+          <span class="artist-tag">PRÓXIMO</span>
+        </div>
+      </div>
+
+      <!-- Promoción Especial -->
+      <div class="promo-card">
+        <div class="promo-icon">🔥</div>
+        <div class="promo-content">
+          <h3>OFERTA FLASH</h3>
+          <p>30% OFF en toda la colección vintage</p>
+          <span class="promo-code">Código: VINTAGE30</span>
+        </div>
+      </div>
+
+    </div>
+  </section>
+
+  <!-- Sección del Reproductor Spotify -->
+  <section class="music-section" aria-label="Música ambiental">
+    <div class="music-container">
+      
+      <!-- Título y Controles -->
+      <div class="music-header">
+        <h3 class="music-title">🎶 Ambiente Sur Occidente</h3>
+        <div class="music-controls">
+          <button class="control-btn" id="prevTrack" aria-label="Canción anterior">⏮️</button>
+          <button class="control-btn play-pause" id="playPause" aria-label="Reproducir/Pausar">▶️</button>
+          <button class="control-btn" id="nextTrack" aria-label="Siguiente canción">⏭️</button>
+        </div>
+      </div>
+
+      <!-- Reproductor Spotify Embed -->
+      <div class="spotify-container">
+        <!-- Playlist por defecto - cambiar por tu playlist real -->
+        <iframe 
+          style="border-radius:12px" 
+          src="https://open.spotify.com/embed/playlist/37i9dQZF1DX0XUsuxWHRQd?utm_source=generator&theme=0" 
+          width="100%" 
+          height="152" 
+          frameBorder="0" 
+          allowfullscreen="" 
+          allow="autoplay; clipboard-write; encrypted-media; fullscreen; picture-in-picture" 
+          loading="lazy"
+          title="Playlist Sur Occidente - Música Vintage">
+        </iframe>
+        
+        <!-- Reproductor alternativo personalizado -->
+        <div class="custom-player" style="display: none;">
+          <div class="now-playing">
+            <div class="track-info">
+              <div class="track-title">Vintage Vibes Mix</div>
+              <div class="track-artist">Sur Occidente Playlist</div>
+            </div>
+            <div class="progress-bar">
+              <div class="progress-fill"></div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Información de Playlist -->
+      <div class="playlist-info">
+        <p>🎵 <strong>Playlist Oficial:</strong> Música seleccionada para acompañar tu experiencia vintage</p>
+        <a href="https://open.spotify.com/playlist/37i9dQZF1DX0XUsuxWHRQd" class="spotify-link" target="_blank" rel="noopener">
+          Seguir en Spotify 🔗
+        </a>
+      </div>
+
+    </div>
+  </section>
+
+  <!-- Footer Bottom - Info Legal -->
+  <div class="footer-bottom">
+    <div class="footer-content">
+      <div class="footer-left">
+        <p>&copy; 2025 Sur Occidente. Todos los derechos reservados.</p>
+        <p>📍 Soacha, Cundinamarca - Colombia</p>
+      </div>
+      <div class="footer-right">
+        <div class="social-links">
+          <a href="#" aria-label="Facebook">📘</a>
+          <a href="#" aria-label="Instagram">📷</a>
+          <a href="#" aria-label="TikTok">🎵</a>
+          <a href="#" aria-label="Spotify">🎧</a>
+        </div>
+      </div>
+    </div>
+  </div>
+
+</footer>
+
+<!-- Modal para Eventos (opcional) -->
+<div id="eventModal" class="modal" style="display: none;">
+  <div class="modal-content">
+    <span class="close" onclick="closeEventModal()">&times;</span>
+    <h2>🎵 Reserva tu lugar</h2>
+    <p>¡No te pierdas nuestro evento especial de música vintage!</p>
+    <form class="event-form">
+      <input type="text" placeholder="Tu nombre" required>
+      <input type="email" placeholder="Tu email" required>
+      <input type="tel" placeholder="Tu teléfono" required>
+      <button type="submit">Confirmar Reserva 🎟️</button>
+    </form>
+  </div>
+</div>
+
+<style>
+  /* 🎯 FOOTER PUBLICITARIO BASE */
+  footer {
+    background: linear-gradient(135deg, #1a1a1a 0%, #2d2d2d 50%, #1a1a1a 100%);
+    color: white;
+    margin-top: auto;
+    border-top: 3px solid #8B4135;
+    position: relative;
+    overflow: hidden;
+  }
+
+  footer::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: -50%;
+    width: 200%;
+    height: 2px;
+    background: linear-gradient(90deg, transparent, #8B4135, #105585, #8B4135, transparent);
+    animation: shimmer 3s infinite;
+  }
+
+  @keyframes shimmer {
+    0% { transform: translateX(-100%); }
+    100% { transform: translateX(100%); }
+  }
+
+  /* 🎵 SECCIÓN PRINCIPAL DE PROMOCIONES */
+  .promo-section {
+    padding: 2rem 1rem;
+    max-width: 1200px;
+    margin: 0 auto;
+  }
+
+  /* Banner Principal del Evento */
+  .main-banner {
+    background: linear-gradient(135deg, #8B4135, #105585);
+    border-radius: 16px;
+    padding: 2rem;
+    margin-bottom: 2rem;
+    position: relative;
+    overflow: hidden;
+    box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3);
+    animation: pulseGlow 4s ease-in-out infinite;
+  }
+
+  @keyframes pulseGlow {
+    0%, 100% { box-shadow: 0 8px 32px rgba(139, 65, 53, 0.3); }
+    50% { box-shadow: 0 12px 40px rgba(16, 85, 133, 0.4); }
+  }
+
+  .banner-content {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 2rem;
+  }
+
+  .banner-text {
+    flex: 1;
+  }
+
+  .banner-title {
+    font-size: 2.5rem;
+    margin: 0 0 0.5rem 0;
+    background: linear-gradient(45deg, #F5DEB3, #FFD700);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+    animation: textShine 2s ease-in-out infinite;
+  }
+
+  @keyframes textShine {
+    0%, 100% { filter: brightness(1); }
+    50% { filter: brightness(1.2); }
+  }
+
+  .banner-subtitle {
+    font-size: 1.2rem;
+    margin: 0 0 1rem 0;
+    color: #F5DEB3;
+  }
+
+  .event-details {
+    display: flex;
+    gap: 1rem;
+    margin: 1rem 0;
+    flex-wrap: wrap;
+  }
+
+  .event-date,
+  .event-location {
+    background: rgba(245, 222, 179, 0.1);
+    padding: 0.5rem 1rem;
+    border-radius: 20px;
+    font-size: 0.9rem;
+    border: 1px solid rgba(245, 222, 179, 0.3);
+  }
+
+  .cta-button {
+    background: linear-gradient(135deg, #FF6B35, #FF4500);
+    color: white;
+    border: none;
+    padding: 1rem 2rem;
+    border-radius: 25px;
+    font-size: 1.1rem;
+    font-weight: bold;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    box-shadow: 0 4px 15px rgba(255, 107, 53, 0.4);
+    animation: buttonPulse 2s infinite;
+  }
+
+  @keyframes buttonPulse {
+    0%, 100% { transform: scale(1); }
+    50% { transform: scale(1.05); }
+  }
+
+  .cta-button:hover {
+    transform: translateY(-2px) scale(1.05);
+    box-shadow: 0 8px 25px rgba(255, 107, 53, 0.6);
+  }
+
+  /* Visual del Banner */
+  .banner-visual {
+    position: relative;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+
+  .rotating-vinyl {
+    font-size: 4rem;
+    animation: rotate 4s linear infinite;
+    filter: drop-shadow(0 0 20px rgba(245, 222, 179, 0.5));
+  }
+
+  @keyframes rotate {
+    from { transform: rotate(0deg); }
+    to { transform: rotate(360deg); }
+  }
+
+  .music-waves {
+    position: absolute;
+    display: flex;
+    gap: 0.3rem;
+    align-items: end;
+  }
+
+  .wave {
+    width: 4px;
+    background: linear-gradient(to top, #F5DEB3, #FFD700);
+    border-radius: 2px;
+    animation: waveAnimation 1.5s ease-in-out infinite;
+  }
+
+  .wave:nth-child(1) {
+    height: 20px;
+    animation-delay: 0s;
+  }
+
+  .wave:nth-child(2) {
+    height: 30px;
+    animation-delay: 0.2s;
+  }
+
+  .wave:nth-child(3) {
+    height: 15px;
+    animation-delay: 0.4s;
+  }
+
+  @keyframes waveAnimation {
+    0%, 100% { transform: scaleY(1); }
+    50% { transform: scaleY(0.5); }
+  }
+
+  /* Grid de Artistas */
+  .artists-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+    gap: 1.5rem;
+    margin-bottom: 2rem;
+  }
+
+  .artist-card {
+    background: rgba(245, 222, 179, 0.05);
+    border-radius: 12px;
+    padding: 1.5rem;
+    border: 1px solid rgba(245, 222, 179, 0.1);
+    transition: all 0.3s ease;
+    position: relative;
+    overflow: hidden;
+  }
+
+  .artist-card:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 10px 30px rgba(139, 65, 53, 0.2);
+  }
+
+  .artist-image {
+    position: relative;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    height: 80px;
+    margin-bottom: 1rem;
+  }
+
+  .placeholder-image {
+    font-size: 3rem;
+    opacity: 0.7;
+  }
+
+  .play-overlay {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    font-size: 1.5rem;
+    opacity: 0;
+    transition: opacity 0.3s ease;
+  }
+
+  .artist-card:hover .play-overlay {
+    opacity: 1;
+  }
+
+  .artist-info h3 {
+    color: #F5DEB3;
+    margin: 0 0 0.5rem 0;
+    font-size: 1.1rem;
+  }
+
+  .artist-info p {
+    color: #CD853F;
+    font-size: 0.9rem;
+    margin: 0 0 1rem 0;
+  }
+
+  .artist-tag {
+    background: linear-gradient(135deg, #FF6B35, #FF4500);
+    color: white;
+    padding: 0.3rem 0.8rem;
+    border-radius: 15px;
+    font-size: 0.8rem;
+    font-weight: bold;
+  }
+
+  .promo-card {
+    background: linear-gradient(135deg, #FF6B35, #FF4500);
+    border-radius: 12px;
+    padding: 1.5rem;
+    text-align: center;
+    animation: promoPulse 3s ease-in-out infinite;
+  }
+
+  @keyframes promoPulse {
+    0%, 100% { transform: scale(1); }
+    50% { transform: scale(1.02); }
+  }
+
+  .promo-icon {
+    font-size: 3rem;
+    margin-bottom: 1rem;
+  }
+
+  .promo-content h3 {
+    margin: 0 0 0.5rem 0;
+    color: white;
+  }
+
+  .promo-content p {
+    color: rgba(255, 255, 255, 0.9);
+    margin: 0 0 1rem 0;
+  }
+
+  .promo-code {
+    background: rgba(255, 255, 255, 0.2);
+    padding: 0.5rem 1rem;
+    border-radius: 20px;
+    font-weight: bold;
+    display: inline-block;
+  }
+
+  /* 🎵 SECCIÓN REPRODUCTOR SPOTIFY */
+  .music-section {
+    background: rgba(245, 222, 179, 0.02);
+    padding: 2rem 1rem;
+    border-top: 1px solid rgba(245, 222, 179, 0.1);
+  }
+
+  .music-container {
+    max-width: 1200px;
+    margin: 0 auto;
+  }
+
+  .music-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 1.5rem;
+    flex-wrap: wrap;
+    gap: 1rem;
+  }
+
+  .music-title {
+    color: #F5DEB3;
+    font-size: 1.5rem;
+    margin: 0;
+  }
+
+  .music-controls {
+    display: flex;
+    gap: 0.5rem;
+  }
+
+  .control-btn {
+    background: rgba(245, 222, 179, 0.1);
+    border: 1px solid rgba(245, 222, 179, 0.3);
+    color: #F5DEB3;
+    padding: 0.5rem;
+    border-radius: 8px;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    font-size: 1.2rem;
+  }
+
+  .control-btn:hover {
+    background: rgba(245, 222, 179, 0.2);
+    transform: translateY(-2px);
+  }
+
+  .play-pause {
+    background: linear-gradient(135deg, #8B4135, #105585);
+    border: none;
+  }
+
+  .spotify-container {
+    margin-bottom: 1.5rem;
+    border-radius: 12px;
+    overflow: hidden;
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.2);
+  }
+
+  .custom-player {
+    background: #191414;
+    padding: 1rem;
+    border-radius: 12px;
+  }
+
+  .now-playing {
+    display: flex;
+    flex-direction: column;
+    gap: 1rem;
+  }
+
+  .track-info {
+    color: white;
+  }
+
+  .track-title {
+    font-weight: bold;
+    margin-bottom: 0.5rem;
+  }
+
+  .track-artist {
+    color: #b3b3b3;
+    font-size: 0.9rem;
+  }
+
+  .progress-bar {
+    height: 4px;
+    background: #4f4f4f;
+    border-radius: 2px;
+    overflow: hidden;
+  }
+
+  .progress-fill {
+    height: 100%;
+    background: #1db954;
+    width: 30%;
+    animation: progressMove 3s linear infinite;
+  }
+
+  @keyframes progressMove {
+    0% { width: 0%; }
+    100% { width: 100%; }
+  }
+
+  .playlist-info {
+    text-align: center;
+    color: #CD853F;
+  }
+
+  .spotify-link {
+    color: #1db954;
+    text-decoration: none;
+    font-weight: bold;
+    transition: color 0.3s ease;
+  }
+
+  .spotify-link:hover {
+    color: #1ed760;
+  }
+
+  /* Footer Bottom */
+  .footer-bottom {
+    background: rgba(0, 0, 0, 0.3);
+    padding: 1rem;
+    border-top: 1px solid rgba(245, 222, 179, 0.1);
+  }
+
+  .footer-content {
+    max-width: 1200px;
+    margin: 0 auto;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    flex-wrap: wrap;
+    gap: 1rem;
+  }
+
+  .footer-left p {
+    margin: 0.25rem 0;
+    color: #CD853F;
+    font-size: 0.9rem;
+  }
+
+  .social-links {
+    display: flex;
+    gap: 1rem;
+  }
+
+  .social-links a {
+    font-size: 1.5rem;
+    text-decoration: none;
+    transition: transform 0.3s ease;
+  }
+
+  .social-links a:hover {
+    transform: scale(1.2);
+  }
+
+  /* Modal para Eventos */
+  .modal {
+    display: none;
+    position: fixed;
+    z-index: 1000;
+    left: 0;
+    top: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(0, 0, 0, 0.8);
+    animation: fadeIn 0.3s ease;
+  }
+
+  .modal-content {
+    background: linear-gradient(135deg, #1a1a1a, #2d2d2d);
+    margin: 15% auto;
+    padding: 2rem;
+    border-radius: 16px;
+    width: 90%;
+    max-width: 500px;
+    position: relative;
+    color: white;
+  }
+
+  .close {
+    position: absolute;
+    right: 1rem;
+    top: 1rem;
+    font-size: 2rem;
+    cursor: pointer;
+    color: #CD853F;
+  }
+
+  .event-form {
+    display: flex;
+    flex-direction: column;
+    gap: 1rem;
+    margin-top: 1rem;
+  }
+
+  .event-form input {
+    padding: 0.8rem;
+    border: 1px solid rgba(245, 222, 179, 0.3);
+    background: rgba(245, 222, 179, 0.05);
+    color: white;
+    border-radius: 8px;
+  }
+
+  .event-form button {
+    background: linear-gradient(135deg, #FF6B35, #FF4500);
+    color: white;
+    border: none;
+    padding: 1rem;
+    border-radius: 8px;
+    font-weight: bold;
+    cursor: pointer;
+    transition: transform 0.3s ease;
+  }
+
+  .event-form button:hover {
+    transform: translateY(-2px);
+  }
+
+  /* Responsive */
+  @media (max-width: 768px) {
+    .banner-content {
+      flex-direction: column;
+      text-align: center;
+    }
+
+    .banner-title {
+      font-size: 2rem;
+    }
+
+    .artists-grid {
+      grid-template-columns: 1fr;
+    }
+
+    .music-header {
+      flex-direction: column;
+      align-items: center;
+      text-align: center;
+    }
+
+    .footer-content {
+      flex-direction: column;
+      text-align: center;
+    }
+
+    .rotating-vinyl {
+      font-size: 3rem;
+    }
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    *,
+    *::before,
+    *::after {
+      animation-duration: 0.01ms !important;
+      animation-iteration-count: 1 !important;
+      transition-duration: 0.01ms !important;
+    }
+  }
+</style>
+
+<script>
+  // JavaScript para funcionalidad del modal y controles
+  function showEventModal() {
+    document.getElementById('eventModal').style.display = 'block';
+  }
+
+  function closeEventModal() {
+    document.getElementById('eventModal').style.display = 'none';
+  }
+
+  // Cerrar modal al hacer clic fuera
+  window.onclick = function(event) {
+    const modal = document.getElementById('eventModal');
+    if (event.target == modal) {
+      modal.style.display = 'none';
+    }
+  }
+
+  // Controles de música simulados
+  document.addEventListener('DOMContentLoaded', function() {
+    const playPauseBtn = document.getElementById('playPause');
+    let isPlaying = false;
+
+    playPauseBtn?.addEventListener('click', function() {
+      isPlaying = !isPlaying;
+      this.textContent = isPlaying ? '⏸️' : '▶️';
+    });
+
+    document.getElementById('prevTrack')?.addEventListener('click', function() {
+      console.log('Canción anterior');
+    });
+
+    document.getElementById('nextTrack')?.addEventListener('click', function() {
+      console.log('Siguiente canción');
+    });
+  });
+</script>
