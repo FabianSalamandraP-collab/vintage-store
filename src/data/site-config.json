@@ -1,7 +1,7 @@
 {
   "site": {
     "name": "Sur Occidente",
-    "description": "Tienda de ropa vintage y segunda mano de alta calidad en Soacha, Cundinamarca",
+    "description": "Tienda de ropa vintage y segunda mano de alta calidad en Bosa, Bogotá",
     "url": "https://suroccidente.com",
     "logo": "/clothesSurOccidente.png",
     "tagline": "Piezas únicas con historia y estilo auténtico",
@@ -9,7 +9,7 @@
       "whatsapp": "+573001234567",
       "email": "info@suroccidente.com",
       "phone": "+57 300 123 4567",
-      "address": "Soacha, Cundinamarca, Colombia",
+      "address": "Bosa, Bogotá, Colombia",
       "hours": "Lunes a Sábado: 9:00 AM - 6:00 PM"
     },
     "social": {
@@ -19,7 +19,7 @@
       "facebook_url": "https://facebook.com/suroccidente"
     },
     "seo": {
-      "keywords": "ropa vintage, segunda mano, Soacha, Colombia, moda sostenible, ropa retro, vintage clothing",
+      "keywords": "ropa vintage, segunda mano, Bosa, Colombia, moda sostenible, ropa retro, vintage clothing",
       "author": "Sur Occidente",
       "og_image": "/images/og-image.jpg"
     },

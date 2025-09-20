@@ -22,20 +22,30 @@ const seoKeywords = siteConfig.seo.keywords;
   <!-- Hero Section -->
   <section class="hero">
     <div class="hero-content">
-      <h1 class="hero-title">
-        Bienvenido a <span class="brand-name">{siteConfig.name}</span>
-      </h1>
+      <!-- Logo en la página principal -->
+      <div class="hero-logo">
+        <img 
+          src="/clothesSurOccidente.png" 
+          alt="Sur Occidente - Bosa, Bogotá" 
+          class="hero-logo-img"
+          width="80"
+          height="80"
+        />
+      </div>
+      
+      <h1 class="hero-title">SUR OCCIDENTE</h1>
       <p class="hero-subtitle">
-        {siteConfig.description}
+        Descubre piezas únicas de ropa vintage, vinilos clásicos y accesorios retro. 
+        Cada artículo cuenta una historia y define tu estilo personal.
       </p>
-      <p class="hero-description">
-        Descubre tesoros únicos del pasado. Ropa vintage auténtica, vinilos clásicos y accesorios retro que cuentan historias.
-      </p>
+      
+
+      
       <div class="hero-actions">
         <a href="/productos" class="btn btn-primary">
-          Ver Catálogo
+          Explorar Productos
         </a>
-        <a href={`https://wa.me/${siteConfig.contact.whatsapp}?text=¡Hola! Me interesa conocer más sobre sus productos vintage`} 
+        <a href="https://wa.me/573001234567?text=¡Hola!%20Me%20interesa%20conocer%20más%20sobre%20Sur%20Occidente" 
            class="btn btn-secondary" 
            target="_blank" 
            rel="noopener noreferrer">
@@ -46,6 +56,7 @@ const seoKeywords = siteConfig.seo.keywords;
         </a>
       </div>
     </div>
+    
     <div class="hero-image">
       <img src="https://trae-api-us.mchost.guru/api/ide/v1/text_to_image?prompt=vintage%20clothing%20store%20display%20with%20colorful%20retro%20shirts%20and%20accessories%20warm%20red%20lighting%20cozy%20atmosphere&image_size=landscape_4_3" 
            alt="Tienda de ropa vintage Sur Occidente" 
@@ -150,28 +161,110 @@ const seoKeywords = siteConfig.seo.keywords;
     </div>
   </section>
 
-  <!-- About Section -->
-  <section class="about-preview">
+  <!-- Videos de Artistas Section -->
+  <section class="artist-videos">
     <div class="container">
-      <div class="about-content">
-        <div class="about-text">
-          <h2 class="section-title">Nuestra Historia</h2>
-          <p class="about-description">
-            {siteConfig.business.mission}
-          </p>
-          <p>
-            Desde {siteConfig.business.founded}, nos dedicamos a rescatar y preservar la moda vintage, 
-            ofreciendo piezas auténticas que trascienden el tiempo y las tendencias.
-          </p>
-          <a href="/sobre-nosotros" class="btn btn-outline">
-            Conoce Más Sobre Nosotros
-          </a>
+      <div class="section-header">
+        <h2 class="section-title">Videos de Nuestros Artistas</h2>
+        <p class="section-subtitle">
+          Descubre el talento del hip hop y reggaetón colombiano
+        </p>
+      </div>
+      <div class="videos-grid">
+        <div class="video-item">
+          <iframe 
+            src="https://www.youtube.com/embed/CRHyBwNtkLA" 
+            title="MF DOOM - Doomsday"
+            frameborder="0" 
+            allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" 
+            allowfullscreen>
+          </iframe>
+          <div class="video-info">
+            <h3>MF DOOM</h3>
+            <p>Doomsday (1999) - Hip Hop Clásico</p>
+          </div>
         </div>
-        <div class="about-image">
-          <img src="https://trae-api-us.mchost.guru/api/ide/v1/text_to_image?prompt=vintage%20store%20owner%20curating%20retro%20clothing%20warm%20atmosphere%20authentic%20vintage%20aesthetic&image_size=portrait_4_3" 
-               alt="Historia de Sur Occidente" 
-               loading="lazy" />
+        <div class="video-item">
+          <iframe 
+            src="https://www.youtube.com/embed/fJuNgBkloFE" 
+            title="The Notorious B.I.G. - Juicy"
+            frameborder="0" 
+            allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" 
+            allowfullscreen>
+          </iframe>
+          <div class="video-info">
+            <h3>The Notorious B.I.G.</h3>
+            <p>Juicy (1994) - Hip Hop Clásico</p>
+          </div>
         </div>
+        <div class="video-item">
+          <iframe 
+            src="https://www.youtube.com/embed/DkFJE8ZdeG8" 
+            title="ChocQuibTown - Somos Pacífico"
+            frameborder="0" 
+            allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" 
+            allowfullscreen>
+          </iframe>
+          <div class="video-info">
+            <h3>ChocQuibTown</h3>
+            <p>Somos Pacífico - Hip Hop Colombiano Actual</p>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Eventos y Conciertos Section -->
+  <section class="events-section">
+    <div class="container">
+      <div class="section-header">
+        <h2 class="section-title">Próximos Eventos y Conciertos</h2>
+        <p class="section-subtitle">
+          No te pierdas los mejores eventos de música urbana
+        </p>
+      </div>
+      <div class="events-grid">
+        <div class="event-card" style="background-image: url('https://trae-api-us.mchost.guru/api/ide/v1/text_to_image?prompt=hip%20hop%20festival%20flyer%20design%20urban%20street%20art%20graffiti%20style%20vibrant%20colors%20music%20event%20poster&image_size=landscape_4_3');">
+          <div class="event-overlay"></div>
+          <div class="event-content">
+            <div class="event-date">
+              <span class="day">15</span>
+              <span class="month">DIC</span>
+            </div>
+            <div class="event-info">
+              <h3>Festival Hip Hop Cali</h3>
+              <p class="event-artist">MC Flow & Invitados</p>
+              <p class="event-location">📍 Parque del Perro, Cali</p>
+              <p class="event-time">🕒 8:00 PM</p>
+            </div>
+            <div class="event-action">
+              <a href="#" class="btn btn-primary">Comprar Boletos</a>
+            </div>
+          </div>
+        </div>
+        <div class="event-card" style="background-image: url('https://trae-api-us.mchost.guru/api/ide/v1/text_to_image?prompt=reggaeton%20night%20party%20flyer%20tropical%20neon%20lights%20club%20atmosphere%20music%20event%20poster&image_size=landscape_4_3');">
+          <div class="event-overlay"></div>
+          <div class="event-content">
+            <div class="event-date">
+              <span class="day">22</span>
+              <span class="month">DIC</span>
+            </div>
+            <div class="event-info">
+              <h3>Noche de Reggaetón</h3>
+              <p class="event-artist">Reggae King</p>
+              <p class="event-location">📍 Club La Topa Tolondra</p>
+              <p class="event-time">🕒 10:00 PM</p>
+            </div>
+            <div class="event-action">
+              <a href="#" class="btn btn-primary">Comprar Boletos</a>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div class="section-footer">
+        <a href="/nosotros" class="btn btn-outline">
+          Conoce Más Sobre Nosotros
+        </a>
       </div>
     </div>
   </section>
@@ -210,11 +303,50 @@ const seoKeywords = siteConfig.seo.keywords;
     grid-template-columns: 1fr 1fr;
     gap: 3rem;
     align-items: center;
+    justify-items: center;
     min-height: 70vh;
+    max-width: 1400px;
+    margin: 0 auto;
   }
   
   .hero-content {
+    width: 100%;
     max-width: 600px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    text-align: center;
+    padding: 2rem;
+  }
+
+  /* Estilos para el logo del hero */
+  .hero-logo {
+    margin-bottom: 2rem;
+    animation: logoFloat 3s ease-in-out infinite;
+  }
+
+  .hero-logo-img {
+    width: 120px;
+    height: 120px;
+    object-fit: contain;
+    filter: drop-shadow(4px 4px 12px rgba(0, 0, 0, 0.3));
+    transition: all 0.4s ease;
+    transform: scale(1.1);
+  }
+
+  .hero-logo-img:hover {
+    transform: scale(1.3) rotate(10deg);
+    filter: drop-shadow(6px 6px 20px rgba(245, 222, 179, 0.6));
+  }
+
+  @keyframes logoFloat {
+    0%, 100% {
+      transform: translateY(0px);
+    }
+    50% {
+      transform: translateY(-10px);
+    }
   }
   
   .hero-title {
@@ -231,9 +363,13 @@ const seoKeywords = siteConfig.seo.keywords;
   
   .hero-subtitle {
     font-size: 1.5rem;
-    margin-bottom: 1rem;
+    margin-bottom: 2rem;
     opacity: 0.9;
+    line-height: 1.4;
+    max-width: 500px;
   }
+  
+
   
   .hero-description {
     font-size: 1.1rem;
@@ -246,10 +382,21 @@ const seoKeywords = siteConfig.seo.keywords;
     display: flex;
     gap: 1rem;
     flex-wrap: wrap;
+    justify-content: center;
+    align-items: center;
+    margin-top: 1rem;
+  }
+  
+  .hero-image {
+    width: 100%;
+    display: flex;
+    justify-content: center;
+    align-items: center;
   }
   
   .hero-image img {
     width: 100%;
+    max-width: 500px;
     height: 400px;
     object-fit: cover;
     border-radius: 12px;
@@ -311,7 +458,8 @@ const seoKeywords = siteConfig.seo.keywords;
   .featured-products,
   .categories,
   .music-section,
-  .about-preview,
+  .artist-videos,
+  .events-section,
   .contact-cta {
     padding: 4rem 0;
   }
@@ -333,6 +481,15 @@ const seoKeywords = siteConfig.seo.keywords;
     color: #718096;
     max-width: 600px;
     margin: 0 auto;
+  }
+  
+  /* Mantener el color blanco hueso solo en la sección de productos destacados */
+  .featured-products .section-title {
+    color: #F5DEB3;
+  }
+  
+  .featured-products .section-subtitle {
+    color: #F5DEB3;
   }
   
   .section-footer {
@@ -527,10 +684,29 @@ const seoKeywords = siteConfig.seo.keywords;
       grid-template-columns: 1fr;
       text-align: center;
       padding: 3rem 1rem;
+      gap: 2rem;
+      min-height: auto;
+    }
+    
+    .hero-content {
+      padding: 1rem;
     }
     
     .hero-title {
       font-size: 2.5rem;
+    }
+    
+    .hero-subtitle {
+      font-size: 1.2rem;
+    }
+    
+    .hero-stats {
+      gap: 1.5rem;
+      margin: 1.5rem 0;
+    }
+    
+    .stat-number {
+      font-size: 1.5rem;
     }
     
     .about-content {
@@ -566,5 +742,249 @@ const seoKeywords = siteConfig.seo.keywords;
       padding: 0.4rem 0.8rem;
       font-size: 0.9rem;
     }
+    
+    .videos-grid {
+      grid-template-columns: 1fr;
+      gap: 2rem;
+    }
+    
+    .events-grid {
+      grid-template-columns: 1fr;
+      gap: 1.5rem;
+    }
+    
+    .event-card {
+      flex-direction: column;
+      text-align: center;
+      padding: 1.5rem;
+      min-height: auto;
+      gap: 1.5rem;
+    }
+    
+    .event-date {
+      margin-bottom: 0;
+      align-self: center;
+      min-width: 100px;
+    }
+    
+    .event-info {
+      order: 2;
+    }
+    
+    .event-action {
+      order: 3;
+      justify-content: center;
+    }
+    
+    .event-info h3 {
+      font-size: 1.25rem;
+      margin-bottom: 0.5rem;
+    }
+    
+    .event-artist {
+      font-size: 1rem;
+      margin-bottom: 0.75rem;
+    }
+    
+    .event-location,
+    .event-time {
+      font-size: 0.9rem;
+      justify-content: center;
+    }
+  }
+  
+  /* Videos Section */
+  .artist-videos {
+    background: #f7fafc;
+  }
+  
+  .videos-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(350px, 1fr));
+    gap: 2rem;
+    margin-top: 2rem;
+  }
+  
+  .video-item {
+    background: white;
+    border-radius: 12px;
+    overflow: hidden;
+    box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+    transition: all 0.3s ease;
+  }
+  
+  .video-item:hover {
+    transform: translateY(-4px);
+    box-shadow: 0 12px 24px rgba(0,0,0,0.15);
+  }
+  
+  .video-item iframe {
+    width: 100%;
+    height: 200px;
+    border: none;
+  }
+  
+  .video-info {
+    padding: 1.5rem;
+    text-align: center;
+  }
+  
+  .video-info h3 {
+    font-size: 1.25rem;
+    font-weight: 600;
+    color: #2d3748;
+    margin-bottom: 0.5rem;
+  }
+  
+  .video-info p {
+    color: #718096;
+    font-size: 0.9rem;
+  }
+  
+  /* Events Section */
+  .events-section {
+    background: white;
+  }
+  
+  .events-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(350px, 1fr));
+    gap: 2rem;
+    margin-top: 2rem;
+  }
+  
+  .event-card {
+    background-size: cover;
+    background-position: center;
+    background-repeat: no-repeat;
+    border-radius: 16px;
+    position: relative;
+    overflow: hidden;
+    min-height: 200px;
+    transition: all 0.3s ease;
+    box-shadow: 0 8px 24px rgba(0,0,0,0.15);
+  }
+
+  .event-overlay {
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: linear-gradient(135deg, rgba(0,0,0,0.7), rgba(0,0,0,0.4));
+    z-index: 1;
+  }
+
+  .event-content {
+    position: relative;
+    z-index: 2;
+    padding: 2rem;
+    display: flex;
+    align-items: stretch;
+    gap: 2rem;
+    height: 100%;
+    min-height: 200px;
+  }
+  
+  .event-card:hover {
+    transform: translateY(-4px);
+    box-shadow: 0 12px 32px rgba(0,0,0,0.25);
+  }
+  
+  .event-date {
+    background: linear-gradient(135deg, #dc2626, #ef4444);
+    color: white;
+    border-radius: 12px;
+    padding: 1.5rem 1rem;
+    text-align: center;
+    min-width: 90px;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    box-shadow: 0 6px 12px rgba(220, 38, 38, 0.4);
+    backdrop-filter: blur(10px);
+  }
+  
+  .event-date .day {
+    display: block;
+    font-size: 2rem;
+    font-weight: 800;
+    line-height: 1;
+    text-shadow: 2px 2px 4px rgba(0,0,0,0.3);
+  }
+  
+  .event-date .month {
+    display: block;
+    font-size: 0.9rem;
+    font-weight: 600;
+    text-transform: uppercase;
+    margin-top: 0.5rem;
+    letter-spacing: 0.5px;
+    text-shadow: 1px 1px 2px rgba(0,0,0,0.3);
+  }
+  
+  .event-info {
+    flex: 1;
+  }
+  
+  .event-info h3 {
+    font-size: 1.5rem;
+    font-weight: 700;
+    color: white;
+    margin-bottom: 0.75rem;
+    line-height: 1.3;
+    text-shadow: 2px 2px 4px rgba(0,0,0,0.7);
+  }
+  
+  .event-artist {
+    color: #fbbf24;
+    font-weight: 600;
+    font-size: 1.1rem;
+    margin-bottom: 1rem;
+    text-shadow: 1px 1px 2px rgba(0,0,0,0.7);
+  }
+  
+  .event-location,
+  .event-time {
+    color: #e5e7eb;
+    font-size: 1rem;
+    margin-bottom: 0.5rem;
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    text-shadow: 1px 1px 2px rgba(0,0,0,0.7);
+  }
+  
+  .event-action {
+    flex-shrink: 0;
+    display: flex;
+    align-items: center;
+    position: relative;
+    z-index: 10;
+  }
+  
+  .event-action .btn {
+    padding: 1rem 1.5rem;
+    font-size: 1rem;
+    font-weight: 700;
+    border-radius: 10px;
+    white-space: nowrap;
+    background: #dc2626;
+    color: white;
+    border: 2px solid #dc2626;
+    box-shadow: 0 6px 16px rgba(220, 38, 38, 0.5);
+    transition: all 0.3s ease;
+    position: relative;
+    z-index: 15;
+    backdrop-filter: blur(10px);
+    text-shadow: none;
+  }
+  
+  .event-action .btn:hover {
+    background: #b91c1c;
+    border-color: #b91c1c;
+    transform: translateY(-2px);
+    box-shadow: 0 8px 20px rgba(220, 38, 38, 0.6);
   }
 </style>

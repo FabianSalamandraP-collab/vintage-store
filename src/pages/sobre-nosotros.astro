@@ -25,34 +25,7 @@ const teamMembers = [
   }
 ];
 
-// Timeline de la empresa
-const timeline = [
-  {
-    year: '2020',
-    title: 'Los Inicios',
-    description: 'Sur Occidente nace como un pequeño proyecto personal de coleccionar y vender ropa vintage auténtica.'
-  },
-  {
-    year: '2021',
-    title: 'Crecimiento Digital',
-    description: 'Expandimos nuestra presencia online y comenzamos a llegar a clientes de toda Colombia.'
-  },
-  {
-    year: '2022',
-    title: 'Reconocimiento',
-    description: 'Nos convertimos en una de las tiendas vintage más reconocidas del país.'
-  },
-  {
-    year: '2023',
-    title: 'Expansión',
-    description: 'Ampliamos nuestro catálogo y establecimos alianzas con coleccionistas internacionales.'
-  },
-  {
-    year: '2024',
-    title: 'Presente',
-    description: 'Continuamos creciendo y ofreciendo las mejores piezas vintage a nuestros clientes.'
-  }
-];
+
 
 // Estadísticas
 const stats = [
@@ -84,102 +57,112 @@ const stats = [
       </div>
     </section>
 
-    <!-- Nuestra Historia -->
+    <!-- Artistas Emergentes y Destacados -->
     <section class="our-story">
       <div class="container">
         <div class="story-content">
           <div class="story-text">
-            <h2 class="section-title">Nuestra Historia</h2>
+            <h2 class="section-title">Artistas Emergentes y Destacados</h2>
             <div class="story-paragraphs">
               <p>
-                Sur Occidente nació en {siteConfig.business.founded} de la pasión por rescatar 
-                y preservar piezas de moda que han marcado épocas. Comenzamos como un pequeño 
-                proyecto personal que rápidamente se convirtió en una misión: hacer que la 
-                moda vintage auténtica sea accesible para todos.
+                En Sur Occidente creemos en el poder transformador de la música urbana y el hip hop. 
+                Por eso, apoyamos activamente a los artistas emergentes y destacados de nuestra 
+                comunidad, brindándoles un espacio para mostrar su talento y conectar con nuestra audiencia.
               </p>
               <p>
-                Cada prenda en nuestra colección es cuidadosamente seleccionada por su 
-                calidad, autenticidad y valor histórico. Creemos que la moda vintage no 
-                solo es una forma de vestir, sino una manera de expresar individualidad 
-                y respeto por la artesanía del pasado.
+                Desde raperos que narran las historias de nuestros barrios hasta cantantes de reggaetón 
+                que fusionan ritmos tradicionales con sonidos modernos, cada artista que presentamos 
+                representa la autenticidad y la pasión de la cultura urbana colombiana.
               </p>
               <p>
-                Hoy, Sur Occidente es reconocida como una de las principales referencias 
-                en moda vintage en Colombia, con clientes que confían en nuestra experiencia 
-                y dedicación para encontrar piezas únicas y auténticas.
+                Descubre las voces que están definiendo el futuro de la música urbana en Colombia. 
+                Aquí encontrarás fotos, videos y contenido exclusivo de los talentos más prometedores 
+                y los artistas consagrados que inspiran nuestra comunidad.
               </p>
             </div>
           </div>
-          <div class="story-image">
-            <img 
-              src="https://trae-api-us.mchost.guru/api/ide/v1/text_to_image?prompt=vintage%20fashion%20collection%20display%2C%20colorful%20retro%20clothing%20on%20hangers%2C%20red%20and%20warm%20tones%2C%20artistic%20arrangement&image_size=portrait_4_3" 
-              alt="Colección vintage Sur Occidente"
-            />
-          </div>
-        </div>
-      </div>
-    </section>
-
-    <!-- Misión, Visión y Valores -->
-    <section class="mission-vision">
-      <div class="container">
-        <div class="mvv-grid">
-          <div class="mvv-item">
-            <div class="mvv-icon">
-              <svg width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                <path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"></path>
-              </svg>
-            </div>
-            <h3>Misión</h3>
-            <p>{siteConfig.business.mission}</p>
-          </div>
-          
-          <div class="mvv-item">
-            <div class="mvv-icon">
-              <svg width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"></path>
-                <circle cx="12" cy="12" r="3"></circle>
-              </svg>
-            </div>
-            <h3>Visión</h3>
-            <p>{siteConfig.business.vision}</p>
-          </div>
-          
-          <div class="mvv-item full-width">
-            <div class="mvv-icon">
-              <svg width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                <path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"></path>
-              </svg>
-            </div>
-            <h3>Valores</h3>
-            <div class="values-list">
-              {siteConfig.business.values.map(value => (
-                <span class="value-tag">{value}</span>
-              ))}
-            </div>
-          </div>
-        </div>
-      </div>
-    </section>
-
-    <!-- Timeline -->
-    <section class="timeline">
-      <div class="container">
-        <h2 class="section-title">Nuestro Recorrido</h2>
-        <div class="timeline-container">
-          {timeline.map((item, index) => (
-            <div class={`timeline-item ${index % 2 === 0 ? 'left' : 'right'}`}>
-              <div class="timeline-content">
-                <div class="timeline-year">{item.year}</div>
-                <h3 class="timeline-title">{item.title}</h3>
-                <p class="timeline-description">{item.description}</p>
+          <div class="artists-gallery">
+            <div class="gallery-grid">
+              <div class="artist-card">
+                <div class="artist-image">
+                  <img 
+                    src="https://trae-api-us.mchost.guru/api/ide/v1/text_to_image?prompt=young%20colombian%20hip%20hop%20rapper%20artist%20urban%20style%20microphone%20studio%20red%20lighting&image_size=square" 
+                    alt="MC Barrio"
+                  />
+                  <div class="play-overlay">
+                    <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                      <polygon points="5,3 19,12 5,21"></polygon>
+                    </svg>
+                  </div>
+                </div>
+                <div class="artist-info">
+                  <h4>MC Barrio</h4>
+                  <span>Hip Hop / Rap</span>
+                </div>
               </div>
-              <div class="timeline-dot"></div>
+              
+              <div class="artist-card">
+                <div class="artist-image">
+                  <img 
+                    src="https://trae-api-us.mchost.guru/api/ide/v1/text_to_image?prompt=colombian%20hip%20hop%20female%20singer%20urban%20fashion%20colorful%20background%20music%20studio&image_size=square" 
+                    alt="La Reina del Sur"
+                  />
+                  <div class="play-overlay">
+                    <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                      <polygon points="5,3 19,12 5,21"></polygon>
+                    </svg>
+                  </div>
+                </div>
+                <div class="artist-info">
+                  <h4>La Reina del Sur</h4>
+                  <span>Reggaetón / Urban</span>
+                </div>
+              </div>
+              
+              <div class="artist-card">
+                <div class="artist-image">
+                  <img 
+                    src="https://trae-api-us.mchost.guru/api/ide/v1/text_to_image?prompt=colombian%20trap%20artist%20young%20male%20urban%20streetwear%20graffiti%20background%20music%20culture&image_size=square" 
+                    alt="Trap King CO"
+                  />
+                  <div class="play-overlay">
+                    <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                      <polygon points="5,3 19,12 5,21"></polygon>
+                    </svg>
+                  </div>
+                </div>
+                <div class="artist-info">
+                  <h4>Trap King CO</h4>
+                  <span>Trap / Hip Hop</span>
+                </div>
+              </div>
+              
+              <div class="artist-card">
+                <div class="artist-image">
+                  <img 
+                    src="https://trae-api-us.mchost.guru/api/ide/v1/text_to_image?prompt=colombian%20urban%20music%20duo%20male%20female%20modern%20studio%20red%20lighting%20hip%20hop%20style&image_size=square" 
+                    alt="Dúo Urbano"
+                  />
+                  <div class="play-overlay">
+                    <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                      <polygon points="5,3 19,12 5,21"></polygon>
+                    </svg>
+                  </div>
+                </div>
+                <div class="artist-info">
+                  <h4>Dúo Urbano</h4>
+                  <span>R&B / Soul</span>
+                </div>
+              </div>
             </div>
-          ))}
+          </div>
         </div>
       </div>
     </section>
+
+
+
+
 
     <!-- Estadísticas -->
     <section class="stats">
@@ -304,6 +287,8 @@ const stats = [
     object-fit: cover;
     display: block;
   }
+
+
   
   /* Nuestra Historia */
   .our-story {
@@ -339,173 +324,107 @@ const stats = [
     margin-bottom: 0;
   }
   
-  .story-image {
-    border-radius: 16px;
-    overflow: hidden;
-    box-shadow: 0 16px 32px rgba(0, 0, 0, 0.1);
+  .artists-gallery {
+    position: relative;
   }
-  
-  .story-image img {
-    width: 100%;
-    height: 500px;
-    object-fit: cover;
-    display: block;
-  }
-  
-  /* Misión, Visión y Valores */
-  .mission-vision {
-    padding: 100px 0;
-    background: white;
-  }
-  
-  .mvv-grid {
+
+  .gallery-grid {
     display: grid;
-    grid-template-columns: 1fr 1fr;
-    gap: 40px;
-    max-width: 800px;
-    margin: 0 auto;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 20px;
   }
-  
-  .mvv-item {
-    text-align: center;
-    padding: 40px 30px;
-    background: #fafafa;
-    border-radius: 16px;
+
+  .artist-card {
+    background: white;
+    border-radius: 12px;
+    overflow: hidden;
+    box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
     transition: transform 0.3s ease, box-shadow 0.3s ease;
+    cursor: pointer;
   }
-  
-  .mvv-item:hover {
-    transform: translateY(-4px);
-    box-shadow: 0 16px 32px rgba(0, 0, 0, 0.1);
+
+  .artist-card:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 10px 25px rgba(0, 0, 0, 0.15);
   }
-  
-  .mvv-item.full-width {
-    grid-column: 1 / -1;
-  }
-  
-  .mvv-icon {
-    color: #dc2626;
-    margin-bottom: 20px;
-  }
-  
-  .mvv-item h3 {
-    font-size: 1.5rem;
-    font-weight: 700;
-    color: #333;
-    margin: 0 0 16px 0;
-  }
-  
-  .mvv-item p {
-    font-size: 1rem;
-    line-height: 1.6;
-    color: #666;
-    margin: 0;
-  }
-  
-  .values-list {
-    display: flex;
-    flex-wrap: wrap;
-    gap: 12px;
-    justify-content: center;
-    margin-top: 20px;
-  }
-  
-  .value-tag {
-    background: #dc2626;
-    color: #F5DEB3;
-    padding: 8px 16px;
-    border-radius: 20px;
-    font-size: 0.875rem;
-    font-weight: 500;
-  }
-  
-  /* Timeline */
-  .timeline {
-    padding: 100px 0;
-    background: #fafafa;
-  }
-  
-  .timeline-container {
+
+  .artist-image {
     position: relative;
-    max-width: 800px;
-    margin: 0 auto;
+    width: 100%;
+    height: 150px;
+    overflow: hidden;
   }
-  
-  .timeline-container::before {
-    content: '';
+
+  .artist-image img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    transition: transform 0.3s ease;
+  }
+
+  .artist-card:hover .artist-image img {
+    transform: scale(1.1);
+  }
+
+  .play-overlay {
     position: absolute;
+    top: 50%;
     left: 50%;
-    top: 0;
-    bottom: 0;
-    width: 4px;
-    background: #dc2626;
-    transform: translateX(-50%);
-  }
-  
-  .timeline-item {
-    position: relative;
-    margin-bottom: 60px;
+    transform: translate(-50%, -50%);
+    background: rgba(220, 38, 38, 0.9);
+    color: white;
+    width: 40px;
+    height: 40px;
+    border-radius: 50%;
     display: flex;
     align-items: center;
+    justify-content: center;
+    opacity: 0;
+    transition: opacity 0.3s ease;
   }
-  
-  .timeline-item.left {
-    justify-content: flex-end;
+
+  .artist-card:hover .play-overlay {
+    opacity: 1;
   }
-  
-  .timeline-item.right {
-    justify-content: flex-start;
+
+  .artist-info {
+    padding: 15px;
+    text-align: center;
   }
-  
-  .timeline-content {
-    background: white;
-    padding: 30px;
-    border-radius: 12px;
-    box-shadow: 0 8px 24px rgba(0, 0, 0, 0.1);
-    width: 45%;
-    position: relative;
-  }
-  
-  .timeline-item.left .timeline-content {
-    margin-right: 30px;
-  }
-  
-  .timeline-item.right .timeline-content {
-    margin-left: 30px;
-  }
-  
-  .timeline-year {
-    font-size: 1.25rem;
-    font-weight: 700;
-    color: #dc2626;
-    margin-bottom: 8px;
-  }
-  
-  .timeline-title {
-    font-size: 1.25rem;
-    font-weight: 600;
-    color: #333;
-    margin: 0 0 12px 0;
-  }
-  
-  .timeline-description {
+
+  .artist-info h4 {
+    margin: 0 0 5px 0;
     font-size: 1rem;
-    line-height: 1.6;
-    color: #666;
-    margin: 0;
+    font-weight: 600;
+    color: #1f2937;
+  }
+
+  .artist-info span {
+    font-size: 0.875rem;
+    color: #6b7280;
+    font-weight: 500;
+  }
+
+  /* Responsive Design para Galería de Artistas */
+  @media (max-width: 768px) {
+    .gallery-grid {
+      grid-template-columns: 1fr;
+      gap: 15px;
+    }
+    
+    .artist-image {
+      height: 200px;
+    }
+    
+    .story-content {
+      grid-template-columns: 1fr;
+      gap: 40px;
+    }
   }
   
-  .timeline-dot {
-    position: absolute;
-    left: 50%;
-    transform: translateX(-50%);
-    width: 16px;
-    height: 16px;
-    background: #dc2626;
-    border: 4px solid #F5DEB3;
-    border-radius: 50%;
-    box-shadow: 0 0 0 4px #dc2626;
-  }
+
+  
+
   
   /* Estadísticas */
   .stats {
@@ -696,24 +615,7 @@ const stats = [
       gap: 24px;
     }
     
-    .timeline-container::before {
-      left: 20px;
-    }
-    
-    .timeline-item {
-      justify-content: flex-start !important;
-    }
-    
-    .timeline-content {
-      width: calc(100% - 60px);
-      margin-left: 40px !important;
-      margin-right: 0 !important;
-    }
-    
-    .timeline-dot {
-      left: 20px;
-      transform: translateX(-50%);
-    }
+
     
     .stats-grid {
       grid-template-columns: 1fr;

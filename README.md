@@ -1,5 +1,11 @@
 <div align="center">
 
+## 🌍 Language / Idioma
+
+**English** | [Español](README_ES.md)
+
+---
+
 # 🎤 S U R   O C C I D E N T E 🎤
 
 ### *"Where Vintage Meets the Beat"* 🔥
@@ -8,7 +14,7 @@
 [![TypeScript](https://img.shields.io/badge/TypeScript-007ACC?style=for-the-badge&logo=typescript&logoColor=white)](https://typescriptlang.org)
 [![CSS3](https://img.shields.io/badge/CSS3-1572B6?style=for-the-badge&logo=css3&logoColor=white)](https://www.w3.org/Style/CSS/)
 
-*Straight outta Soacha, Cundinamarca* 🇨🇴
+*Straight outta Bosa, Bogotá* 🇨🇴
 
 </div>
 
@@ -170,7 +176,7 @@ yarn dev
 
 - 📧 **Email:** info@suroccidente.com
 - 📱 **WhatsApp:** +57 300 123 4567
-- 📍 **Location:** Soacha, Cundinamarca, Colombia
+- 📍 **Location:** Bosa, Bogotá, Colombia
 - 📷 **Instagram:** [@suroccidente](https://instagram.com/suroccidente)
 - 👥 **Facebook:** [Sur Occidente](https://facebook.com/suroccidente)
 
@@ -198,7 +204,7 @@ This project is licensed under the MIT License - see the [LICENSE](LICENSE) file
 
 <div align="center">
 
-### 🎤 *"From the streets of Soacha to the world wide web"* 🌍
+### 🎤 *"From the streets of Bosa to the world wide web"* 🌍
 
 **Made with ❤️ and lots of ☕ by the Sur Occidente crew**
 

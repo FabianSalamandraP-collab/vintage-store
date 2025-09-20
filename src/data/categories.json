@@ -20,6 +20,20 @@
       "slug": "accesorios",
       "description": "Accesorios vintage únicos y coleccionables para completar tu look",
       "sort_order": 3
+    },
+    {
+      "id": "chaquetas",
+      "name": "Chaquetas",
+      "slug": "chaquetas",
+      "description": "Chaquetas vintage y retro de diferentes estilos y épocas",
+      "sort_order": 4
+    },
+    {
+      "id": "pantalones",
+      "name": "Pantalones",
+      "slug": "pantalones",
+      "description": "Pantalones vintage con estilo urbano y auténtico",
+      "sort_order": 5
     }
   ]
 }

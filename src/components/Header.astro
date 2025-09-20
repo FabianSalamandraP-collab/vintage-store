@@ -16,8 +16,8 @@
   "address": {
     "@type": "PostalAddress",
     "streetAddress": "Tu Dirección",
-    "addressLocality": "Soacha",
-    "addressRegion": "Cundinamarca",
+    "addressLocality": "Bosa",
+    "addressRegion": "Bogotá",
     "postalCode": "250001",
     "addressCountry": "CO"
   },
@@ -62,7 +62,7 @@
         <!-- Logo optimizado para SEO con dimensiones compactas -->
         <img 
           src="/clothesSurOccidente.png" 
-          alt="Sur Occidente - Tienda de ropa vintage y segunda mano en Soacha, Cundinamarca"
+          alt="Sur Occidente - Bosa, Bogotá"
           class="logo"
           width="40"
           height="40"
@@ -203,22 +203,24 @@
     transform: translateY(-1px); /* Movimiento más sutil */
   }
   
-  /* 🎯 LOGO COMPACTO - Tamaño optimizado */
+  /* 🎯 LOGO COMPACTO - Tamaño optimizado con scale visual */
   .logo {
     --logo-size: 75px; /* Tamaño base compacto */
     --logo-mobile-size: 32px; /* Aún más pequeño en móvil */
     
-    height: var(--logo-size);
-    width: auto;
-    max-width: calc(var(--logo-size) * 1.2);
+    /* Mantener dimensiones originales para el layout */
+    height: 40px;
+    width: 40px;
+    
+    /* Aplicar scale para aumentar tamaño visual sin afectar layout */
+    transform: scale(1.7);
+    transform-origin: center;
     
     object-fit: contain;
     object-position: center;
     
     flex-shrink: 0;
     flex-grow: 0;
-    
-    min-height: var(--logo-size);
     
     filter: drop-shadow(2px 2px 6px rgba(0, 0, 0, 0.3)); /* Sombra más sutil */
     transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
@@ -228,7 +230,7 @@
   }
   
   .logo:hover {
-    transform: scale(1.08) rotate(3deg); /* Efecto más sutil */
+    transform: scale(1.7) rotate(3deg); /* Efecto más grande en hover */
     filter: drop-shadow(3px 3px 10px rgba(245, 222, 179, 0.5));
   }
   
@@ -328,7 +330,11 @@
     color: #F5DEB3;
   }
   
-  /* 🎯 CARRITO COMPACTO */
+  /* 🎯 CARRITO COMPACTO - TEMPORALMENTE OCULTO */
+  .nav-cart {
+    display: none; /* Oculto temporalmente para futura pasarela de pagos */
+  }
+  
   .nav-cart a {
     background: linear-gradient(135deg, #38363696, #000000);
     color: #F5DEB3;

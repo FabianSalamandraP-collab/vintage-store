@@ -90,8 +90,47 @@ const siteUrl = "https://sur-occidente.com";
 		<title>{title}</title>
 	</head>
 	<body>
+		<!-- Barras laterales negras -->
+		<div class="sidebar-left">
+			<span class="sidebar-text">SUR OCCIDENTE</span>
+		</div>
+		<div class="sidebar-right">
+			<span class="sidebar-text">SUR OCCIDENTE</span>
+		</div>
+		
 		<Header />
 		<slot />
+		
+		<!-- Botón Scroll to Top -->
+		<button id="scrollToTop" class="scroll-to-top" aria-label="Volver al inicio">
+			<svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+				<path d="M7 14L12 9L17 14" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+			</svg>
+		</button>
+		
+		<script>
+			// Funcionalidad del botón Scroll to Top
+			document.addEventListener('DOMContentLoaded', function() {
+				const scrollToTopBtn = document.getElementById('scrollToTop');
+				
+				// Mostrar/ocultar botón según scroll
+				window.addEventListener('scroll', function() {
+					if (window.pageYOffset > 300) {
+						scrollToTopBtn.classList.add('visible');
+					} else {
+						scrollToTopBtn.classList.remove('visible');
+					}
+				});
+				
+				// Scroll suave al hacer click
+				scrollToTopBtn.addEventListener('click', function() {
+					window.scrollTo({
+						top: 0,
+						behavior: 'smooth'
+					});
+				});
+			});
+		</script>
 	</body>
 </html>
 
@@ -167,6 +206,57 @@ const siteUrl = "https://sur-occidente.com";
 	}
 
 	.mb-1 { margin-bottom: 1rem; }
+
+	/* Barras laterales negras */
+	.sidebar-left,
+	.sidebar-right {
+		position: fixed;
+		top: 0;
+		height: 100vh;
+		width: 60px;
+		background: #000;
+		z-index: 1000;
+		display: flex;
+		align-items: center;
+		justify-content: center;
+		writing-mode: vertical-rl;
+		text-orientation: mixed;
+	}
+
+	.sidebar-left {
+		left: 0;
+	}
+
+	.sidebar-right {
+		right: 0;
+	}
+
+	.sidebar-text {
+		color: #F5DEB3;
+		font-weight: bold;
+		font-size: 0.9rem;
+		letter-spacing: 2px;
+		transform: rotate(180deg);
+	}
+
+	/* Ajustar el contenido principal para las barras laterales */
+	body {
+		padding-left: 60px;
+		padding-right: 60px;
+	}
+
+	/* Responsive - ocultar barras en móviles */
+	@media (max-width: 768px) {
+		.sidebar-left,
+		.sidebar-right {
+			display: none;
+		}
+		
+		body {
+			padding-left: 0;
+			padding-right: 0;
+		}
+	}
 	.mb-2 { margin-bottom: 2rem; }
 	.mb-3 { margin-bottom: 3rem; }
 
@@ -236,6 +326,55 @@ const siteUrl = "https://sur-occidente.com";
 	::-moz-selection {
 		background: rgba(220, 38, 38, 0.3);
 		color: #F5DEB3;
+	}
+
+	/* BOTÓN SCROLL TO TOP */
+	.scroll-to-top {
+		position: fixed;
+		bottom: 2rem;
+		right: 2rem;
+		width: 50px;
+		height: 50px;
+		background: #dc2626;
+		color: #F5DEB3;
+		border: none;
+		border-radius: 50%;
+		cursor: pointer;
+		display: flex;
+		align-items: center;
+		justify-content: center;
+		box-shadow: 0 4px 12px rgba(220, 38, 38, 0.3);
+		transition: all 0.3s ease;
+		z-index: 1000;
+		opacity: 0;
+		visibility: hidden;
+		transform: translateY(20px);
+	}
+
+	.scroll-to-top.visible {
+		opacity: 1;
+		visibility: visible;
+		transform: translateY(0);
+	}
+
+	.scroll-to-top:hover {
+		background: #ef4444;
+		transform: translateY(-2px);
+		box-shadow: 0 6px 16px rgba(220, 38, 38, 0.4);
+	}
+
+	.scroll-to-top:active {
+		transform: translateY(0);
+	}
+
+	/* Responsive */
+	@media (max-width: 768px) {
+		.scroll-to-top {
+			bottom: 1.5rem;
+			right: 1.5rem;
+			width: 45px;
+			height: 45px;
+		}
 	}
 </style>
 

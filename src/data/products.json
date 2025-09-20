@@ -104,6 +104,281 @@
       "tags": ["vintage", "surf", "90s", "beach"],
       "created_at": "2025-01-15T12:00:00Z",
       "updated_at": "2025-01-15T12:00:00Z"
+    },
+    {
+      "id": "6",
+      "name": "Chaqueta Bomber 90s",
+      "description": "Chaqueta bomber auténtica de los 90s con bordados únicos. Perfecta para el estilo urbano.",
+      "price": 95,
+      "category": "chaquetas",
+      "condition": "Muy bueno",
+      "featured": true,
+      "images": [
+        {
+          "url": "/images/products/chaqueta-bomber-90s-1.jpg",
+          "alt": "Chaqueta Bomber 90s",
+          "primary": true
+        },
+        {
+          "url": "/images/products/chaqueta-bomber-90s-2.jpg",
+          "alt": "Chaqueta Bomber 90s - Vista trasera",
+          "primary": false
+        }
+      ],
+      "sizes": ["M", "L", "XL"],
+      "tags": ["90s", "bomber", "urbano", "bordado"],
+      "created_at": "2025-01-16T09:15:00Z",
+      "updated_at": "2025-01-16T09:15:00Z"
+    },
+    {
+      "id": "7",
+      "name": "Camiseta Hip Hop Legends",
+      "description": "Camiseta vintage con gráficos de leyendas del hip hop. Edición limitada de los 2000s.",
+      "price": 45,
+      "category": "camisetas",
+      "condition": "Excelente",
+      "featured": false,
+      "images": [
+        {
+          "url": "/images/products/camiseta-hip-hop-legends-1.jpg",
+          "alt": "Camiseta Hip Hop Legends",
+          "primary": true
+        },
+        {
+          "url": "/images/products/camiseta-hip-hop-legends-2.jpg",
+          "alt": "Camiseta Hip Hop Legends - Vista trasera",
+          "primary": false
+        }
+      ],
+      "sizes": ["S", "M", "L"],
+      "tags": ["hip-hop", "2000s", "leyendas", "gráfico"],
+      "created_at": "2025-01-17T14:20:00Z",
+      "updated_at": "2025-01-17T14:20:00Z"
+    },
+    {
+      "id": "8",
+      "name": "Vinilo Funk Classics",
+      "description": "Colección de clásicos del funk en vinilo original. Sonido cálido y auténtico.",
+      "price": 75,
+      "category": "vinilos",
+      "condition": "Muy bueno",
+      "featured": true,
+      "images": [
+        {
+          "url": "/images/products/vinilo-funk-classics-1.jpg",
+          "alt": "Vinilo Funk Classics",
+          "primary": true
+        },
+        {
+          "url": "/images/products/vinilo-funk-classics-2.jpg",
+          "alt": "Vinilo Funk Classics - Contraportada",
+          "primary": false
+        }
+      ],
+      "sizes": [],
+      "tags": ["funk", "clásicos", "original", "colección"],
+      "created_at": "2025-01-18T11:45:00Z",
+      "updated_at": "2025-01-18T11:45:00Z"
+    },
+    {
+      "id": "9",
+      "name": "Pantalones Cargo 2000s",
+      "description": "Pantalones cargo auténticos de principios de los 2000s. Múltiples bolsillos y estilo urbano.",
+      "price": 65,
+      "category": "pantalones",
+      "condition": "Bueno",
+      "featured": false,
+      "images": [
+        {
+          "url": "/images/products/pantalones-cargo-2000s-1.jpg",
+          "alt": "Pantalones Cargo 2000s",
+          "primary": true
+        },
+        {
+          "url": "/images/products/pantalones-cargo-2000s-2.jpg",
+          "alt": "Pantalones Cargo 2000s - Detalle",
+          "primary": false
+        }
+      ],
+      "sizes": ["30", "32", "34", "36"],
+      "tags": ["cargo", "2000s", "urbano", "bolsillos"],
+      "created_at": "2025-01-19T16:30:00Z",
+      "updated_at": "2025-01-19T16:30:00Z"
+    },
+    {
+      "id": "10",
+      "name": "Gorra Snapback Retro",
+      "description": "Gorra snapback vintage con logo bordado. Estilo clásico de los 90s.",
+      "price": 35,
+      "category": "accesorios",
+      "condition": "Excelente",
+      "featured": false,
+      "images": [
+        {
+          "url": "/images/products/gorra-snapback-retro-1.jpg",
+          "alt": "Gorra Snapback Retro",
+          "primary": true
+        },
+        {
+          "url": "/images/products/gorra-snapback-retro-2.jpg",
+          "alt": "Gorra Snapback Retro - Vista lateral",
+          "primary": false
+        }
+      ],
+      "sizes": ["Única"],
+      "tags": ["snapback", "90s", "bordado", "clásico"],
+      "created_at": "2025-01-20T13:10:00Z",
+      "updated_at": "2025-01-20T13:10:00Z"
+    },
+    {
+      "id": "11",
+      "name": "Camiseta Grunge 90s",
+      "description": "Camiseta auténtica de la era grunge con diseño desgastado. Perfecta para el look alternativo.",
+      "price": 50,
+      "category": "camisetas",
+      "condition": "Muy bueno",
+      "featured": true,
+      "images": [
+        {
+          "url": "/images/products/camiseta-grunge-90s-1.jpg",
+          "alt": "Camiseta Grunge 90s",
+          "primary": true
+        },
+        {
+          "url": "/images/products/camiseta-grunge-90s-2.jpg",
+          "alt": "Camiseta Grunge 90s - Vista trasera",
+          "primary": false
+        }
+      ],
+      "sizes": ["S", "M", "L", "XL"],
+      "tags": ["grunge", "90s", "desgastado", "alternativo"],
+      "created_at": "2025-01-21T10:25:00Z",
+      "updated_at": "2025-01-21T10:25:00Z"
+    },
+    {
+      "id": "12",
+      "name": "Vinilo Soul Legends",
+      "description": "Vinilo original con leyendas del soul de los 70s. Condición impecable para coleccionistas.",
+      "price": 120,
+      "category": "vinilos",
+      "condition": "Excelente",
+      "featured": true,
+      "images": [
+        {
+          "url": "/images/products/vinilo-soul-legends-1.jpg",
+          "alt": "Vinilo Soul Legends",
+          "primary": true
+        },
+        {
+          "url": "/images/products/vinilo-soul-legends-2.jpg",
+          "alt": "Vinilo Soul Legends - Contraportada",
+          "primary": false
+        }
+      ],
+      "sizes": [],
+      "tags": ["soul", "70s", "leyendas", "coleccionista"],
+      "created_at": "2025-01-22T15:40:00Z",
+      "updated_at": "2025-01-22T15:40:00Z"
+    },
+    {
+      "id": "13",
+      "name": "Chaqueta Denim Vintage",
+      "description": "Chaqueta de mezclilla vintage con parches únicos. Estilo rockero auténtico de los 80s.",
+      "price": 85,
+      "category": "chaquetas",
+      "condition": "Bueno",
+      "featured": false,
+      "images": [
+        {
+          "url": "/images/products/chaqueta-denim-vintage-1.jpg",
+          "alt": "Chaqueta Denim Vintage",
+          "primary": true
+        },
+        {
+          "url": "/images/products/chaqueta-denim-vintage-2.jpg",
+          "alt": "Chaqueta Denim Vintage - Vista trasera",
+          "primary": false
+        }
+      ],
+      "sizes": ["M", "L"],
+      "tags": ["denim", "80s", "parches", "rockero"],
+      "created_at": "2025-01-23T12:55:00Z",
+      "updated_at": "2025-01-23T12:55:00Z"
+    },
+    {
+      "id": "14",
+      "name": "Cadena Dorada Hip Hop",
+      "description": "Cadena dorada estilo hip hop de los 90s. Accesorio icónico para completar tu look urbano.",
+      "price": 25,
+      "category": "accesorios",
+      "condition": "Muy bueno",
+      "featured": false,
+      "images": [
+        {
+          "url": "/images/products/cadena-dorada-hip-hop-1.jpg",
+          "alt": "Cadena Dorada Hip Hop",
+          "primary": true
+        },
+        {
+          "url": "/images/products/cadena-dorada-hip-hop-2.jpg",
+          "alt": "Cadena Dorada Hip Hop - Detalle",
+          "primary": false
+        }
+      ],
+      "sizes": ["Única"],
+      "tags": ["cadena", "dorada", "hip-hop", "90s"],
+      "created_at": "2025-01-24T09:30:00Z",
+      "updated_at": "2025-01-24T09:30:00Z"
+    },
+    {
+      "id": "15",
+      "name": "Camiseta Oversized 2000s",
+      "description": "Camiseta oversized auténtica de los 2000s con gráficos llamativos. Comodidad y estilo urbano.",
+      "price": 40,
+      "category": "camisetas",
+      "condition": "Excelente",
+      "featured": false,
+      "images": [
+        {
+          "url": "/images/products/camiseta-oversized-2000s-1.jpg",
+          "alt": "Camiseta Oversized 2000s",
+          "primary": true
+        },
+        {
+          "url": "/images/products/camiseta-oversized-2000s-2.jpg",
+          "alt": "Camiseta Oversized 2000s - Vista trasera",
+          "primary": false
+        }
+      ],
+      "sizes": ["L", "XL", "XXL"],
+      "tags": ["oversized", "2000s", "gráficos", "urbano"],
+      "created_at": "2025-01-25T14:15:00Z",
+      "updated_at": "2025-01-25T14:15:00Z"
+    },
+    {
+      "id": "16",
+      "name": "Chaqueta Cuero Biker 80s",
+      "description": "Chaqueta de cuero auténtica estilo biker de los 80s. Pieza icónica con cremalleras y tachuelas originales.",
+      "price": 150,
+      "category": "chaquetas",
+      "condition": "Muy bueno",
+      "featured": true,
+      "images": [
+        {
+          "url": "/images/products/chaqueta-cuero-biker-80s-1.jpg",
+          "alt": "Chaqueta Cuero Biker 80s",
+          "primary": true
+        },
+        {
+          "url": "/images/products/chaqueta-cuero-biker-80s-2.jpg",
+          "alt": "Chaqueta Cuero Biker 80s - Vista trasera",
+          "primary": false
+        }
+      ],
+      "sizes": ["M", "L"],
+      "tags": ["cuero", "biker", "80s", "cremalleras", "tachuelas"],
+      "created_at": "2025-01-26T11:00:00Z",
+      "updated_at": "2025-01-26T11:00:00Z"
     }
   ]
 }
