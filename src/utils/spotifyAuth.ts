@@ -25,8 +25,8 @@ class SpotifyAuthService {
   private tokens: SpotifyTokens | null = null;
 
   constructor() {
-    this.clientId = import.meta.env.PUBLIC_SPOTIFY_CLIENT_ID || 'f6c632a5493346fdbda98cd49c4825a3';
-    this.clientSecret = import.meta.env.SPOTIFY_CLIENT_SECRET || 'b72908fea2834f3fa4cba956761af25e';
+    this.clientId = import.meta.env.PUBLIC_SPOTIFY_CLIENT_ID || '';
+        this.clientSecret = import.meta.env.SPOTIFY_CLIENT_SECRET || '';
     this.redirectUri = import.meta.env.PUBLIC_SPOTIFY_REDIRECT_URI || 'http://localhost:4321/callback';
     
     // Required scopes for playback control and user data

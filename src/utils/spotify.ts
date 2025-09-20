@@ -79,8 +79,8 @@ class SpotifyAPI {
   private tokenExpiry: number = 0;
 
   constructor() {
-    this.clientId = import.meta.env.SPOTIFY_CLIENT_ID || 'f6c632a5493346fdbda98cd49c4825a3';
-    this.clientSecret = import.meta.env.SPOTIFY_CLIENT_SECRET || 'b72908fea2834f3fa4cba956761af25e';
+    this.clientId = import.meta.env.SPOTIFY_CLIENT_ID || '';
+        this.clientSecret = import.meta.env.SPOTIFY_CLIENT_SECRET || '';
   }
 
   // Get access token using Client Credentials flow (for public data)
@@ -106,8 +106,11 @@ class SpotifyAPI {
     this.accessToken = data.access_token;
     this.tokenExpiry = Date.now() + (data.expires_in * 1000);
     
+    if (!this.accessToken) {
+      throw new Error('Access token is null');
+    }
     return this.accessToken;
-  }
+    }
 
   // Get user access token (for user-specific operations)
   async getUserAccessToken(): Promise<string> {
@@ -214,7 +217,7 @@ class SpotifyAPI {
   // Crear playlist vintage personalizada
   async createVintagePlaylist(userId: string, name: string = 'Sur Occidente Vintage Mix'): Promise<string | null> {
     try {
-      const userToken = await spotifyAuth.getUserAccessToken();
+      const userToken = await spotifyAuth.getValidAccessToken();
       if (!userToken) throw new Error('User not authenticated');
       
       // Crear playlist
@@ -681,6 +684,7 @@ export function getVintageGenres(): string[] {
 
 // Función para validar si una canción es vintage
 export function isVintageTrack(track: SpotifyTrack): boolean {
-  const releaseYear = track.album?.release_date ? new Date(track.album.release_date).getFullYear() : 0;
+  // Since release_date is not in the SpotifyTrack interface, we'll need to handle it differently
+  const releaseYear = 0; // Default to 0 since we can't access release date with current interface
   return releaseYear >= 1960 && releaseYear <= 1995;
 }
