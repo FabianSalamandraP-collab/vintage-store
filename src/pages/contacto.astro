@@ -1,0 +1,631 @@
+---
+import Layout from '../layouts/Layout.astro';
+import ContactForm from '../components/ContactForm.astro';
+import { getSiteConfig } from '../utils/data';
+
+// Obtener configuración del sitio
+const siteConfig = getSiteConfig();
+
+// Información para SEO
+const pageTitle = 'Contacto - Sur Occidente';
+const pageDescription = 'Ponte en contacto con Sur Occidente. Estamos aquí para ayudarte con cualquier pregunta sobre nuestras piezas vintage. Contáctanos por WhatsApp, email o visítanos.';
+
+// Información de contacto
+const contactInfo = [
+  {
+    icon: 'phone',
+    title: 'WhatsApp',
+    value: siteConfig.contact.whatsapp,
+    link: `https://wa.me/${siteConfig.contact.whatsapp.replace(/[^0-9]/g, '')}`,
+    description: 'Respuesta inmediata'
+  },
+  {
+    icon: 'mail',
+    title: 'Email',
+    value: siteConfig.contact.email,
+    link: `mailto:${siteConfig.contact.email}`,
+    description: 'Respuesta en 24 horas'
+  },
+  {
+    icon: 'map',
+    title: 'Dirección',
+    value: siteConfig.contact.address,
+    link: `https://maps.google.com/?q=${encodeURIComponent(siteConfig.contact.address)}`,
+    description: 'Visítanos con cita previa'
+  }
+];
+
+// Horarios de atención
+const businessHours = [
+  { day: 'Lunes - Viernes', hours: '9:00 AM - 6:00 PM' },
+  { day: 'Sábados', hours: '10:00 AM - 4:00 PM' },
+  { day: 'Domingos', hours: 'Cerrado' }
+];
+
+// FAQ
+const faq = [
+  {
+    question: '¿Cómo puedo verificar la autenticidad de las piezas?',
+    answer: 'Todas nuestras piezas pasan por un riguroso proceso de verificación. Cada producto incluye información detallada sobre su origen, época y características que garantizan su autenticidad.'
+  },
+  {
+    question: '¿Realizan envíos a toda Colombia?',
+    answer: 'Sí, realizamos envíos a todo el territorio nacional. Los costos y tiempos de entrega varían según la ciudad de destino. Contáctanos para obtener información específica.'
+  },
+  {
+    question: '¿Puedo devolver un producto si no me queda bien?',
+    answer: 'Aceptamos devoluciones dentro de los 7 días posteriores a la compra, siempre que el producto esté en las mismas condiciones en que fue entregado.'
+  },
+  {
+    question: '¿Tienen tienda física?',
+    answer: 'Actualmente operamos principalmente online, pero puedes agendar una cita para ver nuestras piezas en persona. Contáctanos para coordinar una visita.'
+  },
+  {
+    question: '¿Cómo puedo saber mi talla?',
+    answer: 'Cada producto incluye medidas detalladas. También puedes contactarnos por WhatsApp para recibir asesoría personalizada sobre tallas y ajustes.'
+  }
+];
+---
+
+<Layout title={pageTitle} description={pageDescription}>
+  <main class="contact-page">
+    <!-- Hero Section -->
+    <section class="hero">
+      <div class="container">
+        <div class="hero-content">
+          <h1 class="hero-title">Contáctanos</h1>
+          <p class="hero-subtitle">
+            Estamos aquí para ayudarte. Ponte en contacto con nosotros para 
+            cualquier pregunta sobre nuestras piezas vintage.
+          </p>
+        </div>
+      </div>
+    </section>
+
+    <!-- Información de Contacto -->
+    <section class="contact-info">
+      <div class="container">
+        <div class="contact-grid">
+          {contactInfo.map(info => (
+            <a href={info.link} class="contact-card" target={info.icon === 'phone' ? '_blank' : '_self'} rel={info.icon === 'phone' ? 'noopener noreferrer' : ''}>
+              <div class="contact-icon">
+                {info.icon === 'phone' && (
+                  <svg width="32" height="32" viewBox="0 0 24 24" fill="currentColor">
+                    <path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 01-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 01-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 012.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0012.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 005.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893A11.821 11.821 0 0020.885 3.488"/>
+                  </svg>
+                )}
+                {info.icon === 'mail' && (
+                  <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"></path>
+                    <polyline points="22,6 12,13 2,6"></polyline>
+                  </svg>
+                )}
+                {info.icon === 'map' && (
+                  <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"></path>
+                    <circle cx="12" cy="10" r="3"></circle>
+                  </svg>
+                )}
+              </div>
+              <div class="contact-details">
+                <h3 class="contact-title">{info.title}</h3>
+                <p class="contact-value">{info.value}</p>
+                <p class="contact-description">{info.description}</p>
+              </div>
+            </a>
+          ))}
+        </div>
+      </div>
+    </section>
+
+    <!-- Formulario y Horarios -->
+    <section class="form-section">
+      <div class="container">
+        <div class="form-layout">
+          <!-- Formulario de Contacto -->
+          <div class="form-container">
+            <h2 class="section-title">Envíanos un Mensaje</h2>
+            <ContactForm />
+          </div>
+          
+          <!-- Información Adicional -->
+          <div class="info-sidebar">
+            <!-- Horarios -->
+            <div class="info-card">
+              <h3 class="info-title">
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                  <circle cx="12" cy="12" r="10"></circle>
+                  <polyline points="12,6 12,12 16,14"></polyline>
+                </svg>
+                Horarios de Atención
+              </h3>
+              <div class="hours-list">
+                {businessHours.map(schedule => (
+                  <div class="hour-item">
+                    <span class="day">{schedule.day}</span>
+                    <span class="hours">{schedule.hours}</span>
+                  </div>
+                ))}
+              </div>
+            </div>
+            
+            <!-- Información Adicional -->
+            <div class="info-card">
+              <h3 class="info-title">
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                  <circle cx="12" cy="12" r="3"></circle>
+                  <path d="M12 1v6m0 6v6m11-7h-6m-6 0H1"></path>
+                </svg>
+                ¿Por qué elegirnos?
+              </h3>
+              <ul class="benefits-list">
+                <li>
+                  <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <polyline points="20,6 9,17 4,12"></polyline>
+                  </svg>
+                  Piezas 100% auténticas
+                </li>
+                <li>
+                  <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <polyline points="20,6 9,17 4,12"></polyline>
+                  </svg>
+                  Envíos seguros a toda Colombia
+                </li>
+                <li>
+                  <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <polyline points="20,6 9,17 4,12"></polyline>
+                  </svg>
+                  Atención personalizada
+                </li>
+                <li>
+                  <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <polyline points="20,6 9,17 4,12"></polyline>
+                  </svg>
+                  Garantía de devolución
+                </li>
+              </ul>
+            </div>
+            
+            <!-- WhatsApp Directo -->
+            <div class="whatsapp-card">
+              <div class="whatsapp-content">
+                <h3>¿Necesitas ayuda inmediata?</h3>
+                <p>Chatea con nosotros por WhatsApp para recibir atención personalizada.</p>
+                <a 
+                  href={`https://wa.me/${siteConfig.contact.whatsapp.replace(/[^0-9]/g, '')}?text=Hola%2C%20tengo%20una%20consulta%20sobre%20Sur%20Occidente`}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  class="whatsapp-btn"
+                >
+                  <svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor">
+                    <path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 01-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 01-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 012.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0012.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 005.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893A11.821 11.821 0 0020.885 3.488"/>
+                  </svg>
+                  Chatear Ahora
+                </a>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- FAQ Section -->
+    <section class="faq">
+      <div class="container">
+        <h2 class="section-title">Preguntas Frecuentes</h2>
+        <div class="faq-list">
+          {faq.map((item, index) => (
+            <div class="faq-item">
+              <button class="faq-question" data-faq={index}>
+                <span>{item.question}</span>
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" class="faq-icon">
+                  <polyline points="6,9 12,15 18,9"></polyline>
+                </svg>
+              </button>
+              <div class="faq-answer">
+                <p>{item.answer}</p>
+              </div>
+            </div>
+          ))}
+        </div>
+      </div>
+    </section>
+  </main>
+</Layout>
+
+<style>
+  .contact-page {
+    min-height: 100vh;
+  }
+  
+  .container {
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 0 20px;
+  }
+  
+  .section-title {
+    font-size: 2rem;
+    font-weight: 700;
+    color: #333;
+    margin-bottom: 2rem;
+  }
+  
+  /* Hero Section */
+  .hero {
+    padding: 80px 0 60px;
+    background: linear-gradient(135deg, #dc2626 0%, #ef4444 100%);
+    color: #F5DEB3;
+    text-align: center;
+  }
+  
+  .hero-title {
+    font-size: 3rem;
+    font-weight: 700;
+    margin: 0 0 16px 0;
+    line-height: 1.1;
+  }
+  
+  .hero-subtitle {
+    font-size: 1.25rem;
+    line-height: 1.6;
+    opacity: 0.95;
+    margin: 0;
+    max-width: 600px;
+    margin-left: auto;
+    margin-right: auto;
+  }
+  
+  /* Información de Contacto */
+  .contact-info {
+    padding: 80px 0;
+    background: #fafafa;
+  }
+  
+  .contact-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+    gap: 30px;
+  }
+  
+  .contact-card {
+    background: white;
+    padding: 40px 30px;
+    border-radius: 16px;
+    box-shadow: 0 8px 24px rgba(0, 0, 0, 0.1);
+    text-decoration: none;
+    color: inherit;
+    transition: all 0.3s ease;
+    display: flex;
+    align-items: center;
+    gap: 20px;
+  }
+  
+  .contact-card:hover {
+    transform: translateY(-4px);
+    box-shadow: 0 16px 32px rgba(0, 0, 0, 0.15);
+  }
+  
+  .contact-icon {
+    color: #dc2626;
+    flex-shrink: 0;
+  }
+  
+  .contact-details {
+    flex: 1;
+  }
+  
+  .contact-title {
+    font-size: 1.25rem;
+    font-weight: 700;
+    color: #333;
+    margin: 0 0 8px 0;
+  }
+  
+  .contact-value {
+    font-size: 1rem;
+    color: #666;
+    margin: 0 0 4px 0;
+    font-weight: 500;
+  }
+  
+  .contact-description {
+    font-size: 0.875rem;
+    color: #999;
+    margin: 0;
+  }
+  
+  /* Formulario y Sidebar */
+  .form-section {
+    padding: 80px 0;
+    background: white;
+  }
+  
+  .form-layout {
+    display: grid;
+    grid-template-columns: 2fr 1fr;
+    gap: 60px;
+    align-items: start;
+  }
+  
+  .form-container {
+    background: #fafafa;
+    padding: 40px;
+    border-radius: 16px;
+  }
+  
+  .info-sidebar {
+    display: flex;
+    flex-direction: column;
+    gap: 24px;
+  }
+  
+  .info-card {
+    background: white;
+    padding: 30px;
+    border-radius: 12px;
+    box-shadow: 0 4px 16px rgba(0, 0, 0, 0.1);
+  }
+  
+  .info-title {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    font-size: 1.125rem;
+    font-weight: 600;
+    color: #333;
+    margin: 0 0 20px 0;
+  }
+  
+  .info-title svg {
+    color: #dc2626;
+  }
+  
+  /* Horarios */
+  .hours-list {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+  }
+  
+  .hour-item {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 8px 0;
+    border-bottom: 1px solid #eee;
+  }
+  
+  .hour-item:last-child {
+    border-bottom: none;
+  }
+  
+  .day {
+    font-weight: 500;
+    color: #333;
+  }
+  
+  .hours {
+    color: #666;
+    font-size: 0.875rem;
+  }
+  
+  /* Beneficios */
+  .benefits-list {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+  }
+  
+  .benefits-list li {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    font-size: 0.875rem;
+    color: #666;
+  }
+  
+  .benefits-list svg {
+    color: #28a745;
+    flex-shrink: 0;
+  }
+  
+  /* WhatsApp Card */
+  .whatsapp-card {
+    background: linear-gradient(135deg, #25D366 0%, #1da851 100%);
+    color: #F5DEB3;
+    padding: 30px;
+    border-radius: 12px;
+    text-align: center;
+  }
+  
+  .whatsapp-content h3 {
+    font-size: 1.125rem;
+    font-weight: 600;
+    margin: 0 0 8px 0;
+  }
+  
+  .whatsapp-content p {
+    font-size: 0.875rem;
+    opacity: 0.9;
+    margin: 0 0 20px 0;
+    line-height: 1.5;
+  }
+  
+  .whatsapp-btn {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    background: #F5DEB3;
+    color: #25D366;
+    padding: 12px 20px;
+    border-radius: 8px;
+    text-decoration: none;
+    font-weight: 600;
+    font-size: 0.875rem;
+    transition: all 0.2s ease;
+  }
+  
+  .whatsapp-btn:hover {
+    transform: translateY(-1px);
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
+  }
+  
+  /* FAQ */
+  .faq {
+    padding: 80px 0;
+    background: #fafafa;
+  }
+  
+  .faq .section-title {
+    text-align: center;
+    margin-bottom: 3rem;
+  }
+  
+  .faq-list {
+    max-width: 800px;
+    margin: 0 auto;
+  }
+  
+  .faq-item {
+    background: white;
+    border-radius: 12px;
+    margin-bottom: 16px;
+    overflow: hidden;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+  }
+  
+  .faq-question {
+    width: 100%;
+    padding: 24px 30px;
+    background: none;
+    border: none;
+    text-align: left;
+    font-size: 1rem;
+    font-weight: 600;
+    color: #333;
+    cursor: pointer;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    transition: all 0.2s ease;
+  }
+  
+  .faq-question:hover {
+    background: #f8f9fa;
+  }
+  
+  .faq-icon {
+    transition: transform 0.2s ease;
+    color: #dc2626;
+  }
+  
+  .faq-item.active .faq-icon {
+    transform: rotate(180deg);
+  }
+  
+  .faq-answer {
+    max-height: 0;
+    overflow: hidden;
+    transition: max-height 0.3s ease;
+  }
+  
+  .faq-item.active .faq-answer {
+    max-height: 200px;
+  }
+  
+  .faq-answer p {
+    padding: 0 30px 24px;
+    margin: 0;
+    color: #666;
+    line-height: 1.6;
+  }
+  
+  /* Responsive */
+  @media (max-width: 1024px) {
+    .form-layout {
+      gap: 40px;
+    }
+  }
+  
+  @media (max-width: 768px) {
+    .hero-title {
+      font-size: 2.5rem;
+    }
+    
+    .contact-card {
+      flex-direction: column;
+      text-align: center;
+      padding: 30px 20px;
+    }
+    
+    .form-layout {
+      grid-template-columns: 1fr;
+      gap: 40px;
+    }
+    
+    .form-container {
+      padding: 30px 20px;
+    }
+    
+    .info-card {
+      padding: 24px 20px;
+    }
+  }
+  
+  @media (max-width: 480px) {
+    .container {
+      padding: 0 16px;
+    }
+    
+    .hero {
+      padding: 60px 0 40px;
+    }
+    
+    .hero-title {
+      font-size: 2rem;
+    }
+    
+    .contact-info,
+    .form-section,
+    .faq {
+      padding: 60px 0;
+    }
+    
+    .faq-question {
+      padding: 20px;
+      font-size: 0.875rem;
+    }
+    
+    .faq-answer p {
+      padding: 0 20px 20px;
+    }
+  }
+</style>
+
+<script>
+  document.addEventListener('DOMContentLoaded', function() {
+    // FAQ Accordion
+    const faqQuestions = document.querySelectorAll('.faq-question');
+    
+    faqQuestions.forEach(question => {
+      question.addEventListener('click', function() {
+        const faqItem = this.closest('.faq-item');
+        const isActive = faqItem.classList.contains('active');
+        
+        // Cerrar todos los FAQs
+        document.querySelectorAll('.faq-item').forEach(item => {
+          item.classList.remove('active');
+        });
+        
+        // Abrir el FAQ clickeado si no estaba activo
+        if (!isActive) {
+          faqItem.classList.add('active');
+        }
+      });
+    });
+  });
+</script>

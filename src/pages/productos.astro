@@ -1,0 +1,525 @@
+---
+import Layout from '../layouts/Layout.astro';
+import ProductCard from '../components/ProductCard.astro';
+import ProductFilter from '../components/ProductFilter.astro';
+import { getAllProducts, getAllCategories, filterProducts, getCategoryById } from '../utils/data';
+import type { ProductFilter as ProductFilterType } from '../types';
+
+// Obtener parámetros de filtro de la URL
+const url = new URL(Astro.request.url);
+const searchParams = url.searchParams;
+
+const currentFilter: ProductFilterType = {
+  category: searchParams.get('category') || undefined,
+  condition: searchParams.get('condition') || undefined,
+  minPrice: searchParams.get('minPrice') ? parseFloat(searchParams.get('minPrice')!) : undefined,
+  maxPrice: searchParams.get('maxPrice') ? parseFloat(searchParams.get('maxPrice')!) : undefined,
+  sizes: searchParams.get('sizes')?.split(',').filter(Boolean) || undefined,
+  search: searchParams.get('search') || undefined,
+};
+
+// Obtener productos filtrados
+const allProducts = getAllProducts();
+const filteredProducts = filterProducts(allProducts, currentFilter);
+const categories = getAllCategories();
+
+// Información de la página actual
+const currentCategory = currentFilter.category ? getCategoryById(currentFilter.category) : null;
+const pageTitle = currentCategory ? `${currentCategory.name} - Productos` : 'Todos los Productos';
+const pageDescription = currentCategory 
+  ? `Descubre nuestra colección de ${currentCategory.name.toLowerCase()}. ${currentCategory.description}`
+  : 'Explora toda nuestra colección de ropa vintage y accesorios únicos. Encuentra piezas auténticas con historia y estilo.';
+
+// Información para breadcrumbs
+const breadcrumbs = [
+  { name: 'Inicio', url: '/' },
+  { name: 'Productos', url: '/productos' },
+  ...(currentCategory ? [{ name: currentCategory.name, url: `/productos?category=${currentCategory.id}` }] : [])
+];
+---
+
+<Layout title={pageTitle} description={pageDescription}>
+  <main class="products-page">
+    <!-- Breadcrumbs -->
+    <nav class="breadcrumbs">
+      <div class="container">
+        <ol class="breadcrumb-list">
+          {breadcrumbs.map((item, index) => (
+            <li class="breadcrumb-item">
+              {index < breadcrumbs.length - 1 ? (
+                <a href={item.url}>{item.name}</a>
+              ) : (
+                <span class="current">{item.name}</span>
+              )}
+              {index < breadcrumbs.length - 1 && <span class="separator">›</span>}
+            </li>
+          ))}
+        </ol>
+      </div>
+    </nav>
+
+    <!-- Header de la página -->
+    <section class="page-header">
+      <div class="container">
+        <div class="header-content">
+          <h1>{pageTitle}</h1>
+          <p class="page-description">{pageDescription}</p>
+          
+          <!-- Barra de búsqueda -->
+          <div class="search-bar">
+            <form class="search-form" id="searchForm">
+              <div class="search-input-group">
+                <input 
+                  type="text" 
+                  id="searchInput"
+                  name="search"
+                  placeholder="Buscar productos..."
+                  value={currentFilter.search || ''}
+                  class="search-input"
+                />
+                <button type="submit" class="search-btn">
+                  <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <circle cx="11" cy="11" r="8"></circle>
+                    <path d="m21 21-4.35-4.35"></path>
+                  </svg>
+                </button>
+              </div>
+            </form>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- Contenido principal -->
+    <section class="products-content">
+      <div class="container">
+        <div class="products-layout">
+          <!-- Sidebar con filtros -->
+          <aside class="filters-sidebar">
+            <ProductFilter currentFilter={currentFilter} />
+          </aside>
+
+          <!-- Grid de productos -->
+          <div class="products-main">
+            <!-- Información de resultados -->
+            <div class="results-info">
+              <div class="results-count">
+                <span class="count">{filteredProducts.length}</span>
+                <span class="text">
+                  {filteredProducts.length === 1 ? 'producto encontrado' : 'productos encontrados'}
+                </span>
+              </div>
+              
+              <!-- Ordenamiento -->
+              <div class="sort-options">
+                <label for="sortBy">Ordenar por:</label>
+                <select id="sortBy" name="sortBy">
+                  <option value="newest">Más recientes</option>
+                  <option value="price-low">Precio: menor a mayor</option>
+                  <option value="price-high">Precio: mayor a menor</option>
+                  <option value="name">Nombre A-Z</option>
+                </select>
+              </div>
+            </div>
+
+            <!-- Grid de productos -->
+            {filteredProducts.length > 0 ? (
+              <div class="products-grid" id="productsGrid">
+                {filteredProducts.map(product => (
+                  <ProductCard product={product} />
+                ))}
+              </div>
+            ) : (
+              <div class="no-products">
+                <div class="no-products-content">
+                  <svg width="64" height="64" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
+                    <circle cx="11" cy="11" r="8"></circle>
+                    <path d="m21 21-4.35-4.35"></path>
+                  </svg>
+                  <h3>No se encontraron productos</h3>
+                  <p>Intenta ajustar los filtros o buscar con otros términos.</p>
+                  <button class="clear-filters-btn" id="clearAllFilters">
+                    Limpiar todos los filtros
+                  </button>
+                </div>
+              </div>
+            )}
+
+            <!-- Paginación (para futuras implementaciones) -->
+            {filteredProducts.length > 12 && (
+              <div class="pagination">
+                <button class="pagination-btn" disabled>
+                  ‹ Anterior
+                </button>
+                <span class="pagination-info">Página 1 de 1</span>
+                <button class="pagination-btn" disabled>
+                  Siguiente ›
+                </button>
+              </div>
+            )}
+          </div>
+        </div>
+      </div>
+    </section>
+  </main>
+</Layout>
+
+<style>
+  .products-page {
+    min-height: 100vh;
+    background: #fafafa;
+  }
+  
+  .container {
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 0 20px;
+  }
+  
+  /* Breadcrumbs */
+  .breadcrumbs {
+    background: white;
+    border-bottom: 1px solid #eee;
+    padding: 12px 0;
+  }
+  
+  .breadcrumb-list {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    margin: 0;
+    padding: 0;
+    list-style: none;
+    font-size: 0.875rem;
+  }
+  
+  .breadcrumb-item {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+  }
+  
+  .breadcrumb-item a {
+    color: #666;
+    text-decoration: none;
+    transition: color 0.2s ease;
+  }
+  
+  .breadcrumb-item a:hover {
+    color: #dc2626;
+  }
+  
+  .breadcrumb-item .current {
+    color: #333;
+    font-weight: 500;
+  }
+  
+  .separator {
+    color: #999;
+    font-size: 0.75rem;
+  }
+  
+  /* Header de la página */
+  .page-header {
+    background: linear-gradient(135deg, #dc2626 0%, #ef4444 100%);
+    color: #F5DEB3;
+    padding: 40px 0;
+  }
+  
+  .header-content {
+    text-align: center;
+    max-width: 800px;
+    margin: 0 auto;
+  }
+  
+  .page-header h1 {
+    margin: 0 0 12px 0;
+    font-size: 2.5rem;
+    font-weight: 700;
+  }
+  
+  .page-description {
+    margin: 0 0 32px 0;
+    font-size: 1.1rem;
+    opacity: 0.9;
+    line-height: 1.6;
+  }
+  
+  /* Barra de búsqueda */
+  .search-bar {
+    max-width: 500px;
+    margin: 0 auto;
+  }
+  
+  .search-input-group {
+    position: relative;
+    display: flex;
+  }
+  
+  .search-input {
+    flex: 1;
+    padding: 16px 20px;
+    border: none;
+    border-radius: 50px 0 0 50px;
+    font-size: 1rem;
+    outline: none;
+  }
+  
+  .search-btn {
+    background: rgba(245, 222, 179, 0.2);
+    border: none;
+    padding: 16px 20px;
+    border-radius: 0 50px 50px 0;
+    color: #F5DEB3;
+    cursor: pointer;
+    transition: background 0.2s ease;
+  }
+  
+  .search-btn:hover {
+    background: rgba(245, 222, 179, 0.3);
+  }
+  
+  /* Layout de productos */
+  .products-content {
+    padding: 40px 0;
+  }
+  
+  .products-layout {
+    display: grid;
+    grid-template-columns: 280px 1fr;
+    gap: 40px;
+    align-items: start;
+  }
+  
+  /* Información de resultados */
+  .results-info {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 24px;
+    padding: 16px 0;
+    border-bottom: 1px solid #eee;
+  }
+  
+  .results-count .count {
+    font-weight: 700;
+    color: #dc2626;
+    font-size: 1.1rem;
+  }
+  
+  .results-count .text {
+    color: #666;
+    margin-left: 4px;
+  }
+  
+  .sort-options {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    font-size: 0.875rem;
+  }
+  
+  .sort-options label {
+    color: #666;
+    font-weight: 500;
+  }
+  
+  .sort-options select {
+    padding: 8px 12px;
+    border: 1px solid #ddd;
+    border-radius: 6px;
+    font-size: 0.875rem;
+    background: white;
+    cursor: pointer;
+  }
+  
+  /* Grid de productos */
+  .products-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+    gap: 24px;
+  }
+  
+  /* Sin productos */
+  .no-products {
+    text-align: center;
+    padding: 80px 20px;
+    background: white;
+    border-radius: 12px;
+  }
+  
+  .no-products-content svg {
+    color: #ccc;
+    margin-bottom: 16px;
+  }
+  
+  .no-products-content h3 {
+    margin: 0 0 8px 0;
+    color: #333;
+    font-size: 1.25rem;
+  }
+  
+  .no-products-content p {
+    margin: 0 0 24px 0;
+    color: #666;
+  }
+  
+  .clear-filters-btn {
+    background: #dc2626;
+    color: #F5DEB3;
+    border: none;
+    padding: 12px 24px;
+    border-radius: 8px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: background 0.2s ease;
+  }
+  
+  .clear-filters-btn:hover {
+    background: #b91c1c;
+  }
+  
+  /* Paginación */
+  .pagination {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    gap: 16px;
+    margin-top: 40px;
+    padding: 20px 0;
+  }
+  
+  .pagination-btn {
+    background: white;
+    border: 1px solid #ddd;
+    padding: 8px 16px;
+    border-radius: 6px;
+    cursor: pointer;
+    transition: all 0.2s ease;
+  }
+  
+  .pagination-btn:not(:disabled):hover {
+    background: #dc2626;
+    color: #F5DEB3;
+    border-color: #dc2626;
+  }
+  
+  .pagination-btn:disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
+  }
+  
+  .pagination-info {
+    color: #666;
+    font-size: 0.875rem;
+  }
+  
+  /* Responsive */
+  @media (max-width: 1024px) {
+    .products-layout {
+      grid-template-columns: 250px 1fr;
+      gap: 24px;
+    }
+  }
+  
+  @media (max-width: 768px) {
+    .page-header {
+      padding: 24px 0;
+    }
+    
+    .page-header h1 {
+      font-size: 2rem;
+    }
+    
+    .products-layout {
+      grid-template-columns: 1fr;
+      gap: 20px;
+    }
+    
+    .filters-sidebar {
+      order: 2;
+    }
+    
+    .products-main {
+      order: 1;
+    }
+    
+    .results-info {
+      flex-direction: column;
+      align-items: flex-start;
+      gap: 12px;
+    }
+    
+    .products-grid {
+      grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
+      gap: 16px;
+    }
+  }
+  
+  @media (max-width: 480px) {
+    .container {
+      padding: 0 16px;
+    }
+    
+    .page-header h1 {
+      font-size: 1.75rem;
+    }
+    
+    .products-grid {
+      grid-template-columns: 1fr;
+    }
+  }
+</style>
+
+<script>
+  document.addEventListener('DOMContentLoaded', function() {
+    const searchForm = document.getElementById('searchForm');
+    const searchInput = document.getElementById('searchInput');
+    const sortSelect = document.getElementById('sortBy');
+    const clearAllBtn = document.getElementById('clearAllFilters');
+    const productsGrid = document.getElementById('productsGrid');
+    
+    // Manejar búsqueda
+    searchForm?.addEventListener('submit', function(e) {
+      e.preventDefault();
+      const searchTerm = searchInput?.value.trim();
+      updateURL({ search: searchTerm || undefined });
+    });
+    
+    // Manejar ordenamiento
+    sortSelect?.addEventListener('change', function() {
+      const sortValue = this.value;
+      updateURL({ sort: sortValue });
+    });
+    
+    // Limpiar todos los filtros
+    clearAllBtn?.addEventListener('click', function() {
+      window.location.href = '/productos';
+    });
+    
+    // Escuchar cambios de filtros
+    window.addEventListener('filtersChanged', function(e) {
+      updateURL(e.detail);
+    });
+    
+    function updateURL(params) {
+      const url = new URL(window.location);
+      
+      // Actualizar parámetros
+      Object.entries(params).forEach(([key, value]) => {
+        if (value !== undefined && value !== null && value !== '') {
+          if (Array.isArray(value)) {
+            url.searchParams.set(key, value.join(','));
+          } else {
+            url.searchParams.set(key, value.toString());
+          }
+        } else {
+          url.searchParams.delete(key);
+        }
+      });
+      
+      // Navegar a la nueva URL
+      window.location.href = url.toString();
+    }
+  });
+</script>

@@ -1,0 +1,109 @@
+{
+  "products": [
+    {
+      "id": "vintage-tee-001",
+      "name": "VINTAGE COWBOY TEE I",
+      "description": "Camiseta vintage auténtica de los años 90 con diseño cowboy único. Perfecta para un look retro y auténtico.",
+      "price": 55,
+      "category": "camisetas",
+      "condition": "Excelente",
+      "featured": true,
+      "images": [
+        {
+          "url": "/images/products/tee-001-1.jpg",
+          "alt": "Camiseta Cowboy Vintage - Vista frontal",
+          "primary": true
+        },
+        {
+          "url": "/images/products/tee-001-2.jpg",
+          "alt": "Camiseta Cowboy Vintage - Vista trasera",
+          "primary": false
+        }
+      ],
+      "sizes": ["S", "M", "L"],
+      "tags": ["vintage", "cowboy", "90s", "americana"],
+      "created_at": "2025-01-15T10:00:00Z",
+      "updated_at": "2025-01-15T10:00:00Z"
+    },
+    {
+      "id": "vintage-tee-002",
+      "name": "RETRO BAND TEE",
+      "description": "Camiseta de banda vintage de los 80s, diseño original y auténtico con desgaste natural.",
+      "price": 65,
+      "category": "camisetas",
+      "condition": "Muy bueno",
+      "featured": true,
+      "images": [
+        {
+          "url": "/images/products/tee-002-1.jpg",
+          "alt": "Camiseta Banda Retro - Vista frontal",
+          "primary": true
+        }
+      ],
+      "sizes": ["M", "L", "XL"],
+      "tags": ["vintage", "band", "80s", "rock"],
+      "created_at": "2025-01-15T10:30:00Z",
+      "updated_at": "2025-01-15T10:30:00Z"
+    },
+    {
+      "id": "vinyl-001",
+      "name": "CLASSIC ROCK VINYL",
+      "description": "Disco de vinilo clásico de rock de los 70s, edición original en excelente estado.",
+      "price": 85,
+      "category": "vinilos",
+      "condition": "Excelente",
+      "featured": true,
+      "images": [
+        {
+          "url": "/images/products/vinyl-001-1.jpg",
+          "alt": "Vinilo Rock Clásico - Portada",
+          "primary": true
+        }
+      ],
+      "sizes": [],
+      "tags": ["vinyl", "rock", "70s", "classic"],
+      "created_at": "2025-01-15T11:00:00Z",
+      "updated_at": "2025-01-15T11:00:00Z"
+    },
+    {
+      "id": "accessory-001",
+      "name": "VINTAGE LEATHER BELT",
+      "description": "Cinturón de cuero vintage auténtico, hecho a mano con hebilla metálica original.",
+      "price": 45,
+      "category": "accesorios",
+      "condition": "Bueno",
+      "featured": false,
+      "images": [
+        {
+          "url": "/images/products/belt-001-1.jpg",
+          "alt": "Cinturón Cuero Vintage",
+          "primary": true
+        }
+      ],
+      "sizes": ["S", "M", "L"],
+      "tags": ["vintage", "leather", "belt", "handmade"],
+      "created_at": "2025-01-15T11:30:00Z",
+      "updated_at": "2025-01-15T11:30:00Z"
+    },
+    {
+      "id": "vintage-tee-003",
+      "name": "SURF VINTAGE TEE",
+      "description": "Camiseta vintage de surf de los 90s con gráficos originales y colores deslavados.",
+      "price": 50,
+      "category": "camisetas",
+      "condition": "Muy bueno",
+      "featured": true,
+      "images": [
+        {
+          "url": "/images/products/tee-003-1.jpg",
+          "alt": "Camiseta Surf Vintage",
+          "primary": true
+        }
+      ],
+      "sizes": ["S", "M"],
+      "tags": ["vintage", "surf", "90s", "beach"],
+      "created_at": "2025-01-15T12:00:00Z",
+      "updated_at": "2025-01-15T12:00:00Z"
+    }
+  ]
+}

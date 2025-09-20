@@ -1,5 +1,7 @@
 ---
-// Footer.astro - Footer Definitivo con TypeScript - Sin JavaScript
+// Footer.astro - Footer publicitario con promociones y enlaces
+import SpotifyPlayer from './SpotifyPlayer.astro';
+
 interface EventData {
   name: string;
   description: string;
@@ -147,40 +149,92 @@ const whatsappNumber: string = "573XXXXXXXXX"; // Reemplazar con número real
     </div>
   </section>
 
-  <!-- Sección del Reproductor Spotify -->
-  <section class="music-section" aria-label="Música ambiental">
+  <!-- Sección de Música Spotify -->
+  <section class="music-section" aria-label="Música y playlist">
     <div class="music-container">
-      
-      <!-- Título -->
       <div class="music-header">
-        <h3 class="music-title">🎶 Ambiente Sur Occidente</h3>
+        <h2 class="music-title">🎵 Nuestra Playlist Vintage</h2>
+        <p style="color: #CD853F; margin: 0.5rem 0;">Música seleccionada para acompañar tu experiencia de compra</p>
       </div>
-
-      <!-- Reproductor Spotify Embed -->
+      
+      <!-- Reproductor Spotify Personalizado -->
       <div class="spotify-container">
-        <iframe 
-          style="border-radius:12px" 
-          src={`${spotifyPlaylistUrl.replace('playlist/', 'embed/playlist/')}?utm_source=generator&theme=0`}
-          width="100%" 
-          height="152" 
-          frameborder="0" 
-          allowfullscreen="" 
-          allow="autoplay; clipboard-write; encrypted-media; fullscreen; picture-in-picture" 
-          loading="lazy"
-          title="Playlist Sur Occidente - Música Vintage">
-        </iframe>
+        <SpotifyPlayer />
       </div>
-
-      <!-- Información de Playlist -->
-      <div class="playlist-info">
-        <p>🎵 <strong>Playlist Oficial:</strong> Música seleccionada para acompañar tu experiencia vintage</p>
-        <a href={spotifyPlaylistUrl} class="spotify-link" target="_blank" rel="noopener">
-          Seguir en Spotify 🔗
+      
+      <!-- Enlaces de Spotify -->
+      <div class="spotify-links">
+        <a 
+          href="https://open.spotify.com/playlist/37i9dQZF1DX0XUsuxWHRQd" 
+          class="spotify-link"
+          target="_blank"
+          rel="noopener noreferrer"
+          aria-label="Abrir playlist en Spotify"
+        >
+          🎧 Abrir en Spotify
+        </a>
+        <a 
+          href="https://open.spotify.com/user/suroccidente" 
+          class="spotify-link"
+          target="_blank"
+          rel="noopener noreferrer"
+          aria-label="Seguir en Spotify"
+        >
+          ➕ Seguir nuestro perfil
         </a>
       </div>
-
     </div>
   </section>
+
+
+
+
+  <!-- Enlaces de Spotify optimizados -->
+  <style>
+    .spotify-links {
+      display: flex;
+      justify-content: center;
+      gap: 1rem;
+      margin-top: 1rem;
+      flex-wrap: wrap;
+    }
+
+    .spotify-link {
+      display: inline-flex;
+      align-items: center;
+      gap: 0.5rem;
+      background: linear-gradient(135deg, #1DB954, #1ed760);
+      color: #F5DEB3;
+      text-decoration: none;
+      padding: 0.75rem 1.5rem;
+      border-radius: 25px;
+      font-weight: bold;
+      font-size: 0.9rem;
+      transition: all 0.3s ease;
+      box-shadow: 0 4px 15px rgba(29, 185, 84, 0.3);
+    }
+
+    .spotify-link:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 6px 20px rgba(29, 185, 84, 0.4);
+      background: linear-gradient(135deg, #1ed760, #1DB954);
+    }
+
+    @media (max-width: 768px) {
+      .spotify-links {
+        flex-direction: column;
+        align-items: center;
+      }
+      
+      .spotify-link {
+        width: 100%;
+        max-width: 250px;
+        justify-content: center;
+      }
+    }
+  </style>
+    
+
 
   <!-- Footer Bottom - Info Legal -->
   <div class="footer-bottom">
@@ -211,8 +265,8 @@ const whatsappNumber: string = "573XXXXXXXXX"; // Reemplazar con número real
 <style>
   /* 🎯 FOOTER PUBLICITARIO BASE */
   footer {
-    background: linear-gradient(135deg, #1a1a1a 0%, #2d2d2d 50%, #1a1a1a 100%);
-    color: white;
+    background: linear-gradient(135deg, #1a1a1a 0%, #000000 50%, #1a1a1a 100%);
+    color: #F5DEB3;
     margin-top: auto;
     border-top: 3px solid #8B4135;
     position: relative;
@@ -226,7 +280,7 @@ const whatsappNumber: string = "573XXXXXXXXX"; // Reemplazar con número real
     left: -50%;
     width: 200%;
     height: 2px;
-    background: linear-gradient(90deg, transparent, #8B4135, #105585, #8B4135, transparent);
+    background: linear-gradient(90deg, transparent, #dc2626, #105585, #8B4135, transparent);
     animation: shimmer 3s infinite;
   }
 
@@ -244,7 +298,7 @@ const whatsappNumber: string = "573XXXXXXXXX"; // Reemplazar con número real
 
   /* Banner Principal del Evento */
   .main-banner {
-    background: linear-gradient(135deg, #8B4135, #105585);
+    background: linear-gradient(135deg, #0A415C, #0A415C);
     border-radius: 16px;
     padding: 2rem;
     margin-bottom: 2rem;
@@ -308,8 +362,8 @@ const whatsappNumber: string = "573XXXXXXXXX"; // Reemplazar con número real
   }
 
   .cta-button {
-    background: linear-gradient(135deg, #FF6B35, #FF4500);
-    color: white;
+    background: linear-gradient(135deg, #dc2626, #dc2626);
+    color: #F5DEB3;
     border: none;
     padding: 1rem 2rem;
     border-radius: 25px;
@@ -450,8 +504,8 @@ const whatsappNumber: string = "573XXXXXXXXX"; // Reemplazar con número real
   }
 
   .artist-tag {
-    background: linear-gradient(135deg, #FF6B35, #FF4500);
-    color: white;
+    background: linear-gradient(135deg, #dc2626, #dc2626);
+    color: #F5DEB3;
     padding: 0.3rem 0.8rem;
     border-radius: 15px;
     font-size: 0.8rem;
@@ -459,7 +513,7 @@ const whatsappNumber: string = "573XXXXXXXXX"; // Reemplazar con número real
   }
 
   .promo-card {
-    background: linear-gradient(135deg, #FF6B35, #FF4500);
+    background: linear-gradient(135deg, #dc2626, #dc2626);
     border-radius: 12px;
     padding: 1.5rem;
     text-align: center;
@@ -478,11 +532,11 @@ const whatsappNumber: string = "573XXXXXXXXX"; // Reemplazar con número real
 
   .promo-content h3 {
     margin: 0 0 0.5rem 0;
-    color: white;
+    color: #F5DEB3;
   }
 
   .promo-content p {
-    color: rgba(255, 255, 255, 0.9);
+    color: rgba(245, 222, 179, 0.9);
     margin: 0 0 1rem 0;
   }
 

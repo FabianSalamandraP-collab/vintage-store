@@ -1,0 +1,25 @@
+{
+  "categories": [
+    {
+      "id": "camisetas",
+      "name": "Camisetas",
+      "slug": "camisetas",
+      "description": "Camisetas vintage y retro de diferentes épocas, desde los 70s hasta los 90s",
+      "sort_order": 1
+    },
+    {
+      "id": "vinilos",
+      "name": "Vinilos",
+      "slug": "vinilos",
+      "description": "Discos de vinilo vintage y ediciones especiales de todos los géneros",
+      "sort_order": 2
+    },
+    {
+      "id": "accesorios",
+      "name": "Accesorios",
+      "slug": "accesorios",
+      "description": "Accesorios vintage únicos y coleccionables para completar tu look",
+      "sort_order": 3
+    }
+  ]
+}

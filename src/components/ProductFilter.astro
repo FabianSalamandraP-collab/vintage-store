@@ -1,0 +1,482 @@
+---
+import type { Category, ProductFilter } from '../types';
+import { getAllCategories, getProductStats } from '../utils/data';
+
+export interface Props {
+  currentFilter?: ProductFilter;
+  className?: string;
+}
+
+const { currentFilter = {}, className = '' } = Astro.props;
+const categories = getAllCategories();
+const stats = getProductStats();
+---
+
+<div class={`product-filter ${className}`}>
+  <div class="filter-header">
+    <h3>Filtrar Productos</h3>
+    <button class="clear-filters" id="clearFilters">
+      Limpiar filtros
+    </button>
+  </div>
+  
+  <!-- Filtro por categoría -->
+  <div class="filter-section">
+    <h4>Categoría</h4>
+    <div class="filter-options">
+      <label class="filter-option">
+        <input 
+          type="radio" 
+          name="category" 
+          value="" 
+          checked={!currentFilter.category}
+        />
+        <span class="checkmark"></span>
+        <span class="option-text">Todas ({stats.total})</span>
+      </label>
+      
+      {categories.map(category => (
+        <label class="filter-option">
+          <input 
+            type="radio" 
+            name="category" 
+            value={category.id}
+            checked={currentFilter.category === category.id}
+          />
+          <span class="checkmark"></span>
+          <span class="option-text">
+            {category.name} ({stats.byCategory[category.id] || 0})
+          </span>
+        </label>
+      ))}
+    </div>
+  </div>
+  
+  <!-- Filtro por precio -->
+  <div class="filter-section">
+    <h4>Rango de Precio</h4>
+    <div class="price-range">
+      <div class="price-inputs">
+        <div class="price-input-group">
+          <label for="minPrice">Mínimo</label>
+          <input 
+            type="number" 
+            id="minPrice" 
+            name="minPrice"
+            min={stats.priceRange.min}
+            max={stats.priceRange.max}
+            value={currentFilter.minPrice || ''}
+            placeholder={`$${stats.priceRange.min.toLocaleString()}`}
+          />
+        </div>
+        
+        <div class="price-input-group">
+          <label for="maxPrice">Máximo</label>
+          <input 
+            type="number" 
+            id="maxPrice" 
+            name="maxPrice"
+            min={stats.priceRange.min}
+            max={stats.priceRange.max}
+            value={currentFilter.maxPrice || ''}
+            placeholder={`$${stats.priceRange.max.toLocaleString()}`}
+          />
+        </div>
+      </div>
+      
+      <div class="price-range-slider">
+        <input 
+          type="range" 
+          id="priceSlider"
+          min={stats.priceRange.min}
+          max={stats.priceRange.max}
+          value={currentFilter.maxPrice || stats.priceRange.max}
+          class="slider"
+        />
+      </div>
+    </div>
+  </div>
+  
+  <!-- Filtro por condición -->
+  <div class="filter-section">
+    <h4>Condición</h4>
+    <div class="filter-options">
+      <label class="filter-option">
+        <input 
+          type="radio" 
+          name="condition" 
+          value="" 
+          checked={!currentFilter.condition}
+        />
+        <span class="checkmark"></span>
+        <span class="option-text">Todas</span>
+      </label>
+      
+      {stats.conditions.map(condition => (
+        <label class="filter-option">
+          <input 
+            type="radio" 
+            name="condition" 
+            value={condition}
+            checked={currentFilter.condition === condition}
+          />
+          <span class="checkmark"></span>
+          <span class="option-text">{condition}</span>
+        </label>
+      ))}
+    </div>
+  </div>
+  
+  <!-- Filtro por tallas -->
+  <div class="filter-section">
+    <h4>Tallas</h4>
+    <div class="filter-options sizes-grid">
+      {stats.sizes.map(size => (
+        <label class="filter-option size-option">
+          <input 
+            type="checkbox" 
+            name="sizes" 
+            value={size}
+            checked={currentFilter.sizes?.includes(size)}
+          />
+          <span class="checkmark"></span>
+          <span class="option-text">{size}</span>
+        </label>
+      ))}
+    </div>
+  </div>
+  
+  <div class="filter-actions">
+    <button class="apply-filters" id="applyFilters">
+      Aplicar Filtros
+    </button>
+  </div>
+</div>
+
+<style>
+  .product-filter {
+    background: white;
+    border-radius: 12px;
+    padding: 20px;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+    position: sticky;
+    top: 20px;
+  }
+  
+  .filter-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 20px;
+    padding-bottom: 12px;
+    border-bottom: 1px solid #eee;
+  }
+  
+  .filter-header h3 {
+    margin: 0;
+    font-size: 1.1rem;
+    font-weight: 700;
+    color: #333;
+  }
+  
+  .clear-filters {
+    background: none;
+    border: none;
+    color: #dc2626;
+    font-size: 0.875rem;
+    cursor: pointer;
+    text-decoration: underline;
+    padding: 0;
+  }
+  
+  .clear-filters:hover {
+    color: #b91c1c;
+  }
+  
+  .filter-section {
+    margin-bottom: 24px;
+  }
+  
+  .filter-section h4 {
+    margin: 0 0 12px 0;
+    font-size: 0.9rem;
+    font-weight: 600;
+    color: #555;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+  }
+  
+  .filter-options {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+  }
+  
+  .filter-option {
+    display: flex;
+    align-items: center;
+    cursor: pointer;
+    padding: 6px 0;
+    transition: color 0.2s ease;
+  }
+  
+  .filter-option:hover {
+    color: #dc2626;
+  }
+  
+  .filter-option input {
+    display: none;
+  }
+  
+  .checkmark {
+    width: 16px;
+    height: 16px;
+    border: 2px solid #ddd;
+    border-radius: 3px;
+    margin-right: 8px;
+    position: relative;
+    transition: all 0.2s ease;
+  }
+  
+  .filter-option input[type="radio"] + .checkmark {
+    border-radius: 50%;
+  }
+  
+  .filter-option input:checked + .checkmark {
+    background: #dc2626;
+    border-color: #dc2626;
+  }
+  
+  .filter-option input:checked + .checkmark::after {
+    content: '';
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    width: 6px;
+    height: 6px;
+    background: white;
+    border-radius: 50%;
+  }
+  
+  .filter-option input[type="checkbox"]:checked + .checkmark::after {
+    content: '✓';
+    color: #F5DEB3;
+    font-size: 10px;
+    font-weight: bold;
+    width: auto;
+    height: auto;
+    background: none;
+    border-radius: 0;
+  }
+  
+  .option-text {
+    font-size: 0.875rem;
+    color: #666;
+  }
+  
+  .filter-option:hover .option-text {
+    color: #dc2626;
+  }
+  
+  .price-range {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+  }
+  
+  .price-inputs {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 8px;
+  }
+  
+  .price-input-group {
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+  }
+  
+  .price-input-group label {
+    font-size: 0.75rem;
+    color: #888;
+    font-weight: 500;
+  }
+  
+  .price-input-group input {
+    padding: 8px;
+    border: 1px solid #ddd;
+    border-radius: 6px;
+    font-size: 0.875rem;
+    transition: border-color 0.2s ease;
+  }
+  
+  .price-input-group input:focus {
+    outline: none;
+    border-color: #dc2626;
+  }
+  
+  .slider {
+    width: 100%;
+    height: 4px;
+    border-radius: 2px;
+    background: #ddd;
+    outline: none;
+    -webkit-appearance: none;
+  }
+  
+  .slider::-webkit-slider-thumb {
+    -webkit-appearance: none;
+    appearance: none;
+    width: 16px;
+    height: 16px;
+    border-radius: 50%;
+    background: #dc2626;
+    cursor: pointer;
+  }
+  
+  .slider::-moz-range-thumb {
+    width: 16px;
+    height: 16px;
+    border-radius: 50%;
+    background: #dc2626;
+    cursor: pointer;
+    border: none;
+  }
+  
+  .sizes-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(60px, 1fr));
+    gap: 8px;
+  }
+  
+  .size-option {
+    justify-content: center;
+    text-align: center;
+    padding: 8px 4px;
+    border: 1px solid #eee;
+    border-radius: 6px;
+    transition: all 0.2s ease;
+  }
+  
+  .size-option:hover {
+    border-color: #dc2626;
+    background: #fef2f2;
+  }
+  
+  .size-option input:checked + .checkmark {
+    display: none;
+  }
+  
+  .size-option input:checked ~ .option-text {
+    color: #dc2626;
+    font-weight: 600;
+  }
+  
+  .filter-actions {
+    margin-top: 20px;
+    padding-top: 16px;
+    border-top: 1px solid #eee;
+  }
+  
+  .apply-filters {
+    width: 100%;
+    background: #dc2626;
+    color: #F5DEB3;
+    border: none;
+    padding: 12px;
+    border-radius: 8px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: background 0.2s ease;
+  }
+  
+  .apply-filters:hover {
+    background: #b91c1c;
+  }
+  
+  @media (max-width: 768px) {
+    .product-filter {
+      position: static;
+      margin-bottom: 20px;
+    }
+    
+    .filter-header {
+      flex-direction: column;
+      align-items: flex-start;
+      gap: 8px;
+    }
+    
+    .price-inputs {
+      grid-template-columns: 1fr;
+    }
+  }
+</style>
+
+<script>
+  // Funcionalidad del filtro
+  document.addEventListener('DOMContentLoaded', function() {
+    const filterForm = document.querySelector('.product-filter');
+    const clearButton = document.getElementById('clearFilters');
+    const applyButton = document.getElementById('applyFilters');
+    
+    // Limpiar filtros
+    clearButton?.addEventListener('click', function() {
+      const inputs = filterForm?.querySelectorAll('input');
+      inputs?.forEach(input => {
+        if (input.type === 'checkbox' || input.type === 'radio') {
+          input.checked = false;
+        } else {
+          input.value = '';
+        }
+      });
+      
+      // Marcar "Todas" por defecto
+      const allCategoriesRadio = filterForm?.querySelector('input[name="category"][value=""]');
+      const allConditionsRadio = filterForm?.querySelector('input[name="condition"][value=""]');
+      if (allCategoriesRadio) allCategoriesRadio.checked = true;
+      if (allConditionsRadio) allConditionsRadio.checked = true;
+      
+      applyFilters();
+    });
+    
+    // Aplicar filtros
+    applyButton?.addEventListener('click', applyFilters);
+    
+    // Auto-aplicar filtros en cambios
+    filterForm?.addEventListener('change', applyFilters);
+    
+    function applyFilters() {
+      const formData = new FormData(filterForm);
+      const params = new URLSearchParams();
+      
+      // Recopilar filtros
+      const category = formData.get('category');
+      const condition = formData.get('condition');
+      const minPrice = formData.get('minPrice');
+      const maxPrice = formData.get('maxPrice');
+      const sizes = formData.getAll('sizes');
+      
+      if (category) params.set('category', category);
+      if (condition) params.set('condition', condition);
+      if (minPrice) params.set('minPrice', minPrice);
+      if (maxPrice) params.set('maxPrice', maxPrice);
+      if (sizes.length > 0) params.set('sizes', sizes.join(','));
+      
+      // Actualizar URL
+      const newUrl = window.location.pathname + (params.toString() ? '?' + params.toString() : '');
+      window.history.pushState({}, '', newUrl);
+      
+      // Disparar evento personalizado para actualizar productos
+      window.dispatchEvent(new CustomEvent('filtersChanged', {
+        detail: {
+          category,
+          condition,
+          minPrice: minPrice ? parseFloat(minPrice) : undefined,
+          maxPrice: maxPrice ? parseFloat(maxPrice) : undefined,
+          sizes
+        }
+      }));
+    }
+  });
+</script>

@@ -1,10 +1,503 @@
 ---
 import Layout from '../layouts/Layout.astro';
-import Body from '../components/Body.astro';
-import Footer from '../components/Footer.astro';
+import ProductCard from '../components/ProductCard.astro';
+import SpotifyPlayer from '../components/SpotifyPlayer.astro';
+import { getFeaturedProducts, getSiteConfig } from '../utils/data';
+import type { Product } from '../types';
+
+const featuredProducts = getFeaturedProducts();
+const siteConfig = getSiteConfig();
+
+const seoTitle = `${siteConfig.name} | ${siteConfig.description}`;
+const seoDescription = `Descubre ${siteConfig.name}, tu tienda de ropa vintage en línea. Encuentra piezas únicas de los años 80, 90 y 2000. Camisetas vintage, vinilos clásicos y accesorios retro. ¡Envíos a toda Colombia!`;
+const seoKeywords = siteConfig.seo.keywords;
 ---
 
-<Layout title="Sur Occidente | Tienda de Ropa Vintage - Tesoros Únicos del Pasado">
-  <Body />
-  <Footer />
+<Layout 
+  title={seoTitle}
+  description={seoDescription}
+  keywords={seoKeywords}
+  ogImage="/images/og-home.jpg"
+>
+  <!-- Hero Section -->
+  <section class="hero">
+    <div class="hero-content">
+      <h1 class="hero-title">
+        Bienvenido a <span class="brand-name">{siteConfig.name}</span>
+      </h1>
+      <p class="hero-subtitle">
+        {siteConfig.description}
+      </p>
+      <p class="hero-description">
+        Descubre tesoros únicos del pasado. Ropa vintage auténtica, vinilos clásicos y accesorios retro que cuentan historias.
+      </p>
+      <div class="hero-actions">
+        <a href="/productos" class="btn btn-primary">
+          Ver Catálogo
+        </a>
+        <a href={`https://wa.me/${siteConfig.contact.whatsapp}?text=¡Hola! Me interesa conocer más sobre sus productos vintage`} 
+           class="btn btn-secondary" 
+           target="_blank" 
+           rel="noopener noreferrer">
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor">
+            <path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 01-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 01-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 012.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0012.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 005.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893A11.821 11.821 0 0020.885 3.488"/>
+          </svg>
+          Contactar WhatsApp
+        </a>
+      </div>
+    </div>
+    <div class="hero-image">
+      <img src="https://trae-api-us.mchost.guru/api/ide/v1/text_to_image?prompt=vintage%20clothing%20store%20display%20with%20colorful%20retro%20shirts%20and%20accessories%20warm%20red%20lighting%20cozy%20atmosphere&image_size=landscape_4_3" 
+           alt="Tienda de ropa vintage Sur Occidente" 
+           loading="eager" />
+    </div>
+  </section>
+
+  <!-- Featured Products Section -->
+  <section class="featured-products">
+    <div class="container">
+      <div class="section-header">
+        <h2 class="section-title">Productos Destacados</h2>
+        <p class="section-subtitle">
+          Descubre nuestras piezas más populares y únicas
+        </p>
+      </div>
+      
+      <div class="products-grid">
+        {featuredProducts.map((product: Product) => (
+          <ProductCard product={product} />
+        ))}
+      </div>
+      
+      <div class="section-footer">
+        <a href="/productos" class="btn btn-outline">
+          Ver Todos los Productos
+        </a>
+      </div>
+    </div>
+  </section>
+
+  <!-- Categories Section -->
+  <section class="categories">
+    <div class="container">
+      <div class="section-header">
+        <h2 class="section-title">Nuestras Categorías</h2>
+        <p class="section-subtitle">
+          Explora nuestra colección organizada por categorías
+        </p>
+      </div>
+      
+      <div class="categories-grid">
+        <a href="/productos?categoria=camisetas" class="category-card">
+          <div class="category-image">
+            <img src="https://trae-api-us.mchost.guru/api/ide/v1/text_to_image?prompt=vintage%20t-shirts%20collection%20colorful%20retro%20designs%20hanging%20display&image_size=square" 
+                 alt="Camisetas Vintage" 
+                 loading="lazy" />
+          </div>
+          <div class="category-content">
+            <h3>Camisetas Vintage</h3>
+            <p>Diseños únicos de los 80s, 90s y 2000s</p>
+          </div>
+        </a>
+        
+        <a href="/productos?categoria=vinilos" class="category-card">
+          <div class="category-image">
+            <img src="https://trae-api-us.mchost.guru/api/ide/v1/text_to_image?prompt=vintage%20vinyl%20records%20collection%20classic%20albums%20music%20nostalgia&image_size=square" 
+                 alt="Vinilos Clásicos" 
+                 loading="lazy" />
+          </div>
+          <div class="category-content">
+            <h3>Vinilos Clásicos</h3>
+            <p>Música que marcó generaciones</p>
+          </div>
+        </a>
+        
+        <a href="/productos?categoria=accesorios" class="category-card">
+          <div class="category-image">
+            <img src="https://trae-api-us.mchost.guru/api/ide/v1/text_to_image?prompt=vintage%20accessories%20retro%20sunglasses%20jewelry%20bags%20nostalgic%20items&image_size=square" 
+                 alt="Accesorios Retro" 
+                 loading="lazy" />
+          </div>
+          <div class="category-content">
+            <h3>Accesorios Retro</h3>
+            <p>Complementos que definen tu estilo</p>
+          </div>
+        </a>
+      </div>
+    </div>
+  </section>
+
+  <!-- Spotify Music Section -->
+  <section class="music-section">
+    <div class="container">
+      <div class="section-header">
+        <h2 class="section-title">Música Vintage</h2>
+        <p class="section-subtitle">
+          Disfruta de nuestra selección musical mientras exploras nuestros productos
+        </p>
+      </div>
+      <SpotifyPlayer />
+    </div>
+  </section>
+
+  <!-- About Section -->
+  <section class="about-preview">
+    <div class="container">
+      <div class="about-content">
+        <div class="about-text">
+          <h2 class="section-title">Nuestra Historia</h2>
+          <p class="about-description">
+            {siteConfig.business.mission}
+          </p>
+          <p>
+            Desde {siteConfig.business.founded}, nos dedicamos a rescatar y preservar la moda vintage, 
+            ofreciendo piezas auténticas que trascienden el tiempo y las tendencias.
+          </p>
+          <a href="/sobre-nosotros" class="btn btn-outline">
+            Conoce Más Sobre Nosotros
+          </a>
+        </div>
+        <div class="about-image">
+          <img src="https://trae-api-us.mchost.guru/api/ide/v1/text_to_image?prompt=vintage%20store%20owner%20curating%20retro%20clothing%20warm%20atmosphere%20authentic%20vintage%20aesthetic&image_size=portrait_4_3" 
+               alt="Historia de Sur Occidente" 
+               loading="lazy" />
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Contact CTA Section -->
+  <section class="contact-cta">
+    <div class="container">
+      <div class="cta-content">
+        <h2 class="cta-title">¿Tienes Preguntas?</h2>
+        <p class="cta-description">
+          Estamos aquí para ayudarte a encontrar esa pieza vintage perfecta
+        </p>
+        <div class="cta-actions">
+          <a href="/contacto" class="btn btn-primary">
+            Contáctanos
+          </a>
+          <a href={`https://wa.me/${siteConfig.contact.whatsapp}`} 
+             class="btn btn-secondary" 
+             target="_blank" 
+             rel="noopener noreferrer">
+            WhatsApp
+          </a>
+        </div>
+      </div>
+    </div>
+  </section>
 </Layout>
+
+<style>
+  /* Hero Section */
+  .hero {
+    background: linear-gradient(135deg, #dc2626 0%, #ef4444 100%);
+    color: #F5DEB3;
+    padding: 4rem 2rem;
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 3rem;
+    align-items: center;
+    min-height: 70vh;
+  }
+  
+  .hero-content {
+    max-width: 600px;
+  }
+  
+  .hero-title {
+    font-size: 3rem;
+    font-weight: 700;
+    margin-bottom: 1rem;
+    line-height: 1.2;
+  }
+  
+  .brand-name {
+    color: #F5DEB3;
+    text-shadow: 2px 2px 4px rgba(0,0,0,0.3);
+  }
+  
+  .hero-subtitle {
+    font-size: 1.5rem;
+    margin-bottom: 1rem;
+    opacity: 0.9;
+  }
+  
+  .hero-description {
+    font-size: 1.1rem;
+    margin-bottom: 2rem;
+    opacity: 0.8;
+    line-height: 1.6;
+  }
+  
+  .hero-actions {
+    display: flex;
+    gap: 1rem;
+    flex-wrap: wrap;
+  }
+  
+  .hero-image img {
+    width: 100%;
+    height: 400px;
+    object-fit: cover;
+    border-radius: 12px;
+    box-shadow: 0 20px 40px rgba(0,0,0,0.2);
+  }
+  
+  /* Buttons */
+  .btn {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.5rem;
+    padding: 0.875rem 1.5rem;
+    border-radius: 8px;
+    text-decoration: none;
+    font-weight: 600;
+    transition: all 0.3s ease;
+    border: 2px solid transparent;
+  }
+  
+  .btn-primary {
+    background: white;
+    color: #dc2626;
+  }
+  
+  .btn-primary:hover {
+    background: #f8f9fa;
+    transform: translateY(-2px);
+  }
+  
+  .btn-secondary {
+    background: transparent;
+    color: #F5DEB3;
+    border-color: #F5DEB3;
+  }
+  
+  .btn-secondary:hover {
+    background: #F5DEB3;
+    color: #dc2626;
+  }
+  
+  .btn-outline {
+      background: transparent;
+      color: #dc2626;
+      border-color: #dc2626;
+    }
+  
+  .btn-outline:hover {
+    background: #dc2626;
+    color: #F5DEB3;
+  }
+  
+  /* Sections */
+  .container {
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 0 2rem;
+  }
+  
+  .featured-products,
+  .categories,
+  .music-section,
+  .about-preview,
+  .contact-cta {
+    padding: 4rem 0;
+  }
+  
+  .section-header {
+    text-align: center;
+    margin-bottom: 3rem;
+  }
+  
+  .section-title {
+    font-size: 2.5rem;
+    font-weight: 700;
+    color: #2d3748;
+    margin-bottom: 1rem;
+  }
+  
+  .section-subtitle {
+    font-size: 1.2rem;
+    color: #718096;
+    max-width: 600px;
+    margin: 0 auto;
+  }
+  
+  .section-footer {
+    text-align: center;
+    margin-top: 3rem;
+  }
+  
+  /* Products Grid */
+  .products-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+    gap: 2rem;
+  }
+  
+  /* Categories Grid */
+  .categories {
+    background: #f7fafc;
+  }
+
+  /* Music Section */
+  .music-section {
+    background: #f7fafc;
+    position: relative;
+  }
+
+  .music-section::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: linear-gradient(45deg, rgba(255, 107, 53, 0.05) 0%, rgba(247, 147, 30, 0.05) 100%);
+    pointer-events: none;
+  }
+
+  .music-section .container {
+    position: relative;
+    z-index: 1;
+  }
+  
+  .categories-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+    gap: 2rem;
+  }
+  
+  .category-card {
+    background: white;
+    border-radius: 12px;
+    overflow: hidden;
+    text-decoration: none;
+    color: inherit;
+    transition: all 0.3s ease;
+    box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+  }
+  
+  .category-card:hover {
+    transform: translateY(-4px);
+    box-shadow: 0 12px 24px rgba(0,0,0,0.15);
+  }
+  
+  .category-image img {
+    width: 100%;
+    height: 200px;
+    object-fit: cover;
+  }
+  
+  .category-content {
+    padding: 1.5rem;
+  }
+  
+  .category-content h3 {
+    font-size: 1.5rem;
+    font-weight: 600;
+    color: #2d3748;
+    margin-bottom: 0.5rem;
+  }
+  
+  .category-content p {
+    color: #718096;
+  }
+  
+  /* About Preview */
+  .about-content {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 3rem;
+    align-items: center;
+  }
+  
+  .about-text {
+    max-width: 500px;
+  }
+  
+  .about-description {
+    font-size: 1.1rem;
+    color: #4a5568;
+    margin-bottom: 1.5rem;
+    line-height: 1.6;
+  }
+  
+  .about-image img {
+    width: 100%;
+    height: 400px;
+    object-fit: cover;
+    border-radius: 12px;
+  }
+  
+  /* Contact CTA */
+  .contact-cta {
+    background: linear-gradient(135deg, #dc2626 0%, #ef4444 100%);
+    color: #F5DEB3;
+  }
+  
+  .cta-content {
+    text-align: center;
+    max-width: 600px;
+    margin: 0 auto;
+  }
+  
+  .cta-title {
+    font-size: 2.5rem;
+    font-weight: 700;
+    margin-bottom: 1rem;
+  }
+  
+  .cta-description {
+    font-size: 1.2rem;
+    margin-bottom: 2rem;
+    opacity: 0.9;
+  }
+  
+  .cta-actions {
+    display: flex;
+    gap: 1rem;
+    justify-content: center;
+    flex-wrap: wrap;
+  }
+  
+  /* Responsive Design */
+  @media (max-width: 768px) {
+    .hero {
+      grid-template-columns: 1fr;
+      text-align: center;
+      padding: 3rem 1rem;
+    }
+    
+    .hero-title {
+      font-size: 2.5rem;
+    }
+    
+    .about-content {
+      grid-template-columns: 1fr;
+      text-align: center;
+    }
+    
+    .section-title {
+      font-size: 2rem;
+    }
+    
+    .cta-title {
+      font-size: 2rem;
+    }
+    
+    .hero-actions,
+    .cta-actions {
+      flex-direction: column;
+      align-items: center;
+    }
+    
+    .btn {
+      width: 100%;
+      max-width: 300px;
+      justify-content: center;
+    }
+  }
+</style>

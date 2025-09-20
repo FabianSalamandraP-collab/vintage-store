@@ -1,0 +1,118 @@
+---
+// Spotify OAuth Callback Page
+---
+
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Conectando con Spotify...</title>
+  <style>
+    body {
+      font-family: 'Inter', sans-serif;
+      background: linear-gradient(135deg, #dc2626 0%, #b91c1c 100%);
+      color: #F5DEB3;
+      margin: 0;
+      padding: 0;
+      min-height: 100vh;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+    
+    .callback-container {
+      text-align: center;
+      padding: 2rem;
+      background: rgba(0, 0, 0, 0.2);
+      border-radius: 12px;
+      backdrop-filter: blur(10px);
+      border: 1px solid rgba(255, 255, 255, 0.1);
+    }
+    
+    .spinner {
+      width: 50px;
+      height: 50px;
+      border: 3px solid rgba(255, 255, 255, 0.3);
+      border-top: 3px solid white;
+      border-radius: 50%;
+      animation: spin 1s linear infinite;
+      margin: 0 auto 1rem;
+    }
+    
+    @keyframes spin {
+      0% { transform: rotate(0deg); }
+      100% { transform: rotate(360deg); }
+    }
+    
+    .message {
+      font-size: 1.2rem;
+      margin-bottom: 1rem;
+    }
+    
+    .error {
+      color: #fca5a5;
+    }
+    
+    .success {
+      color: #86efac;
+    }
+  </style>
+</head>
+<body>
+  <div class="callback-container">
+    <div class="spinner"></div>
+    <div id="message" class="message">Conectando con Spotify...</div>
+    <div id="details"></div>
+  </div>
+
+  <script>
+    import { spotifyAuth } from '../utils/spotifyAuth';
+    
+    async function handleCallback() {
+      try {
+        const urlParams = new URLSearchParams(window.location.search);
+        const code = urlParams.get('code');
+        const state = urlParams.get('state');
+        const error = urlParams.get('error');
+        
+        if (error) {
+          throw new Error(`Spotify authentication error: ${error}`);
+        }
+        
+        if (!code || !state) {
+          throw new Error('Missing authorization code or state parameter');
+        }
+        
+        document.getElementById('message').textContent = 'Intercambiando código por tokens...';
+        
+        // Exchange code for tokens
+        const tokens = await spotifyAuth.exchangeCodeForTokens(code, state);
+        
+        document.getElementById('message').textContent = 'Autenticación exitosa!';
+        document.getElementById('message').className = 'message success';
+        document.getElementById('details').textContent = 'Redirigiendo...';
+        
+        // Redirect back to main page after successful authentication
+        setTimeout(() => {
+          window.location.href = '/';
+        }, 2000);
+        
+      } catch (error) {
+        console.error('Callback error:', error);
+        document.getElementById('message').textContent = 'Error de autenticación';
+        document.getElementById('message').className = 'message error';
+        document.getElementById('details').textContent = error.message;
+        
+        // Redirect back after error
+        setTimeout(() => {
+          window.location.href = '/';
+        }, 5000);
+      }
+    }
+    
+    // Handle callback when page loads
+    document.addEventListener('DOMContentLoaded', handleCallback);
+  </script>
+</body>
+</html>
