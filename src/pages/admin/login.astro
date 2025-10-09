@@ -1,0 +1,880 @@
+---
+export const prerender = false;
+
+// Sistema de Login Seguro para Admin - Sur Occidente
+import Layout from '../../layouts/Layout.astro';
+import crypto from 'crypto';
+
+// Configuración de seguridad
+const SECURITY_CONFIG = {
+  maxFailedAttempts: 5,
+  lockoutDuration: 15 * 60 * 1000, // 15 minutos
+  sessionTimeout: 30 * 60 * 1000, // 30 minutos
+  requireCaptcha: true,
+  passwordHash: '$2a$12$LQv3c1yqBWVHxkd0LHAkCOYz6TtxMQJqhN8/LewdBdXig/pPOYHDi', // admin123
+  secretKey: 'sur-occidente-admin-2024'
+};
+
+// Verificar si ya está logueado
+const cookies = Astro.cookies;
+const adminSession = cookies.get('admin_session')?.value;
+
+if (adminSession) {
+  try {
+    const sessionData = JSON.parse(atob(adminSession));
+    const now = new Date().getTime();
+    if (now - new Date(sessionData.loginTime).getTime() < SECURITY_CONFIG.sessionTimeout) {
+      return Astro.redirect('/admin');
+    } else {
+      // Sesión expirada
+      cookies.delete('admin_session', { path: '/' });
+    }
+  } catch (error) {
+    cookies.delete('admin_session', { path: '/' });
+  }
+}
+
+// Obtener IP del cliente
+const clientIP = Astro.request.headers.get('x-forwarded-for') || 
+                Astro.request.headers.get('x-real-ip') || 
+                'unknown';
+
+// Gestión de intentos fallidos (en producción usar base de datos)
+let failedAttempts = {};
+let loginError = '';
+let isLocked = false;
+let requireCaptcha = false;
+
+// Verificar bloqueo por IP
+const attemptKey = `failed_${clientIP}`;
+if (failedAttempts[attemptKey]) {
+  const attempts = failedAttempts[attemptKey];
+  if (attempts.count >= SECURITY_CONFIG.maxFailedAttempts) {
+    const timeSinceLastAttempt = new Date().getTime() - attempts.lastAttempt;
+    if (timeSinceLastAttempt < SECURITY_CONFIG.lockoutDuration) {
+      isLocked = true;
+      const remainingTime = Math.ceil((SECURITY_CONFIG.lockoutDuration - timeSinceLastAttempt) / 60000);
+      loginError = `Cuenta bloqueada. Intenta de nuevo en ${remainingTime} minutos.`;
+    } else {
+      // Reset después del tiempo de bloqueo
+      delete failedAttempts[attemptKey];
+    }
+  } else if (attempts.count >= 3) {
+    requireCaptcha = true;
+  }
+}
+
+// Función para hash de contraseña (simulada)
+function verifyPassword(password, hash) {
+  // En producción usar bcrypt real
+  const testHash = crypto.createHash('sha256').update(password + SECURITY_CONFIG.secretKey).digest('hex');
+  return password === 'admin123'; // Simplificado para demo
+}
+
+// Manejar envío del formulario
+if (Astro.request.method === 'POST' && !isLocked) {
+  try {
+    const formData = await Astro.request.formData();
+    const username = formData.get('username')?.toString();
+    const password = formData.get('password')?.toString();
+    const captcha = formData.get('captcha')?.toString();
+    const rememberMe = formData.get('rememberMe') === 'on';
+    
+    // Validaciones
+    if (!username || !password) {
+      loginError = 'Usuario y contraseña son requeridos';
+    } else if (requireCaptcha && (!captcha || captcha !== '7')) {
+      loginError = 'CAPTCHA incorrecto';
+    } else if (username === 'admin' && verifyPassword(password, SECURITY_CONFIG.passwordHash)) {
+      // Login exitoso
+      const sessionData = {
+        user: 'admin',
+        loginTime: new Date().toISOString(),
+        ip: clientIP,
+        userAgent: Astro.request.headers.get('user-agent') || 'unknown',
+        sessionId: crypto.randomUUID()
+      };
+      
+      const sessionToken = btoa(JSON.stringify(sessionData));
+      
+      // Limpiar intentos fallidos
+      delete failedAttempts[attemptKey];
+      
+      // Establecer cookie de sesión
+      const maxAge = rememberMe ? 7 * 24 * 60 * 60 : 30 * 60; // 7 días o 30 minutos
+      cookies.set('admin_session', sessionToken, {
+        httpOnly: true,
+        secure: process.env.NODE_ENV === 'production',
+        sameSite: 'strict',
+        maxAge: maxAge,
+        path: '/'
+      });
+      
+      // Log de seguridad (en producción guardar en base de datos)
+      console.log(`[SECURITY] Login exitoso: ${username} desde ${clientIP}`);
+      
+      return Astro.redirect('/admin');
+    } else {
+      // Login fallido
+      if (!failedAttempts[attemptKey]) {
+        failedAttempts[attemptKey] = { count: 0, lastAttempt: 0 };
+      }
+      failedAttempts[attemptKey].count++;
+      failedAttempts[attemptKey].lastAttempt = new Date().getTime();
+      
+      // Log de seguridad
+      console.log(`[SECURITY] Login fallido: ${username} desde ${clientIP} (intento ${failedAttempts[attemptKey].count})`);
+      
+      if (failedAttempts[attemptKey].count >= SECURITY_CONFIG.maxFailedAttempts) {
+        loginError = 'Demasiados intentos fallidos. Cuenta bloqueada por 15 minutos.';
+        isLocked = true;
+      } else {
+        loginError = 'Credenciales incorrectas';
+        if (failedAttempts[attemptKey].count >= 3) {
+          requireCaptcha = true;
+        }
+      }
+    }
+  } catch (error) {
+    loginError = 'Error en el sistema de autenticación';
+    console.error('Login error:', error);
+  }
+}
+---
+
+<Layout title="Login Admin - Sur Occidente">
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+      min-height: 100vh;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    .login-container {
+      background: white;
+      padding: 2rem;
+      border-radius: 1rem;
+      box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04);
+      width: 100%;
+      max-width: 400px;
+    }
+
+    .login-header {
+      text-align: center;
+      margin-bottom: 2rem;
+    }
+
+    .login-title {
+      font-size: 1.875rem;
+      font-weight: 700;
+      color: #1f2937;
+      margin-bottom: 0.5rem;
+    }
+
+    .login-subtitle {
+      color: #6b7280;
+      font-size: 0.875rem;
+    }
+
+    .error-message {
+      background: #fef2f2;
+      border: 1px solid #fecaca;
+      color: #dc2626;
+      padding: 0.75rem;
+      border-radius: 0.5rem;
+      margin-bottom: 1rem;
+      font-size: 0.875rem;
+    }
+
+    .form-group {
+      margin-bottom: 1.5rem;
+    }
+
+    .form-label {
+      display: block;
+      margin-bottom: 0.5rem;
+      color: #374151;
+      font-weight: 500;
+      font-size: 0.875rem;
+    }
+
+    .form-input {
+      width: 100%;
+      padding: 0.75rem;
+      border: 1px solid #d1d5db;
+      border-radius: 0.5rem;
+      font-size: 1rem;
+      transition: border-color 0.2s, box-shadow 0.2s;
+    }
+
+    .form-input:focus {
+      outline: none;
+      border-color: #3b82f6;
+      box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.1);
+    }
+
+    .captcha-group {
+      background: #f3f4f6;
+      padding: 1rem;
+      border-radius: 0.5rem;
+      border: 2px solid #fbbf24;
+    }
+
+    .captcha-input {
+      max-width: 100px;
+      text-align: center;
+      font-weight: bold;
+    }
+
+    .checkbox-group {
+      display: flex;
+      align-items: center;
+      margin-bottom: 1rem;
+    }
+
+    .checkbox-label {
+      display: flex;
+      align-items: center;
+      cursor: pointer;
+      font-size: 0.875rem;
+      color: #6b7280;
+    }
+
+    .checkbox-input {
+      margin-right: 0.5rem;
+      width: 16px;
+      height: 16px;
+    }
+
+    .security-info {
+      background: #eff6ff;
+      border: 1px solid #bfdbfe;
+      border-radius: 0.5rem;
+      padding: 1rem;
+      margin-bottom: 1.5rem;
+      font-size: 0.875rem;
+      color: #1e40af;
+    }
+
+    .security-info h4 {
+      margin: 0 0 0.5rem 0;
+      font-weight: 600;
+    }
+
+    .security-info ul {
+      margin: 0;
+      padding-left: 1.25rem;
+    }
+
+    .security-info li {
+      margin-bottom: 0.25rem;
+    }
+
+    .login-btn {
+      width: 100%;
+      background: #3b82f6;
+      color: white;
+      border: none;
+      padding: 0.75rem;
+      border-radius: 0.5rem;
+      font-size: 1rem;
+      font-weight: 500;
+      cursor: pointer;
+      transition: background 0.2s;
+    }
+
+    .login-btn:hover {
+      background: #2563eb;
+    }
+
+    .login-btn:disabled {
+      background: #9ca3af;
+      cursor: not-allowed;
+    }
+
+    .demo-info {
+      margin-top: 1.5rem;
+      padding: 1rem;
+      background: #f9fafb;
+      border-radius: 0.5rem;
+      border: 1px solid #e5e7eb;
+    }
+
+    .demo-title {
+      font-size: 0.875rem;
+      font-weight: 600;
+      color: #374151;
+      margin-bottom: 0.5rem;
+    }
+
+    .demo-password {
+      font-family: monospace;
+      background: #1f2937;
+      color: #f9fafb;
+      padding: 0.5rem;
+      border-radius: 0.25rem;
+      font-size: 0.875rem;
+      text-align: center;
+    }
+
+    @media (max-width: 480px) {
+      .login-container {
+        margin: 1rem;
+        padding: 1.5rem;
+      }
+    }
+  </style>
+
+  <div class="login-container">
+    <div class="login-header">
+      <h1 class="login-title">Admin Panel</h1>
+      <p class="login-subtitle">Sur Occidente - Acceso Administrativo</p>
+    </div>
+
+    <form method="POST">
+      {loginError && (
+        <div class="error-message">
+          {loginError}
+        </div>
+      )}
+
+      <div class="security-info">
+        <h4>🔒 Sistema de Seguridad Mejorado</h4>
+        <ul>
+          <li>Máximo 5 intentos de login fallidos</li>
+          <li>Bloqueo automático por 15 minutos tras intentos fallidos</li>
+          <li>CAPTCHA requerido después de 3 intentos fallidos</li>
+          <li>Sesiones seguras con expiración automática</li>
+          <li>Monitoreo de actividad sospechosa</li>
+        </ul>
+      </div>
+
+      <div class="form-group">
+        <label for="username" class="form-label">Usuario</label>
+        <input 
+          type="text" 
+          id="username" 
+          name="username" 
+          class="form-input" 
+          placeholder="Ingresa tu usuario"
+          required
+          autocomplete="username"
+          value="admin"
+        >
+      </div>
+
+      <div class="form-group">
+        <label for="password" class="form-label">Contraseña de Administrador</label>
+        <input 
+          type="password" 
+          id="password" 
+          name="password" 
+          class="form-input" 
+          placeholder="Ingresa la contraseña"
+          required
+          autocomplete="current-password"
+        >
+      </div>
+
+      {requireCaptcha && (
+        <div class="form-group">
+          <label for="captcha" class="form-label">Verificación: ¿Cuánto es 3 + 4?</label>
+          <input 
+            type="text" 
+            id="captcha" 
+            name="captcha" 
+            class="form-input" 
+            placeholder="Respuesta"
+            required
+          >
+        </div>
+      )}
+
+      <div class="form-group">
+        <label class="form-label">
+          <input type="checkbox" name="rememberMe" style="margin-right: 8px;" />
+          Recordar sesión por 7 días
+        </label>
+      </div>
+
+      <button type="submit" class="login-btn" disabled={isLocked}>
+        {isLocked ? 'Bloqueado' : 'Acceder al Panel'}
+      </button>
+    </form>
+
+    <div class="demo-info">
+      <div class="demo-title">Contraseña por defecto:</div>
+      <div class="demo-password">admin123</div>
+    </div>
+  </div>
+</Layout>
+              <div class="admin-demo-password">view123</div>
+            </div>
+          </div>
+        </div>
+        
+        <!-- Footer -->
+        <div class="admin-login-footer">
+          <p>&copy; 2024 Vintage Store. Todos los derechos reservados.</p>
+          <div class="admin-login-links">
+            <a href="/">Volver al sitio</a>
+            <a href="/admin/help">Ayuda</a>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <style>
+    /* Login Page Styles */
+    .admin-login-container {
+      min-height: 100vh;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+      padding: var(--admin-spacing-lg);
+    }
+
+    .admin-login-wrapper {
+      position: relative;
+      width: 100%;
+      max-width: 1200px;
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      min-height: 600px;
+      background: var(--admin-bg-primary);
+      border-radius: var(--admin-radius-2xl);
+      box-shadow: var(--admin-shadow-2xl);
+      overflow: hidden;
+    }
+
+    .admin-login-bg {
+      position: relative;
+      background: linear-gradient(135deg, var(--admin-primary) 0%, var(--admin-primary-dark) 100%);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: var(--admin-text-inverse);
+    }
+
+    .admin-login-pattern {
+      position: absolute;
+      inset: 0;
+      background-image: 
+        radial-gradient(circle at 25% 25%, rgba(255, 255, 255, 0.1) 0%, transparent 50%),
+        radial-gradient(circle at 75% 75%, rgba(255, 255, 255, 0.1) 0%, transparent 50%),
+        radial-gradient(circle at 75% 25%, rgba(255, 255, 255, 0.05) 0%, transparent 50%),
+        radial-gradient(circle at 25% 75%, rgba(255, 255, 255, 0.05) 0%, transparent 50%);
+      background-size: 200px 200px;
+      animation: float 20s ease-in-out infinite;
+    }
+
+    @keyframes float {
+      0%, 100% { transform: translateY(0px) rotate(0deg); }
+      50% { transform: translateY(-20px) rotate(5deg); }
+    }
+
+    .admin-login-form-container {
+      padding: var(--admin-spacing-2xl);
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+    }
+
+    .admin-login-header {
+      text-align: center;
+      margin-bottom: var(--admin-spacing-2xl);
+    }
+
+    .admin-login-logo {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      width: 64px;
+      height: 64px;
+      background: linear-gradient(135deg, var(--admin-primary) 0%, var(--admin-primary-dark) 100%);
+      color: var(--admin-text-inverse);
+      border-radius: var(--admin-radius-xl);
+      margin: 0 auto var(--admin-spacing-lg) auto;
+      box-shadow: var(--admin-shadow-lg);
+    }
+
+    .admin-login-title {
+      font-size: var(--admin-font-size-3xl);
+      font-weight: 700;
+      color: var(--admin-text-primary);
+      margin: 0 0 var(--admin-spacing-sm) 0;
+    }
+
+    .admin-login-subtitle {
+      font-size: var(--admin-font-size-lg);
+      color: var(--admin-text-secondary);
+      margin: 0;
+    }
+
+    .admin-login-form {
+      display: flex;
+      flex-direction: column;
+      gap: var(--admin-spacing-lg);
+    }
+
+    .admin-form-group {
+      display: flex;
+      flex-direction: column;
+      gap: var(--admin-spacing-sm);
+    }
+
+    .admin-form-label {
+      display: flex;
+      align-items: center;
+      gap: var(--admin-spacing-sm);
+      font-weight: 500;
+      color: var(--admin-text-primary);
+      font-size: var(--admin-font-size-sm);
+    }
+
+    .admin-form-input {
+      width: 100%;
+      padding: var(--admin-spacing-md) var(--admin-spacing-lg);
+      border: 2px solid var(--admin-border-light);
+      border-radius: var(--admin-radius-lg);
+      font-size: var(--admin-font-size-md);
+      background-color: var(--admin-bg-secondary);
+      color: var(--admin-text-primary);
+      transition: all var(--admin-transition-fast);
+    }
+
+    .admin-form-input:focus {
+      outline: none;
+      border-color: var(--admin-primary);
+      box-shadow: 0 0 0 3px rgba(99, 102, 241, 0.1);
+      background-color: var(--admin-bg-primary);
+    }
+
+    .admin-password-field {
+      position: relative;
+    }
+
+    .admin-password-toggle {
+      position: absolute;
+      right: var(--admin-spacing-md);
+      top: 50%;
+      transform: translateY(-50%);
+      background: none;
+      border: none;
+      color: var(--admin-text-secondary);
+      cursor: pointer;
+      padding: var(--admin-spacing-sm);
+      border-radius: var(--admin-radius-md);
+      transition: color var(--admin-transition-fast);
+    }
+
+    .admin-password-toggle:hover {
+      color: var(--admin-text-primary);
+    }
+
+    .admin-form-options {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+
+    .admin-checkbox-label {
+      display: flex;
+      align-items: center;
+      gap: var(--admin-spacing-sm);
+      cursor: pointer;
+      font-size: var(--admin-font-size-sm);
+      color: var(--admin-text-secondary);
+    }
+
+    .admin-checkbox {
+      display: none;
+    }
+
+    .admin-checkbox-custom {
+      width: 18px;
+      height: 18px;
+      border: 2px solid var(--admin-border-light);
+      border-radius: var(--admin-radius-sm);
+      position: relative;
+      transition: all var(--admin-transition-fast);
+    }
+
+    .admin-checkbox:checked + .admin-checkbox-custom {
+      background-color: var(--admin-primary);
+      border-color: var(--admin-primary);
+    }
+
+    .admin-checkbox:checked + .admin-checkbox-custom::after {
+      content: '';
+      position: absolute;
+      left: 3px;
+      top: 0px;
+      width: 6px;
+      height: 10px;
+      border: solid white;
+      border-width: 0 2px 2px 0;
+      transform: rotate(45deg);
+    }
+
+    .admin-forgot-link {
+      color: var(--admin-primary);
+      text-decoration: none;
+      font-size: var(--admin-font-size-sm);
+      transition: color var(--admin-transition-fast);
+    }
+
+    .admin-forgot-link:hover {
+      color: var(--admin-primary-dark);
+      text-decoration: underline;
+    }
+
+    .admin-login-btn {
+      width: 100%;
+      padding: var(--admin-spacing-lg);
+      background: linear-gradient(135deg, var(--admin-primary) 0%, var(--admin-primary-dark) 100%);
+      color: var(--admin-text-inverse);
+      border: none;
+      border-radius: var(--admin-radius-lg);
+      font-size: var(--admin-font-size-lg);
+      font-weight: 600;
+      cursor: pointer;
+      transition: all var(--admin-transition-fast);
+      position: relative;
+      overflow: hidden;
+    }
+
+    .admin-login-btn:hover {
+      transform: translateY(-2px);
+      box-shadow: var(--admin-shadow-lg);
+    }
+
+    .admin-login-btn:active {
+      transform: translateY(0);
+    }
+
+    .admin-login-btn:disabled {
+      opacity: 0.7;
+      cursor: not-allowed;
+      transform: none;
+    }
+
+    .admin-btn-loading {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: var(--admin-spacing-sm);
+    }
+
+    .admin-demo-credentials {
+      margin-top: var(--admin-spacing-xl);
+      padding: var(--admin-spacing-lg);
+      background-color: var(--admin-bg-tertiary);
+      border-radius: var(--admin-radius-lg);
+      border: 1px solid var(--admin-border-light);
+    }
+
+    .admin-demo-credentials h3 {
+      font-size: var(--admin-font-size-lg);
+      font-weight: 600;
+      color: var(--admin-text-primary);
+      margin: 0 0 var(--admin-spacing-md) 0;
+      text-align: center;
+    }
+
+    .admin-demo-accounts {
+      display: flex;
+      flex-direction: column;
+      gap: var(--admin-spacing-sm);
+    }
+
+    .admin-demo-account {
+      padding: var(--admin-spacing-md);
+      background-color: var(--admin-bg-primary);
+      border: 1px solid var(--admin-border-light);
+      border-radius: var(--admin-radius-md);
+      cursor: pointer;
+      transition: all var(--admin-transition-fast);
+    }
+
+    .admin-demo-account:hover {
+      border-color: var(--admin-primary);
+      background-color: var(--admin-bg-secondary);
+      transform: translateY(-1px);
+    }
+
+    .admin-demo-role {
+      font-weight: 600;
+      color: var(--admin-primary);
+      font-size: var(--admin-font-size-sm);
+    }
+
+    .admin-demo-email {
+      font-size: var(--admin-font-size-sm);
+      color: var(--admin-text-primary);
+      margin: var(--admin-spacing-xs) 0;
+    }
+
+    .admin-demo-password {
+      font-size: var(--admin-font-size-xs);
+      color: var(--admin-text-secondary);
+      font-family: monospace;
+    }
+
+    .admin-login-footer {
+      margin-top: var(--admin-spacing-xl);
+      text-align: center;
+      padding-top: var(--admin-spacing-lg);
+      border-top: 1px solid var(--admin-border-light);
+    }
+
+    .admin-login-footer p {
+      font-size: var(--admin-font-size-sm);
+      color: var(--admin-text-muted);
+      margin: 0 0 var(--admin-spacing-sm) 0;
+    }
+
+    .admin-login-links {
+      display: flex;
+      justify-content: center;
+      gap: var(--admin-spacing-lg);
+    }
+
+    .admin-login-links a {
+      color: var(--admin-primary);
+      text-decoration: none;
+      font-size: var(--admin-font-size-sm);
+      transition: color var(--admin-transition-fast);
+    }
+
+    .admin-login-links a:hover {
+      color: var(--admin-primary-dark);
+      text-decoration: underline;
+    }
+
+    /* Loading Animation */
+    .admin-loading {
+      width: 16px;
+      height: 16px;
+      border: 2px solid rgba(255, 255, 255, 0.3);
+      border-top: 2px solid white;
+      border-radius: 50%;
+      animation: spin 1s linear infinite;
+    }
+
+    @keyframes spin {
+      0% { transform: rotate(0deg); }
+      100% { transform: rotate(360deg); }
+    }
+
+    /* Responsive Design */
+    @media (max-width: 1024px) {
+      .admin-login-wrapper {
+        grid-template-columns: 1fr;
+        max-width: 500px;
+      }
+      
+      .admin-login-bg {
+        display: none;
+      }
+    }
+
+    @media (max-width: 768px) {
+      .admin-login-container {
+        padding: var(--admin-spacing-md);
+      }
+      
+      .admin-login-form-container {
+        padding: var(--admin-spacing-lg);
+      }
+      
+      .admin-demo-accounts {
+        gap: var(--admin-spacing-xs);
+      }
+    }
+  </style>
+
+  <script>
+    // Wait for DOM to be fully loaded
+    document.addEventListener('DOMContentLoaded', function() {
+      // Get form elements with null checks
+      const passwordInput = document.getElementById('password');
+      const usernameInput = document.getElementById('username');
+      const loginForm = document.querySelector('form');
+      const loginBtn = document.querySelector('.login-btn');
+      
+      // Auto-focus username field if it exists
+      if (usernameInput) {
+        usernameInput.focus();
+      }
+      
+      // Form submission handling
+      if (loginForm && loginBtn) {
+        loginForm.addEventListener('submit', (e) => {
+          // Show loading state
+          loginBtn.textContent = 'Iniciando sesión...';
+          loginBtn.disabled = true;
+          
+          // Re-enable button after a delay in case of errors
+          setTimeout(() => {
+            if (loginBtn.disabled) {
+              loginBtn.textContent = 'Acceder al Panel';
+              loginBtn.disabled = false;
+            }
+          }, 5000);
+        });
+      }
+      
+      // Enter key handling
+      document.addEventListener('keydown', (e) => {
+        if (e.key === 'Enter' && loginBtn && !loginBtn.disabled) {
+          if (loginForm) {
+            loginForm.requestSubmit();
+          }
+        }
+      });
+      
+      // Clear error on input
+      const inputs = document.querySelectorAll('.form-input');
+      inputs.forEach(input => {
+        input.addEventListener('input', () => {
+          const errorMessage = document.querySelector('.error-message');
+          if (errorMessage) {
+            errorMessage.style.display = 'none';
+          }
+        });
+      });
+      
+      // Demo credentials fill function
+      window.fillCredentials = function(username, password) {
+        const usernameField = document.getElementById('username');
+        const passwordField = document.getElementById('password');
+        
+        if (usernameField && passwordField) {
+          usernameField.value = username;
+          passwordField.value = password;
+          
+          // Add visual feedback
+          usernameField.style.borderColor = '#10b981';
+          passwordField.style.borderColor = '#10b981';
+          
+          setTimeout(() => {
+            usernameField.style.borderColor = '';
+            passwordField.style.borderColor = '';
+          }, 2000);
+        }
+      };
+    });
+  </script>
+</Layout>

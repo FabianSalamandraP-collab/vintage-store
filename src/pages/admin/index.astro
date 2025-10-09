@@ -1,0 +1,606 @@
+---
+export const prerender = false;
+
+// Panel de Administración Simple - Sur Occidente
+import Layout from '../../layouts/Layout.astro';
+
+// Verificación de autenticación simple
+const cookies = Astro.cookies;
+const adminSession = cookies.get('admin_session')?.value;
+
+// Si no hay sesión, redirigir al login
+if (!adminSession) {
+  return Astro.redirect('/admin/login');
+}
+
+// Cargar datos reales desde archivos JSON
+import messagesData from '../../data/admin-messages.json';
+import statsData from '../../data/admin-stats.json';
+import configData from '../../data/admin-config.json';
+
+const adminData = {
+  stats: {
+    totalVisits: statsData.siteStats.totalVisits,
+    contactMessages: statsData.contactStats.unreadMessages,
+    totalProducts: statsData.productStats.totalProducts,
+    systemHealth: configData.site.maintenanceMode ? 'Mantenimiento' : 'Óptimo'
+  },
+  recentMessages: messagesData.messages.slice(0, 3).map(msg => ({
+    id: msg.id,
+    name: msg.name,
+    email: msg.email,
+    subject: msg.subject,
+    date: new Date(msg.date).toLocaleDateString('es-CO'),
+    read: msg.read
+  })),
+  recentActivity: statsData.recentActivity.slice(0, 3).map(activity => ({
+    action: activity.description,
+    time: new Date(activity.timestamp).toLocaleTimeString('es-CO', { hour: '2-digit', minute: '2-digit' }),
+    date: new Date(activity.timestamp).toLocaleDateString('es-CO')
+  }))
+};
+---
+
+<Layout title="Panel de Administración - Sur Occidente">
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+      background: #f8fafc;
+      color: #334155;
+    }
+
+    .admin-container {
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+    }
+
+    .admin-header {
+      background: white;
+      border-bottom: 1px solid #e2e8f0;
+      padding: 1rem 2rem;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+    }
+
+    .admin-title {
+      font-size: 1.5rem;
+      font-weight: 600;
+      color: #1e293b;
+    }
+
+    .admin-user {
+      display: flex;
+      align-items: center;
+      gap: 1rem;
+    }
+
+    .logout-btn {
+      background: #ef4444;
+      color: white;
+      border: none;
+      padding: 0.5rem 1rem;
+      border-radius: 0.375rem;
+      cursor: pointer;
+      font-size: 0.875rem;
+      transition: background 0.2s;
+    }
+
+    .logout-btn:hover {
+      background: #dc2626;
+    }
+
+    .admin-main {
+      flex: 1;
+      padding: 2rem;
+      max-width: 1200px;
+      margin: 0 auto;
+      width: 100%;
+    }
+
+    .admin-tabs {
+      display: flex;
+      background: white;
+      border-radius: 0.5rem;
+      padding: 0.25rem;
+      margin-bottom: 2rem;
+      box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+    }
+
+    .tab-btn {
+      flex: 1;
+      padding: 0.75rem 1rem;
+      border: none;
+      background: transparent;
+      cursor: pointer;
+      border-radius: 0.375rem;
+      font-weight: 500;
+      transition: all 0.2s;
+    }
+
+    .tab-btn.active {
+      background: #3b82f6;
+      color: white;
+    }
+
+    .tab-btn:not(.active):hover {
+      background: #f1f5f9;
+    }
+
+    .tab-content {
+      display: none;
+    }
+
+    .tab-content.active {
+      display: block;
+    }
+
+    .stats-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+      gap: 1.5rem;
+      margin-bottom: 2rem;
+    }
+
+    .stat-card {
+      background: white;
+      padding: 1.5rem;
+      border-radius: 0.5rem;
+      box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+      border-left: 4px solid #3b82f6;
+    }
+
+    .stat-title {
+      font-size: 0.875rem;
+      color: #64748b;
+      margin-bottom: 0.5rem;
+    }
+
+    .stat-value {
+      font-size: 2rem;
+      font-weight: 700;
+      color: #1e293b;
+    }
+
+    .content-card {
+      background: white;
+      border-radius: 0.5rem;
+      box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+      overflow: hidden;
+    }
+
+    .card-header {
+      padding: 1.5rem;
+      border-bottom: 1px solid #e2e8f0;
+      font-weight: 600;
+      color: #1e293b;
+    }
+
+    .card-content {
+      padding: 1.5rem;
+    }
+
+    .message-item {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 1rem;
+      border-bottom: 1px solid #f1f5f9;
+    }
+
+    .message-item:last-child {
+      border-bottom: none;
+    }
+
+    .message-item.unread {
+      background: #fef3c7;
+      border-left: 3px solid #f59e0b;
+    }
+
+    .message-info h4 {
+      font-weight: 600;
+      margin-bottom: 0.25rem;
+    }
+
+    .message-info p {
+      color: #64748b;
+      font-size: 0.875rem;
+    }
+
+    .message-actions {
+      display: flex;
+      gap: 0.5rem;
+    }
+
+    .btn {
+      padding: 0.5rem 1rem;
+      border: none;
+      border-radius: 0.375rem;
+      cursor: pointer;
+      font-size: 0.875rem;
+      transition: all 0.2s;
+    }
+
+    .btn-primary {
+      background: #3b82f6;
+      color: white;
+    }
+
+    .btn-primary:hover {
+      background: #2563eb;
+    }
+
+    .btn-secondary {
+      background: #e2e8f0;
+      color: #475569;
+    }
+
+    .btn-secondary:hover {
+      background: #cbd5e1;
+    }
+
+    .form-group {
+      margin-bottom: 1rem;
+    }
+
+    .form-label {
+      display: block;
+      margin-bottom: 0.5rem;
+      font-weight: 500;
+      color: #374151;
+    }
+
+    .form-input {
+      width: 100%;
+      padding: 0.75rem;
+      border: 1px solid #d1d5db;
+      border-radius: 0.375rem;
+      font-size: 1rem;
+    }
+
+    .form-input:focus {
+      outline: none;
+      border-color: #3b82f6;
+      box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.1);
+    }
+
+    .activity-item {
+      display: flex;
+      justify-content: space-between;
+      padding: 0.75rem 0;
+      border-bottom: 1px solid #f1f5f9;
+    }
+
+    .activity-item:last-child {
+      border-bottom: none;
+    }
+
+    .activity-time {
+      color: #64748b;
+      font-size: 0.875rem;
+    }
+
+    @media (max-width: 768px) {
+      .admin-header {
+        padding: 1rem;
+        flex-direction: column;
+        gap: 1rem;
+      }
+
+      .admin-main {
+        padding: 1rem;
+      }
+
+      .admin-tabs {
+        flex-direction: column;
+      }
+
+      .stats-grid {
+        grid-template-columns: 1fr;
+      }
+
+      .message-item {
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 1rem;
+      }
+    }
+  </style>
+
+  <div class="admin-container">
+    <!-- Header -->
+    <header class="admin-header">
+      <h1 class="admin-title">Panel de Administración - Sur Occidente</h1>
+      <div class="admin-user">
+        <span>Administrador</span>
+        <form action="/admin/logout" method="POST" style="display: inline;">
+          <button type="submit" class="logout-btn">Cerrar Sesión</button>
+        </form>
+      </div>
+    </header>
+
+    <!-- Main Content -->
+    <main class="admin-main">
+      <!-- Navigation Tabs -->
+      <div class="admin-tabs">
+        <button class="tab-btn active" onclick="showTab('dashboard')">Dashboard</button>
+        <button class="tab-btn" onclick="showTab('messages')">Mensajes</button>
+        <button class="tab-btn" onclick="showTab('products')">Productos</button>
+        <button class="tab-btn" onclick="showTab('settings')">Configuración</button>
+      </div>
+
+      <!-- Dashboard Tab -->
+      <div id="dashboard" class="tab-content active">
+        <!-- Stats -->
+        <div class="stats-grid">
+          <div class="stat-card">
+            <div class="stat-title">Visitas Totales</div>
+            <div class="stat-value">{adminData.stats.totalVisits}</div>
+          </div>
+          <div class="stat-card">
+            <div class="stat-title">Mensajes Pendientes</div>
+            <div class="stat-value">{adminData.stats.contactMessages}</div>
+          </div>
+          <div class="stat-card">
+            <div class="stat-title">Productos Activos</div>
+            <div class="stat-value">{adminData.stats.totalProducts}</div>
+          </div>
+          <div class="stat-card">
+            <div class="stat-title">Estado del Sistema</div>
+            <div class="stat-value" style="font-size: 1.5rem; color: #10b981;">{adminData.stats.systemHealth}</div>
+          </div>
+        </div>
+
+        <!-- Recent Activity -->
+        <div class="content-card">
+          <div class="card-header">Actividad Reciente</div>
+          <div class="card-content">
+            {adminData.recentActivity.map(activity => (
+              <div class="activity-item">
+                <span>{activity.action}</span>
+                <span class="activity-time">{activity.time} - {activity.date}</span>
+              </div>
+            ))}
+          </div>
+        </div>
+      </div>
+
+      <!-- Messages Tab -->
+      <div id="messages" class="tab-content">
+        <div class="content-card">
+          <div class="card-header">Mensajes de Contacto</div>
+          <div class="card-content">
+            {adminData.recentMessages.map(message => (
+              <div class={`message-item ${!message.read ? 'unread' : ''}`}>
+                <div class="message-info">
+                  <h4>{message.name}</h4>
+                  <p>{message.email} - {message.subject}</p>
+                  <small>{message.date}</small>
+                </div>
+                <div class="message-actions">
+                  <button class="btn btn-primary" onclick={`viewMessage(${message.id})`}>Ver</button>
+                  <button class="btn btn-secondary" onclick={`deleteMessage(${message.id})`}>Eliminar</button>
+                </div>
+              </div>
+            ))}
+          </div>
+        </div>
+      </div>
+
+      <!-- Products Tab -->
+      <div id="products" class="tab-content">
+        <div class="content-card">
+          <div class="card-header">Gestión de Productos</div>
+          <div class="card-content">
+            <form id="productForm">
+              <div class="form-group">
+                <label class="form-label">Nombre del Producto</label>
+                <input type="text" class="form-input" name="productName" required>
+              </div>
+              <div class="form-group">
+                <label class="form-label">Precio</label>
+                <input type="number" class="form-input" name="productPrice" step="0.01" required>
+              </div>
+              <div class="form-group">
+                <label class="form-label">Descripción</label>
+                <textarea class="form-input" name="productDescription" rows="3"></textarea>
+              </div>
+              <div class="form-group">
+                <label class="form-label">Categoría</label>
+                <select class="form-input" name="productCategory">
+                  <option value="ropa">Ropa</option>
+                  <option value="accesorios">Accesorios</option>
+                  <option value="calzado">Calzado</option>
+                  <option value="decoracion">Decoración</option>
+                </select>
+              </div>
+              <button type="submit" class="btn btn-primary">Agregar Producto</button>
+            </form>
+          </div>
+        </div>
+      </div>
+
+      <!-- Settings Tab -->
+      <div id="settings" class="tab-content">
+        <div class="content-card">
+          <div class="card-header">Configuración del Sistema</div>
+          <div class="card-content">
+            <form id="settingsForm">
+              <div class="form-group">
+                <label class="form-label">Nueva Contraseña de Admin</label>
+                <input type="password" class="form-input" name="newPassword">
+              </div>
+              <div class="form-group">
+                <label class="form-label">Confirmar Contraseña</label>
+                <input type="password" class="form-input" name="confirmPassword">
+              </div>
+              <div class="form-group">
+                <label class="form-label">
+                  <input type="checkbox" name="maintenanceMode"> Modo Mantenimiento
+                </label>
+              </div>
+              <button type="submit" class="btn btn-primary">Guardar Configuración</button>
+            </form>
+          </div>
+        </div>
+      </div>
+    </main>
+  </div>
+
+  <script>
+    // Función para cambiar entre tabs
+    function showTab(tabName) {
+      // Ocultar todos los contenidos
+      document.querySelectorAll('.tab-content').forEach(content => {
+        content.classList.remove('active');
+      });
+      
+      // Remover clase active de todos los botones
+      document.querySelectorAll('.tab-btn').forEach(btn => {
+        btn.classList.remove('active');
+      });
+      
+      // Mostrar el contenido seleccionado
+      document.getElementById(tabName).classList.add('active');
+      
+      // Activar el botón correspondiente
+      event.target.classList.add('active');
+    }
+
+    // Funciones para mensajes
+    function viewMessage(id) {
+      alert(`Ver mensaje ID: ${id}`);
+      // Aquí iría la lógica para mostrar el mensaje completo
+    }
+
+    function deleteMessage(id) {
+      if (confirm('¿Estás seguro de que quieres eliminar este mensaje?')) {
+        alert(`Mensaje ${id} eliminado`);
+        // Aquí iría la lógica para eliminar el mensaje
+      }
+    }
+
+    // Función para manejar envío de formulario de productos
+    async function handleProductSubmit(event) {
+      event.preventDefault();
+      const formData = new FormData(event.target);
+      const productData = {
+        id: 'prod_' + Date.now(),
+        name: formData.get('productName'),
+        price: parseFloat(formData.get('productPrice')),
+        category: formData.get('productCategory'),
+        description: formData.get('productDescription'),
+        active: formData.get('productActive') === 'on',
+        createdAt: new Date().toISOString(),
+        image: '/images/placeholder-product.jpg'
+      };
+      
+      try {
+        // En una implementación real, esto se enviaría al servidor
+        console.log('Nuevo producto:', productData);
+        
+        // Simular guardado exitoso
+        alert('Producto agregado exitosamente');
+        event.target.reset();
+        
+        // Actualizar contador de productos en la interfaz
+        const productCount = document.querySelector('.stat-card:nth-child(3) .stat-value');
+        if (productCount) {
+          const currentCount = parseInt(productCount.textContent);
+          productCount.textContent = currentCount + 1;
+        }
+      } catch (error) {
+        console.error('Error al agregar producto:', error);
+        alert('Error al agregar el producto. Inténtalo de nuevo.');
+      }
+    }
+
+    // Manejo del formulario de productos
+    document.getElementById('productForm').addEventListener('submit', handleProductSubmit);
+
+    // Función para validar configuraciones
+    function validateSettings(formData) {
+      const newPassword = formData.get('newPassword');
+      const confirmPassword = formData.get('confirmPassword');
+      
+      if (newPassword && newPassword !== confirmPassword) {
+        alert('Las contraseñas no coinciden');
+        return false;
+      }
+      
+      if (newPassword && newPassword.length < 6) {
+        alert('La contraseña debe tener al menos 6 caracteres');
+        return false;
+      }
+      
+      return true;
+    }
+    
+    // Función para manejar cambios de configuración
+    async function handleSettingsSubmit(event) {
+      event.preventDefault();
+      const formData = new FormData(event.target);
+      
+      if (!validateSettings(formData)) {
+        return;
+      }
+      
+      const settings = {
+        newPassword: formData.get('newPassword'),
+        maintenanceMode: formData.get('maintenanceMode') === 'on',
+        siteName: formData.get('siteName'),
+        adminEmail: formData.get('adminEmail')
+      };
+      
+      try {
+        // En una implementación real, esto se enviaría al servidor
+        console.log('Configuraciones actualizadas:', settings);
+        
+        // Simular guardado exitoso
+        alert('Configuraciones guardadas exitosamente');
+        
+        // Limpiar campos de contraseña
+        document.getElementById('newPassword').value = '';
+        document.getElementById('confirmPassword').value = '';
+        
+        // Actualizar estado de mantenimiento en la interfaz si cambió
+        if (settings.maintenanceMode !== undefined) {
+          const healthStatus = document.querySelector('.stat-card:nth-child(4) .stat-value');
+          if (healthStatus) {
+            healthStatus.textContent = settings.maintenanceMode ? 'Mantenimiento' : 'Óptimo';
+            healthStatus.style.color = settings.maintenanceMode ? '#f59e0b' : '#10b981';
+          }
+        }
+      } catch (error) {
+        console.error('Error al guardar configuraciones:', error);
+        alert('Error al guardar las configuraciones. Inténtalo de nuevo.');
+      }
+    }
+
+    // Manejo del formulario de configuración
+    document.getElementById('settingsForm').addEventListener('submit', handleSettingsSubmit);
+
+    // Auto-logout después de 30 minutos de inactividad
+    let inactivityTimer;
+    function resetInactivityTimer() {
+      clearTimeout(inactivityTimer);
+      inactivityTimer = setTimeout(() => {
+        alert('Sesión expirada por inactividad');
+        window.location.href = '/admin/logout';
+      }, 30 * 60 * 1000); // 30 minutos
+    }
+
+    // Resetear timer en cualquier actividad
+    document.addEventListener('click', resetInactivityTimer);
+    document.addEventListener('keypress', resetInactivityTimer);
+    resetInactivityTimer();
+  </script>
+</Layout>

@@ -1,0 +1,29 @@
+{
+  "messages": [
+    {
+      "id": "msg_001",
+      "name": "María González",
+      "email": "maria@email.com",
+      "subject": "Consulta sobre productos vintage",
+      "message": "Hola, me interesa conocer más sobre sus productos de los años 80. ¿Tienen disponibilidad?",
+      "date": "2024-01-15T10:30:00Z",
+      "read": false,
+      "replied": false
+    },
+    {
+      "id": "msg_002",
+      "name": "Carlos Rodríguez",
+      "email": "carlos.r@email.com",
+      "subject": "Pregunta sobre envíos",
+      "message": "¿Realizan envíos a toda Colombia? Me interesa una chaqueta que vi en su catálogo.",
+      "date": "2024-01-14T15:45:00Z",
+      "read": true,
+      "replied": false
+    }
+  ],
+  "stats": {
+    "total": 2,
+    "unread": 1,
+    "replied": 1
+  }
+}

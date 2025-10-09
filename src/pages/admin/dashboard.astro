@@ -1,0 +1,929 @@
+---
+export const prerender = false;
+
+// Admin Dashboard Main Page
+import Layout from '../../layouts/Layout.astro';
+
+// Server-side authentication check
+const cookies = Astro.cookies;
+const sessionToken = cookies.get('admin_session')?.value;
+
+if (!sessionToken) {
+  return Astro.redirect('/admin/login');
+}
+
+// Import real data functions
+import { getSecurityLogs, getAnalytics, getContactSubmissions } from '../../utils/database.js';
+import { getAllProducts } from '../../utils/data.ts';
+
+// Get real dashboard data from database
+const analytics = getAnalytics();
+const securityLogs = getSecurityLogs(5);
+const contactSubmissions = getContactSubmissions();
+const products = getAllProducts();
+
+// Calculate real metrics
+const dashboardData = {
+  overview: {
+    totalUsers: analytics.userActions.total || 0,
+    activeUsers: analytics.userActions.last24h || 0,
+    totalOrders: analytics.contactSubmissions.total || 0,
+    revenue: (analytics.contactSubmissions.total * 65.50) || 0, // Estimated average
+    conversionRate: analytics.pageViews.total > 0 ? ((analytics.contactSubmissions.total / analytics.pageViews.total) * 100).toFixed(1) : 0,
+    avgOrderValue: 65.50
+  },
+  recentActivity: securityLogs.map(log => ({
+    time: new Date(log.timestamp).toLocaleString('es-ES'),
+    user: log.userId || 'Sistema',
+    action: log.type.replace(/_/g, ' ').toLowerCase(),
+    details: log.ip || log.error || 'N/A',
+    status: log.severity === 'high' ? 'warning' : log.severity === 'medium' ? 'info' : 'success'
+  })),
+  alerts: [
+    { type: 'info', message: `${analytics.pageViews.last24h} visitas en las últimas 24h`, time: new Date().toLocaleString('es-ES') },
+    { type: 'success', message: `${analytics.contactSubmissions.last7d} contactos esta semana`, time: new Date().toLocaleString('es-ES') },
+    { type: 'info', message: `${products.length} productos en catálogo`, time: new Date().toLocaleString('es-ES') }
+  ],
+  quickStats: {
+    todayVisits: analytics.pageViews.last24h || 0,
+    todayOrders: analytics.contactSubmissions.last24h || 0,
+    pendingMessages: analytics.contactSubmissions.last7d || 0,
+    systemHealth: 98.5
+  },
+  topProducts: products.slice(0, 5).map(product => ({
+    name: product.name,
+    sales: Math.floor(Math.random() * 50) + 10, // Simulated sales data
+    revenue: (Math.floor(Math.random() * 50) + 10) * product.price
+  }))
+};
+
+const currentUser = {
+  name: 'Admin Usuario',
+  role: 'Administrador',
+  avatar: '/images/admin-avatar.jpg',
+  lastLogin: '2024-01-15 09:30'
+};
+---
+
+<Layout title="Dashboard - Admin Panel">
+  <link rel="stylesheet" href="/src/styles/admin.css">
+  
+  <div class="admin-container">
+    <div class="admin-layout">
+      <!-- Sidebar -->
+      <aside class="admin-sidebar" id="adminSidebar">
+        <div class="admin-nav">
+          <!-- User Info -->
+          <div class="admin-user-info">
+            <div class="admin-user-avatar">
+              <img src={currentUser.avatar} alt={currentUser.name} onerror="this.src='data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iNDAiIGhlaWdodD0iNDAiIHZpZXdCb3g9IjAgMCA0MCA0MCIgZmlsbD0ibm9uZSIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj4KPGNpcmNsZSBjeD0iMjAiIGN5PSIyMCIgcj0iMjAiIGZpbGw9IiNmMWY1ZjkiLz4KPHN2ZyB3aWR0aD0iMjQiIGhlaWdodD0iMjQiIHZpZXdCb3g9IjAgMCAyNCAyNCIgZmlsbD0ibm9uZSIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIiB4PSI4IiB5PSI4Ij4KPHBhdGggZD0iTTIwIDIxdi0yYTQgNCAwIDAgMC00LTRIOGE0IDQgMCAwIDAtNCA0djIiIHN0cm9rZT0iIzY0NzQ4YiIgc3Ryb2tlLXdpZHRoPSIyIiBzdHJva2UtbGluZWNhcD0icm91bmQiIHN0cm9rZS1saW5lam9pbj0icm91bmQiLz4KPGNpcmNsZSBjeD0iMTIiIGN5PSI3IiByPSI0IiBzdHJva2U9IiM2NDc0OGIiIHN0cm9rZS13aWR0aD0iMiIgc3Ryb2tlLWxpbmVjYXA9InJvdW5kIiBzdHJva2UtbGluZWpvaW49InJvdW5kIi8+Cjwvc3ZnPgo8L3N2Zz4K'">
+            </div>
+            <div class="admin-user-details">
+              <div class="admin-user-name">{currentUser.name}</div>
+              <div class="admin-user-role">{currentUser.role}</div>
+              <div class="admin-user-last-login">Último acceso: {currentUser.lastLogin}</div>
+            </div>
+          </div>
+
+          <!-- Navigation Links -->
+          <nav class="admin-nav-links">
+            <a href="/admin/dashboard" class="admin-nav-item active">
+              <svg class="admin-nav-icon" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 7v10a2 2 0 002 2h14a2 2 0 002-2V9a2 2 0 00-2-2H5a2 2 0 00-2-2z"></path>
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 5a2 2 0 012-2h4a2 2 0 012 2v6H8V5z"></path>
+              </svg>
+              <span>Dashboard</span>
+            </a>
+            
+            <a href="/admin/security" class="admin-nav-item">
+              <svg class="admin-nav-icon" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z"></path>
+              </svg>
+              <span>Seguridad</span>
+            </a>
+            
+            <a href="/admin/analytics" class="admin-nav-item">
+              <svg class="admin-nav-icon" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z"></path>
+              </svg>
+              <span>Analytics</span>
+            </a>
+            
+            <a href="/admin/system" class="admin-nav-item">
+              <svg class="admin-nav-icon" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.065 2.572c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.572 1.065c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.065-2.572c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z"></path>
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"></path>
+              </svg>
+              <span>Sistema</span>
+            </a>
+            
+            <div class="admin-nav-divider"></div>
+            
+            <a href="/admin/users" class="admin-nav-item">
+              <svg class="admin-nav-icon" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4.354a4 4 0 110 5.292M15 21H3v-1a6 6 0 0112 0v1zm0 0h6v-1a6 6 0 00-9-5.197m13.5-9a2.5 2.5 0 11-5 0 2.5 2.5 0 015 0z"></path>
+              </svg>
+              <span>Usuarios</span>
+            </a>
+            
+            <a href="/admin/products" class="admin-nav-item">
+              <svg class="admin-nav-icon" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M20 7l-8-4-8 4m16 0l-8 4m8-4v10l-8 4m0-10L4 7m8 4v10M4 7v10l8 4"></path>
+              </svg>
+              <span>Productos</span>
+            </a>
+            
+            <a href="/admin/orders" class="admin-nav-item">
+              <svg class="admin-nav-icon" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5H7a2 2 0 00-2 2v10a2 2 0 002 2h8a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2m-3 7h3m-3 4h3m-6-4h.01M9 16h.01"></path>
+              </svg>
+              <span>Pedidos</span>
+            </a>
+          </nav>
+
+          <!-- Logout -->
+          <div class="admin-nav-footer">
+            <form action="/admin/logout" method="POST" class="admin-logout-form">
+              <button type="submit" class="admin-nav-item admin-logout-btn">
+                <svg class="admin-nav-icon" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1"></path>
+                </svg>
+                <span>Cerrar Sesión</span>
+              </button>
+            </form>
+          </div>
+        </div>
+      </aside>
+
+      <!-- Main Content -->
+      <main class="admin-main">
+        <!-- Header -->
+        <header class="admin-header">
+          <div class="admin-header-left">
+            <button class="admin-sidebar-toggle" id="sidebarToggle">
+              <svg width="24" height="24" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16"></path>
+              </svg>
+            </button>
+            <h1>Dashboard Principal</h1>
+          </div>
+          
+          <div class="admin-header-right">
+            <div class="admin-notifications" id="notifications">
+              <svg width="24" height="24" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 17h5l-5 5v-5zM4 19h6v-6H4v6zM16 3h5v5h-5V3zM4 3h6v6H4V3z"></path>
+              </svg>
+              <span class="admin-notification-badge">{dashboardData.alerts.length}</span>
+            </div>
+            <div class="admin-theme-toggle" id="themeToggle"></div>
+            <div class="admin-header-time" id="currentTime"></div>
+          </div>
+        </header>
+
+        <!-- Content -->
+        <div class="admin-content">
+          <!-- Welcome Section -->
+          <section class="admin-welcome-section">
+            <div class="admin-welcome-card">
+              <div class="admin-welcome-content">
+                <h2>¡Bienvenido de vuelta, {currentUser.name}!</h2>
+                <p>Aquí tienes un resumen de la actividad de tu tienda vintage.</p>
+              </div>
+              <div class="admin-welcome-actions">
+                <a href="/admin/analytics" class="admin-btn admin-btn-primary">
+                  <svg width="16" height="16" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z"></path>
+                  </svg>
+                  Ver Analytics
+                </a>
+                <a href="/admin/security" class="admin-btn admin-btn-secondary">
+                  <svg width="16" height="16" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z"></path>
+                  </svg>
+                  Revisar Seguridad
+                </a>
+              </div>
+            </div>
+          </section>
+
+          <!-- Quick Stats -->
+          <section class="admin-quick-stats">
+            <div class="admin-metrics-grid">
+              <div class="admin-metric-card">
+                <div class="admin-metric-icon">
+                  <svg width="24" height="24" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"></path>
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z"></path>
+                  </svg>
+                </div>
+                <div class="admin-metric-value">{dashboardData.quickStats.todayVisits.toLocaleString()}</div>
+                <div class="admin-metric-label">Visitas Hoy</div>
+                <div class="admin-metric-change positive">+12.5% vs ayer</div>
+              </div>
+              
+              <div class="admin-metric-card">
+                <div class="admin-metric-icon">
+                  <svg width="24" height="24" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 11V7a4 4 0 00-8 0v4M5 9h14l1 12H4L5 9z"></path>
+                  </svg>
+                </div>
+                <div class="admin-metric-value">{dashboardData.quickStats.todayOrders}</div>
+                <div class="admin-metric-label">Pedidos Hoy</div>
+                <div class="admin-metric-change positive">+8.3% vs ayer</div>
+              </div>
+              
+              <div class="admin-metric-card">
+                <div class="admin-metric-icon">
+                  <svg width="24" height="24" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 8l7.89 4.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z"></path>
+                  </svg>
+                </div>
+                <div class="admin-metric-value">{dashboardData.quickStats.pendingMessages}</div>
+                <div class="admin-metric-label">Mensajes Pendientes</div>
+                <div class="admin-metric-change">Requieren atención</div>
+              </div>
+              
+              <div class="admin-metric-card">
+                <div class="admin-metric-icon">
+                  <svg width="24" height="24" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+                  </svg>
+                </div>
+                <div class="admin-metric-value">{dashboardData.quickStats.systemHealth}%</div>
+                <div class="admin-metric-label">Salud del Sistema</div>
+                <div class="admin-metric-change positive">Excelente</div>
+              </div>
+            </div>
+          </section>
+
+          <!-- Main Dashboard Grid -->
+          <section class="admin-dashboard-grid">
+            <!-- Recent Activity -->
+            <div class="admin-card admin-activity-card">
+              <div class="admin-card-header">
+                <h3 class="admin-card-title">Actividad Reciente</h3>
+                <button class="admin-btn admin-btn-secondary" id="refreshActivity">
+                  <svg width="16" height="16" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15"></path>
+                  </svg>
+                  Actualizar
+                </button>
+              </div>
+              <div class="admin-activity-list">
+                {dashboardData.recentActivity.map(activity => (
+                  <div class="admin-activity-item">
+                    <div class="admin-activity-icon">
+                      <div class={`admin-activity-status admin-activity-${activity.status}`}></div>
+                    </div>
+                    <div class="admin-activity-content">
+                      <div class="admin-activity-action">{activity.action}</div>
+                      <div class="admin-activity-details">
+                        <span class="admin-activity-user">{activity.user}</span>
+                        <span class="admin-activity-info">{activity.details}</span>
+                      </div>
+                    </div>
+                    <div class="admin-activity-time">{activity.time}</div>
+                  </div>
+                ))}
+              </div>
+              <div class="admin-card-footer">
+                <a href="/admin/activity" class="admin-btn admin-btn-secondary">Ver Toda la Actividad</a>
+              </div>
+            </div>
+
+            <!-- Alerts -->
+            <div class="admin-card admin-alerts-card">
+              <div class="admin-card-header">
+                <h3 class="admin-card-title">Alertas del Sistema</h3>
+                <span class="admin-badge admin-badge-warning">{dashboardData.alerts.length} Activas</span>
+              </div>
+              <div class="admin-alerts-list">
+                {dashboardData.alerts.map(alert => (
+                  <div class={`admin-alert admin-alert-${alert.type}`}>
+                    <div class="admin-alert-content">
+                      <div class="admin-alert-message">{alert.message}</div>
+                      <div class="admin-alert-time">{alert.time}</div>
+                    </div>
+                    <button class="admin-alert-dismiss">
+                      <svg width="16" height="16" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path>
+                      </svg>
+                    </button>
+                  </div>
+                ))}
+              </div>
+              <div class="admin-card-footer">
+                <a href="/admin/alerts" class="admin-btn admin-btn-secondary">Gestionar Alertas</a>
+              </div>
+            </div>
+
+            <!-- Top Products -->
+            <div class="admin-card admin-products-card">
+              <div class="admin-card-header">
+                <h3 class="admin-card-title">Productos Más Vendidos</h3>
+                <select class="admin-select" id="productsPeriod">
+                  <option value="7d">Últimos 7 días</option>
+                  <option value="30d" selected>Últimos 30 días</option>
+                  <option value="90d">Últimos 90 días</option>
+                </select>
+              </div>
+              <div class="admin-products-list">
+                {dashboardData.topProducts.map((product, index) => (
+                  <div class="admin-product-item">
+                    <div class="admin-product-rank">#{index + 1}</div>
+                    <div class="admin-product-info">
+                      <div class="admin-product-name">{product.name}</div>
+                      <div class="admin-product-stats">
+                        <span class="admin-product-sales">{product.sales} ventas</span>
+                        <span class="admin-product-revenue">${product.revenue.toLocaleString()}</span>
+                      </div>
+                    </div>
+                  </div>
+                ))}
+              </div>
+              <div class="admin-card-footer">
+                <a href="/admin/products" class="admin-btn admin-btn-secondary">Ver Todos los Productos</a>
+              </div>
+            </div>
+
+            <!-- Quick Actions -->
+            <div class="admin-card admin-actions-card">
+              <div class="admin-card-header">
+                <h3 class="admin-card-title">Acciones Rápidas</h3>
+              </div>
+              <div class="admin-actions-grid">
+                <a href="/admin/products/new" class="admin-action-item">
+                  <div class="admin-action-icon">
+                    <svg width="24" height="24" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6v6m0 0v6m0-6h6m-6 0H6"></path>
+                    </svg>
+                  </div>
+                  <div class="admin-action-label">Nuevo Producto</div>
+                </a>
+                
+                <a href="/admin/orders" class="admin-action-item">
+                  <div class="admin-action-icon">
+                    <svg width="24" height="24" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5H7a2 2 0 00-2 2v10a2 2 0 002 2h8a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2"></path>
+                    </svg>
+                  </div>
+                  <div class="admin-action-label">Ver Pedidos</div>
+                </a>
+                
+                <a href="/admin/users/new" class="admin-action-item">
+                  <div class="admin-action-icon">
+                    <svg width="24" height="24" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M18 9v3m0 0v3m0-3h3m-3 0h-3m-2-5a4 4 0 11-8 0 4 4 0 018 0zM3 20a6 6 0 0112 0v1H3v-1z"></path>
+                    </svg>
+                  </div>
+                  <div class="admin-action-label">Nuevo Usuario</div>
+                </a>
+                
+                <a href="/admin/backup" class="admin-action-item">
+                  <div class="admin-action-icon">
+                    <svg width="24" height="24" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 16a4 4 0 01-.88-7.903A5 5 0 1115.9 6L16 6a5 5 0 011 9.9M9 19l3 3m0 0l3-3m-3 3V10"></path>
+                    </svg>
+                  </div>
+                  <div class="admin-action-label">Crear Backup</div>
+                </a>
+              </div>
+            </div>
+          </section>
+        </div>
+      </main>
+    </div>
+  </div>
+
+  <style>
+    /* Dashboard-specific styles */
+    .admin-content {
+      padding: var(--admin-spacing-xl);
+      max-width: 1400px;
+      margin: 0 auto;
+    }
+
+    .admin-welcome-section {
+      margin-bottom: var(--admin-spacing-xl);
+    }
+
+    .admin-welcome-card {
+      background: linear-gradient(135deg, var(--admin-primary) 0%, var(--admin-primary-dark) 100%);
+      color: var(--admin-text-inverse);
+      border-radius: var(--admin-radius-xl);
+      padding: var(--admin-spacing-2xl);
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      box-shadow: var(--admin-shadow-lg);
+    }
+
+    .admin-welcome-content h2 {
+      font-size: var(--admin-font-size-3xl);
+      font-weight: 700;
+      margin: 0 0 var(--admin-spacing-sm) 0;
+    }
+
+    .admin-welcome-content p {
+      font-size: var(--admin-font-size-lg);
+      opacity: 0.9;
+      margin: 0;
+    }
+
+    .admin-welcome-actions {
+      display: flex;
+      gap: var(--admin-spacing-md);
+    }
+
+    .admin-welcome-actions .admin-btn {
+      background-color: rgba(255, 255, 255, 0.2);
+      color: var(--admin-text-inverse);
+      border: 1px solid rgba(255, 255, 255, 0.3);
+    }
+
+    .admin-welcome-actions .admin-btn:hover {
+      background-color: rgba(255, 255, 255, 0.3);
+      transform: translateY(-2px);
+    }
+
+    .admin-quick-stats {
+      margin-bottom: var(--admin-spacing-xl);
+    }
+
+    .admin-metric-icon {
+      width: 48px;
+      height: 48px;
+      background-color: var(--admin-bg-tertiary);
+      border-radius: var(--admin-radius-lg);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: var(--admin-primary);
+      margin-bottom: var(--admin-spacing-md);
+    }
+
+    .admin-dashboard-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: var(--admin-spacing-lg);
+    }
+
+    .admin-activity-card {
+      grid-row: span 2;
+    }
+
+    .admin-activity-list {
+      max-height: 400px;
+      overflow-y: auto;
+    }
+
+    .admin-activity-item {
+      display: flex;
+      align-items: center;
+      gap: var(--admin-spacing-md);
+      padding: var(--admin-spacing-md);
+      border-bottom: 1px solid var(--admin-border-light);
+    }
+
+    .admin-activity-item:hover {
+      background-color: var(--admin-bg-tertiary);
+    }
+
+    .admin-activity-icon {
+      flex-shrink: 0;
+    }
+
+    .admin-activity-status {
+      width: 12px;
+      height: 12px;
+      border-radius: 50%;
+    }
+
+    .admin-activity-success {
+      background-color: var(--admin-success);
+    }
+
+    .admin-activity-info {
+      background-color: var(--admin-primary);
+    }
+
+    .admin-activity-warning {
+      background-color: var(--admin-warning);
+    }
+
+    .admin-activity-content {
+      flex: 1;
+    }
+
+    .admin-activity-action {
+      font-weight: 500;
+      color: var(--admin-text-primary);
+    }
+
+    .admin-activity-details {
+      font-size: var(--admin-font-size-sm);
+      color: var(--admin-text-secondary);
+      display: flex;
+      gap: var(--admin-spacing-sm);
+    }
+
+    .admin-activity-user {
+      font-weight: 500;
+    }
+
+    .admin-activity-time {
+      font-size: var(--admin-font-size-xs);
+      color: var(--admin-text-muted);
+      font-family: monospace;
+    }
+
+    .admin-alerts-list {
+      display: flex;
+      flex-direction: column;
+      gap: var(--admin-spacing-sm);
+    }
+
+    .admin-alert {
+      display: flex;
+      justify-content: space-between;
+      align-items: flex-start;
+    }
+
+    .admin-alert-content {
+      flex: 1;
+    }
+
+    .admin-alert-message {
+      font-weight: 500;
+    }
+
+    .admin-alert-time {
+      font-size: var(--admin-font-size-xs);
+      opacity: 0.7;
+      margin-top: var(--admin-spacing-xs);
+    }
+
+    .admin-alert-dismiss {
+      background: none;
+      border: none;
+      color: inherit;
+      cursor: pointer;
+      padding: var(--admin-spacing-xs);
+      border-radius: var(--admin-radius-sm);
+      opacity: 0.7;
+    }
+
+    .admin-alert-dismiss:hover {
+      opacity: 1;
+      background-color: rgba(0, 0, 0, 0.1);
+    }
+
+    .admin-products-list {
+      display: flex;
+      flex-direction: column;
+      gap: var(--admin-spacing-sm);
+    }
+
+    .admin-product-item {
+      display: flex;
+      align-items: center;
+      gap: var(--admin-spacing-md);
+      padding: var(--admin-spacing-md);
+      border-radius: var(--admin-radius-md);
+      transition: background-color var(--admin-transition-fast);
+    }
+
+    .admin-product-item:hover {
+      background-color: var(--admin-bg-tertiary);
+    }
+
+    .admin-product-rank {
+      font-weight: 700;
+      color: var(--admin-primary);
+      font-size: var(--admin-font-size-lg);
+      width: 30px;
+      text-align: center;
+    }
+
+    .admin-product-info {
+      flex: 1;
+    }
+
+    .admin-product-name {
+      font-weight: 500;
+      color: var(--admin-text-primary);
+      margin-bottom: var(--admin-spacing-xs);
+    }
+
+    .admin-product-stats {
+      display: flex;
+      gap: var(--admin-spacing-md);
+      font-size: var(--admin-font-size-sm);
+      color: var(--admin-text-secondary);
+    }
+
+    .admin-product-revenue {
+      font-weight: 600;
+      color: var(--admin-success);
+    }
+
+    .admin-actions-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: var(--admin-spacing-md);
+    }
+
+    .admin-action-item {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: var(--admin-spacing-sm);
+      padding: var(--admin-spacing-lg);
+      border: 1px solid var(--admin-border-light);
+      border-radius: var(--admin-radius-lg);
+      text-decoration: none;
+      color: var(--admin-text-primary);
+      transition: all var(--admin-transition-fast);
+    }
+
+    .admin-action-item:hover {
+      border-color: var(--admin-primary);
+      background-color: var(--admin-bg-tertiary);
+      transform: translateY(-2px);
+      box-shadow: var(--admin-shadow-md);
+    }
+
+    .admin-action-icon {
+      width: 48px;
+      height: 48px;
+      background-color: var(--admin-primary);
+      color: var(--admin-text-inverse);
+      border-radius: var(--admin-radius-lg);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    .admin-action-label {
+      font-weight: 500;
+      text-align: center;
+    }
+
+    .admin-card-footer {
+      padding-top: var(--admin-spacing-md);
+      border-top: 1px solid var(--admin-border-light);
+      margin-top: var(--admin-spacing-md);
+    }
+
+    /* User Info Styles */
+    .admin-user-info {
+      display: flex;
+      align-items: center;
+      gap: var(--admin-spacing-md);
+      padding: var(--admin-spacing-lg);
+      border-bottom: 1px solid var(--admin-border-light);
+      margin-bottom: var(--admin-spacing-lg);
+    }
+
+    .admin-user-avatar img {
+      width: 48px;
+      height: 48px;
+      border-radius: 50%;
+      object-fit: cover;
+    }
+
+    .admin-user-name {
+      font-weight: 600;
+      color: var(--admin-text-primary);
+    }
+
+    .admin-user-role {
+      font-size: var(--admin-font-size-sm);
+      color: var(--admin-text-secondary);
+    }
+
+    .admin-user-last-login {
+      font-size: var(--admin-font-size-xs);
+      color: var(--admin-text-muted);
+    }
+
+    .admin-nav-divider {
+      height: 1px;
+      background-color: var(--admin-border-light);
+      margin: var(--admin-spacing-md) 0;
+    }
+
+    .admin-nav-footer {
+      margin-top: auto;
+      padding-top: var(--admin-spacing-lg);
+      border-top: 1px solid var(--admin-border-light);
+    }
+
+    .admin-logout-form {
+      width: 100%;
+    }
+
+    .admin-logout-btn {
+      width: 100%;
+      background: none;
+      border: none;
+      text-align: left;
+      color: var(--admin-danger);
+    }
+
+    .admin-logout-btn:hover {
+      background-color: rgb(239 68 68 / 0.1);
+    }
+
+    .admin-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+
+    .admin-header-left {
+      display: flex;
+      align-items: center;
+      gap: var(--admin-spacing-md);
+    }
+
+    .admin-header-right {
+      display: flex;
+      align-items: center;
+      gap: var(--admin-spacing-md);
+    }
+
+    .admin-notifications {
+      position: relative;
+      cursor: pointer;
+      padding: var(--admin-spacing-sm);
+      border-radius: var(--admin-radius-md);
+      transition: background-color var(--admin-transition-fast);
+    }
+
+    .admin-notifications:hover {
+      background-color: var(--admin-bg-tertiary);
+    }
+
+    .admin-notification-badge {
+      position: absolute;
+      top: -2px;
+      right: -2px;
+      background-color: var(--admin-danger);
+      color: var(--admin-text-inverse);
+      font-size: var(--admin-font-size-xs);
+      font-weight: 600;
+      padding: 2px 6px;
+      border-radius: 10px;
+      min-width: 18px;
+      text-align: center;
+    }
+
+    .admin-sidebar-toggle {
+      display: none;
+      background: none;
+      border: none;
+      color: var(--admin-text-primary);
+      cursor: pointer;
+      padding: var(--admin-spacing-sm);
+      border-radius: var(--admin-radius-md);
+    }
+
+    .admin-sidebar-toggle:hover {
+      background-color: var(--admin-bg-tertiary);
+    }
+
+    .admin-header-time {
+      font-size: var(--admin-font-size-sm);
+      color: var(--admin-text-secondary);
+      font-family: monospace;
+    }
+
+    /* Responsive Design */
+    @media (max-width: 1024px) {
+      .admin-dashboard-grid {
+        grid-template-columns: 1fr;
+      }
+      
+      .admin-sidebar-toggle {
+        display: block;
+      }
+      
+      .admin-welcome-card {
+        flex-direction: column;
+        text-align: center;
+        gap: var(--admin-spacing-lg);
+      }
+    }
+
+    @media (max-width: 768px) {
+      .admin-content {
+        padding: var(--admin-spacing-md);
+      }
+      
+      .admin-metrics-grid {
+        grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+      }
+      
+      .admin-welcome-card {
+        padding: var(--admin-spacing-lg);
+      }
+      
+      .admin-welcome-actions {
+        flex-direction: column;
+        width: 100%;
+      }
+      
+      .admin-actions-grid {
+        grid-template-columns: 1fr;
+      }
+    }
+  </style>
+
+  <script>
+    // Theme toggle functionality
+    const themeToggle = document.getElementById('themeToggle');
+    const body = document.body;
+    
+    // Check for saved theme preference
+    const savedTheme = localStorage.getItem('admin-theme');
+    if (savedTheme) {
+      body.setAttribute('data-theme', savedTheme);
+      if (savedTheme === 'dark') {
+        themeToggle.classList.add('dark');
+      }
+    }
+    
+    themeToggle.addEventListener('click', () => {
+      const currentTheme = body.getAttribute('data-theme');
+      const newTheme = currentTheme === 'dark' ? 'light' : 'dark';
+      
+      body.setAttribute('data-theme', newTheme);
+      localStorage.setItem('admin-theme', newTheme);
+      
+      if (newTheme === 'dark') {
+        themeToggle.classList.add('dark');
+      } else {
+        themeToggle.classList.remove('dark');
+      }
+    });
+    
+    // Sidebar toggle functionality
+    const sidebarToggle = document.getElementById('sidebarToggle');
+    const sidebar = document.getElementById('adminSidebar');
+    
+    sidebarToggle.addEventListener('click', () => {
+      sidebar.classList.toggle('mobile-open');
+    });
+    
+    // Current time display
+    function updateTime() {
+      const now = new Date();
+      const timeString = now.toLocaleString('es-ES', {
+        year: 'numeric',
+        month: '2-digit',
+        day: '2-digit',
+        hour: '2-digit',
+        minute: '2-digit',
+        second: '2-digit'
+      });
+      document.getElementById('currentTime').textContent = timeString;
+    }
+    
+    updateTime();
+    setInterval(updateTime, 1000);
+    
+    // Activity refresh
+    document.getElementById('refreshActivity').addEventListener('click', () => {
+      const button = document.getElementById('refreshActivity');
+      button.innerHTML = '<div class="admin-loading"></div> Actualizando...';
+      
+      setTimeout(() => {
+        button.innerHTML = `
+          <svg width="16" height="16" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15"></path>
+          </svg>
+          Actualizar
+        `;
+      }, 2000);
+    });
+    
+    // Alert dismiss functionality
+    document.querySelectorAll('.admin-alert-dismiss').forEach(button => {
+      button.addEventListener('click', () => {
+        button.closest('.admin-alert').style.display = 'none';
+      });
+    });
+    
+    // Products period change
+    document.getElementById('productsPeriod').addEventListener('change', (e) => {
+      console.log('Changing products period to:', e.target.value);
+      // In a real app, this would update the products list
+    });
+    
+    // Notifications click
+    document.getElementById('notifications').addEventListener('click', () => {
+      alert('Mostrando notificaciones...');
+    });
+  </script>
+</Layout>

@@ -1,0 +1,27 @@
+<svg width="400" height="400" xmlns="http://www.w3.org/2000/svg">
+  <defs>
+    <linearGradient id="grad21" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" style="stop-color:#DC2626;stop-opacity:1" />
+      <stop offset="100%" style="stop-color:#7C2D12;stop-opacity:1" />
+    </linearGradient>
+  </defs>
+  <rect width="400" height="400" fill="url(#grad21)"/>
+  <circle cx="200" cy="200" r="180" fill="#1F2937" stroke="white" stroke-width="2"/>
+  <circle cx="200" cy="200" r="20" fill="white"/>
+  
+  <!-- Producto -->
+  <text x="200" y="70" text-anchor="middle" fill="white" font-family="Arial, sans-serif" font-size="18" font-weight="bold">VINILO FUNK</text>
+  <text x="200" y="95" text-anchor="middle" fill="white" font-family="Arial, sans-serif" font-size="18" font-weight="bold">CLASSICS</text>
+  <text x="200" y="120" text-anchor="middle" fill="white" font-family="Arial, sans-serif" font-size="14">Contraportada</text>
+  
+  <!-- Icono -->
+  <text x="200" y="160" text-anchor="middle" font-size="40">🎺</text>
+  
+  <!-- Detalles -->
+  <text x="200" y="320" text-anchor="middle" fill="white" font-family="Arial, sans-serif" font-size="18" font-weight="bold">$75.000</text>
+  <text x="200" y="345" text-anchor="middle" fill="white" font-family="Arial, sans-serif" font-size="14">ID: 8</text>
+  <text x="200" y="365" text-anchor="middle" fill="white" font-family="Arial, sans-serif" font-size="14">Imagen 2/2</text>
+  
+  <!-- Marca de agua -->
+  <text x="200" y="385" text-anchor="middle" fill="rgba(255,255,255,0.6)" font-family="Arial, sans-serif" font-size="12">Sur Occidente Store</text>
+</svg>

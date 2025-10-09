@@ -6,7 +6,17 @@ export interface Props {
 const { className = '' } = Astro.props;
 ---
 
-<form class={`contact-form ${className}`} id="contactForm">
+<!-- Importar utilidades de seguridad -->
+<script>
+  import { sanitizeInput, validateEmail, validateText, validatePhone, isRateLimited, logSecurityEvent } from '../utils/security.js';
+</script>
+
+<form class={`contact-form ${className}`} id="contactForm" data-security="enabled">
+  <!-- Campo honeypot oculto para detectar bots -->
+  <div style="position: absolute; left: -9999px; opacity: 0; pointer-events: none;" aria-hidden="true">
+    <label for="website">No llenar este campo:</label>
+    <input type="text" id="website" name="website" tabindex="-1" autocomplete="off" />
+  </div>
   <div class="form-header">
     <h3>Envíanos un mensaje</h3>
     <p>Estamos aquí para ayudarte. Completa el formulario y te responderemos pronto.</p>
@@ -20,8 +30,13 @@ const { className = '' } = Astro.props;
         id="name" 
         name="name" 
         required 
+        minlength="2"
+        maxlength="100"
+        pattern="[a-zA-ZáéíóúÁÉÍÓÚñÑ\s]+"
         placeholder="Tu nombre completo"
+        data-validate="text"
       />
+      <span class="field-error" id="name-error"></span>
     </div>
     
     <div class="form-group">
@@ -31,8 +46,11 @@ const { className = '' } = Astro.props;
         id="email" 
         name="email" 
         required 
+        maxlength="254"
         placeholder="tu@email.com"
+        data-validate="email"
       />
+      <span class="field-error" id="email-error"></span>
     </div>
     
     <div class="form-group">
@@ -41,8 +59,12 @@ const { className = '' } = Astro.props;
         type="tel" 
         id="phone" 
         name="phone" 
+        maxlength="20"
+        pattern="[+]?[0-9\s\-()]+"
         placeholder="+57 300 123 4567"
+        data-validate="phone"
       />
+      <span class="field-error" id="phone-error"></span>
     </div>
     
     <div class="form-group">
@@ -65,8 +87,15 @@ const { className = '' } = Astro.props;
       name="message" 
       required 
       rows="5"
+      minlength="10"
+      maxlength="1000"
       placeholder="Cuéntanos en qué podemos ayudarte..."
+      data-validate="text"
     ></textarea>
+    <div class="char-counter">
+      <span id="message-counter">0</span>/1000 caracteres
+    </div>
+    <span class="field-error" id="message-error"></span>
   </div>
   
   <div class="form-group checkbox-group">
@@ -181,6 +210,46 @@ const { className = '' } = Astro.props;
   .form-group textarea {
     resize: vertical;
     min-height: 120px;
+  }
+  
+  .field-error {
+    color: #dc3545;
+    font-size: 0.75rem;
+    margin-top: 4px;
+    display: none;
+  }
+  
+  .field-error.show {
+    display: block;
+  }
+  
+  .char-counter {
+    text-align: right;
+    font-size: 0.75rem;
+    color: #666;
+    margin-top: 4px;
+  }
+  
+  .char-counter.warning {
+    color: #f59e0b;
+  }
+  
+  .char-counter.danger {
+    color: #dc3545;
+  }
+  
+  .form-group input.error,
+  .form-group select.error,
+  .form-group textarea.error {
+    border-color: #dc3545;
+    box-shadow: 0 0 0 3px rgba(220, 53, 69, 0.1);
+  }
+  
+  .form-group input.valid,
+  .form-group select.valid,
+  .form-group textarea.valid {
+    border-color: #28a745;
+    box-shadow: 0 0 0 3px rgba(40, 167, 69, 0.1);
   }
   
   .checkbox-group {
@@ -332,7 +401,63 @@ const { className = '' } = Astro.props;
   }
 </style>
 
-<script>
+<script is:inline>
+  // Funciones de seguridad simplificadas
+  function sanitizeInput(input) {
+    if (typeof input !== 'string') return '';
+    return input
+      .replace(/[<>"'&]/g, function(match) {
+        const map = {
+          '<': '&lt;',
+          '>': '&gt;',
+          '"': '&quot;',
+          "'": '&#x27;',
+          '&': '&amp;'
+        };
+        return map[match];
+      })
+      .trim();
+  }
+  
+  function validateEmail(email) {
+    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    return emailRegex.test(email) && email.length <= 254;
+  }
+  
+  function validateText(text, minLength = 1, maxLength = 1000) {
+    return text && text.length >= minLength && text.length <= maxLength;
+  }
+  
+  function validatePhone(phone) {
+    const phoneRegex = /^[\d\s\+\-\(\)]{7,20}$/;
+    return phoneRegex.test(phone);
+  }
+  
+  function isRateLimited(key, maxAttempts, timeWindow) {
+    const now = Date.now();
+    const attempts = JSON.parse(localStorage.getItem(`rate_limit_${key}`) || '[]');
+    const recentAttempts = attempts.filter(time => now - time < timeWindow);
+    
+    if (recentAttempts.length >= maxAttempts) {
+      return true;
+    }
+    
+    recentAttempts.push(now);
+    localStorage.setItem(`rate_limit_${key}`, JSON.stringify(recentAttempts));
+    return false;
+  }
+  
+  function logSecurityEvent(type, data) {
+    const logs = JSON.parse(localStorage.getItem('security_logs') || '[]');
+    logs.push({
+      type,
+      data,
+      timestamp: Date.now(),
+      level: 'info'
+    });
+    localStorage.setItem('security_logs', JSON.stringify(logs.slice(-100))); // Mantener solo los últimos 100
+  }
+  
   document.addEventListener('DOMContentLoaded', function() {
     const form = document.getElementById('contactForm');
     const submitBtn = form?.querySelector('.submit-btn');
@@ -340,6 +465,27 @@ const { className = '' } = Astro.props;
     const btnLoading = submitBtn?.querySelector('.btn-loading');
     const formStatus = document.getElementById('formStatus');
     const whatsappBtn = document.getElementById('whatsappContact');
+    const messageCounter = document.getElementById('message-counter');
+    const messageTextarea = document.getElementById('message');
+    
+    // Contador de caracteres para el mensaje
+    messageTextarea?.addEventListener('input', function() {
+      const length = this.value.length;
+      const maxLength = 1000;
+      
+      if (messageCounter) {
+        messageCounter.textContent = length;
+        const counterElement = messageCounter.parentElement;
+        
+        if (length > maxLength * 0.9) {
+          counterElement.className = 'char-counter danger';
+        } else if (length > maxLength * 0.8) {
+          counterElement.className = 'char-counter warning';
+        } else {
+          counterElement.className = 'char-counter';
+        }
+      }
+    });
     
     // Manejar envío del formulario
     form?.addEventListener('submit', async function(e) {
@@ -347,15 +493,67 @@ const { className = '' } = Astro.props;
       
       if (!submitBtn || !btnText || !btnLoading || !formStatus) return;
       
-      // Mostrar estado de carga
-      submitBtn.disabled = true;
-      btnText.style.display = 'none';
-      btnLoading.style.display = 'inline';
-      formStatus.style.display = 'none';
-      
       try {
+        // Verificar rate limiting
+        if (isRateLimited('contact-form', 3, 300000)) { // 3 intentos por 5 minutos
+          showStatus('Has enviado demasiados mensajes. Espera unos minutos antes de intentar de nuevo.', 'error');
+          logSecurityEvent('RATE_LIMIT_EXCEEDED', { action: 'contact_form_submit' });
+          return;
+        }
+        
+        // Verificar honeypot
+        const honeypot = form.querySelector('input[name="website"]');
+        if (honeypot && honeypot.value.trim() !== '') {
+          logSecurityEvent('BOT_DETECTED', { honeypot_value: honeypot.value });
+          showStatus('Error en el envío. Por favor, intenta de nuevo.', 'error');
+          return;
+        }
+        
+        // Validar todos los campos
+        const isFormValid = validateAllFields();
+        if (!isFormValid) {
+          showStatus('Por favor, corrige los errores en el formulario.', 'error');
+          return;
+        }
+        
+        // Mostrar estado de carga
+        submitBtn.disabled = true;
+        btnText.style.display = 'none';
+        btnLoading.style.display = 'inline';
+        formStatus.style.display = 'none';
+        
         const formData = new FormData(form);
-        const data = Object.fromEntries(formData.entries());
+        const data = {};
+        
+        // Sanitizar y validar datos
+        for (const [key, value] of formData.entries()) {
+          if (key !== 'website') { // Excluir honeypot
+            data[key] = sanitizeInput(value.toString());
+          }
+        }
+        
+        // Validaciones adicionales
+        if (!validateEmail(data.email)) {
+          throw new Error('Email inválido');
+        }
+        
+        if (!validateText(data.name, 2, 100)) {
+          throw new Error('Nombre inválido');
+        }
+        
+        if (!validateText(data.message, 10, 1000)) {
+          throw new Error('Mensaje inválido');
+        }
+        
+        if (data.phone && !validatePhone(data.phone)) {
+          throw new Error('Teléfono inválido');
+        }
+        
+        // Log del envío exitoso
+        logSecurityEvent('FORM_SUBMITTED', { 
+          form: 'contact',
+          fields: Object.keys(data).filter(k => k !== 'message')
+        });
         
         // Simular envío (aquí iría la lógica real de envío)
         await new Promise(resolve => setTimeout(resolve, 2000));
@@ -364,8 +562,15 @@ const { className = '' } = Astro.props;
         showStatus('¡Mensaje enviado correctamente! Te responderemos pronto.', 'success');
         form.reset();
         
+        // Resetear contador
+        if (messageCounter) {
+          messageCounter.textContent = '0';
+          messageCounter.parentElement.className = 'char-counter';
+        }
+        
       } catch (error) {
         console.error('Error al enviar formulario:', error);
+        logSecurityEvent('FORM_ERROR', { error: error.message });
         showStatus('Error al enviar el mensaje. Por favor, intenta de nuevo.', 'error');
       } finally {
         // Restaurar botón
@@ -378,10 +583,10 @@ const { className = '' } = Astro.props;
     // Contacto por WhatsApp
     whatsappBtn?.addEventListener('click', function() {
       const formData = new FormData(form);
-      const name = formData.get('name') || 'Cliente';
-      const email = formData.get('email') || '';
-      const subject = formData.get('subject') || 'Consulta general';
-      const message = formData.get('message') || '';
+      const name = sanitizeInput(formData.get('name') || 'Cliente');
+      const email = sanitizeInput(formData.get('email') || '');
+      const subject = sanitizeInput(formData.get('subject') || 'Consulta general');
+      const message = sanitizeInput(formData.get('message') || '');
       
       let whatsappMessage = `¡Hola! Soy ${name}.\n\n`;
       whatsappMessage += `Asunto: ${subject}\n\n`;
@@ -394,6 +599,8 @@ const { className = '' } = Astro.props;
       
       const whatsappUrl = `https://wa.me/573001234567?text=${encodeURIComponent(whatsappMessage)}`;
       window.open(whatsappUrl, '_blank');
+      
+      logSecurityEvent('WHATSAPP_CONTACT', { hasMessage: !!message });
     });
     
     function showStatus(message, type) {
@@ -424,17 +631,87 @@ const { className = '' } = Astro.props;
     });
     
     function validateField(field) {
-      const isValid = field.checkValidity();
+      const value = field.value.trim();
+      const fieldType = field.dataset.validate;
+      const errorElement = document.getElementById(`${field.id}-error`);
+      let isValid = true;
+      let errorMessage = '';
       
+      // Validación básica HTML5
+      if (!field.checkValidity()) {
+        isValid = false;
+        errorMessage = field.validationMessage;
+      }
+      
+      // Validaciones personalizadas
+      if (isValid && value) {
+        switch (fieldType) {
+          case 'email':
+            if (!validateEmail(value)) {
+              isValid = false;
+              errorMessage = 'Por favor, ingresa un email válido';
+            }
+            break;
+          case 'text':
+            if (field.id === 'name') {
+              if (!validateText(value, 2, 100)) {
+                isValid = false;
+                errorMessage = 'El nombre debe tener entre 2 y 100 caracteres';
+              }
+            } else if (field.id === 'message') {
+              if (!validateText(value, 10, 1000)) {
+                isValid = false;
+                errorMessage = 'El mensaje debe tener entre 10 y 1000 caracteres';
+              }
+            }
+            break;
+          case 'phone':
+            if (!validatePhone(value)) {
+              isValid = false;
+              errorMessage = 'Por favor, ingresa un teléfono válido';
+            }
+            break;
+        }
+      }
+      
+      // Actualizar UI
       if (isValid) {
         field.classList.remove('error');
-        field.style.borderColor = '#e5e5e5';
+        field.classList.add('valid');
+        if (errorElement) {
+          errorElement.classList.remove('show');
+          errorElement.textContent = '';
+        }
       } else {
+        field.classList.remove('valid');
         field.classList.add('error');
-        field.style.borderColor = '#dc3545';
+        if (errorElement) {
+          errorElement.classList.add('show');
+          errorElement.textContent = errorMessage;
+        }
       }
       
       return isValid;
+    }
+    
+    function validateAllFields() {
+      const fields = form?.querySelectorAll('input[data-validate], textarea[data-validate], select[required]');
+      let allValid = true;
+      
+      fields?.forEach(field => {
+        if (!validateField(field)) {
+          allValid = false;
+        }
+      });
+      
+      // Validar checkbox de privacidad
+      const privacyCheckbox = form?.querySelector('#privacy');
+      if (privacyCheckbox && !privacyCheckbox.checked) {
+        allValid = false;
+        showStatus('Debes aceptar la política de privacidad para continuar.', 'error');
+      }
+      
+      return allValid;
     }
   });
 </script>

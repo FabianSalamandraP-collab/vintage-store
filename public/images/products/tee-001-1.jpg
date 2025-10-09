@@ -1,0 +1,10 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="400" height="400" viewBox="0 0 400 400">
+  <rect width="400" height="400" fill="#8B4513"/>
+  <rect x="50" y="50" width="300" height="300" fill="#D2691E" stroke="#654321" stroke-width="3"/>
+  <text x="200" y="120" text-anchor="middle" font-family="Arial, sans-serif" font-size="24" font-weight="bold" fill="#FFFFFF">VINTAGE</text>
+  <text x="200" y="150" text-anchor="middle" font-family="Arial, sans-serif" font-size="24" font-weight="bold" fill="#FFFFFF">COWBOY TEE</text>
+  <text x="200" y="200" text-anchor="middle" font-family="Arial, sans-serif" font-size="48" fill="#FFD700">🤠</text>
+  <text x="200" y="280" text-anchor="middle" font-family="Arial, sans-serif" font-size="18" fill="#FFFFFF">Años 90</text>
+  <text x="200" y="310" text-anchor="middle" font-family="Arial, sans-serif" font-size="16" fill="#FFFFFF">$55</text>
+  <text x="200" y="340" text-anchor="middle" font-family="Arial, sans-serif" font-size="14" fill="#FFFFFF">Excelente Estado</text>
+</svg>

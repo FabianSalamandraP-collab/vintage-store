@@ -1,0 +1,26 @@
+{
+  "auth": {
+    "passwordHash": "$2a$10$N9qo8uLOickgx2ZMRZoMye",
+    "defaultPassword": "admin123",
+    "sessionTimeout": 1800000,
+    "lastPasswordChange": "2024-01-01T00:00:00Z"
+  },
+  "site": {
+    "maintenanceMode": false,
+    "siteName": "Sur Occidente - Vintage Store",
+    "adminEmail": "admin@suroccidente.com",
+    "timezone": "America/Bogota",
+    "language": "es"
+  },
+  "features": {
+    "allowRegistration": false,
+    "enableAnalytics": true,
+    "enableContactForm": true,
+    "enableProductManagement": true
+  },
+  "backup": {
+    "lastBackup": "2024-01-15T00:00:00Z",
+    "autoBackup": true,
+    "backupFrequency": "daily"
+  }
+}

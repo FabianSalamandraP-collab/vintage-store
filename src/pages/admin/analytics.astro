@@ -1,0 +1,759 @@
+---
+// Analytics Admin Page
+import Layout from '../../layouts/Layout.astro';
+
+// Server-side authentication check
+const cookies = Astro.cookies;
+const sessionToken = cookies.get('admin_session')?.value;
+
+if (!sessionToken) {
+  return Astro.redirect('/admin/login');
+}
+
+// Mock analytics data (in production, fetch from database)
+const analyticsData = {
+  overview: {
+    totalVisits: 15847,
+    uniqueVisitors: 8923,
+    pageViews: 42156,
+    bounceRate: 34.2,
+    avgSessionDuration: '3:42',
+    conversionRate: 2.8
+  },
+  traffic: {
+    today: 1247,
+    yesterday: 1156,
+    thisWeek: 8934,
+    lastWeek: 8234,
+    thisMonth: 35678,
+    lastMonth: 32145
+  },
+  topPages: [
+    { path: '/', views: 8934, percentage: 21.2 },
+    { path: '/productos', views: 6745, percentage: 16.0 },
+    { path: '/contacto', views: 4523, percentage: 10.7 },
+    { path: '/nosotros', views: 3456, percentage: 8.2 },
+    { path: '/producto/vintage-jacket', views: 2890, percentage: 6.9 }
+  ],
+  devices: {
+    desktop: 45.6,
+    mobile: 42.3,
+    tablet: 12.1
+  },
+  browsers: {
+    chrome: 58.4,
+    firefox: 18.7,
+    safari: 12.9,
+    edge: 7.2,
+    other: 2.8
+  },
+  countries: [
+    { name: 'Colombia', visits: 8934, percentage: 56.4 },
+    { name: 'México', visits: 2345, percentage: 14.8 },
+    { name: 'España', visits: 1876, percentage: 11.8 },
+    { name: 'Argentina', visits: 1234, percentage: 7.8 },
+    { name: 'Otros', visits: 1458, percentage: 9.2 }
+  ],
+  recentActivity: [
+    { time: '2024-01-15 14:30', action: 'Página visitada', details: '/productos', ip: '192.168.1.100' },
+    { time: '2024-01-15 14:28', action: 'Formulario enviado', details: 'Contacto', ip: '192.168.1.101' },
+    { time: '2024-01-15 14:25', action: 'Producto visto', details: 'Vintage Jacket', ip: '192.168.1.102' },
+    { time: '2024-01-15 14:22', action: 'Búsqueda realizada', details: 'vintage clothing', ip: '192.168.1.103' },
+    { time: '2024-01-15 14:20', action: 'Página visitada', details: '/nosotros', ip: '192.168.1.104' }
+  ]
+};
+
+const currentUser = {
+  name: 'Admin Usuario',
+  role: 'Administrador',
+  avatar: '/images/admin-avatar.jpg'
+};
+---
+
+<Layout title="Analytics - Admin Panel">
+  <link rel="stylesheet" href="/src/styles/admin.css">
+  
+  <div class="admin-container">
+    <div class="admin-layout">
+      <!-- Sidebar -->
+      <aside class="admin-sidebar" id="adminSidebar">
+        <div class="admin-nav">
+          <!-- User Info -->
+          <div class="admin-user-info">
+            <div class="admin-user-avatar">
+              <img src={currentUser.avatar} alt={currentUser.name} onerror="this.src='data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iNDAiIGhlaWdodD0iNDAiIHZpZXdCb3g9IjAgMCA0MCA0MCIgZmlsbD0ibm9uZSIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj4KPGNpcmNsZSBjeD0iMjAiIGN5PSIyMCIgcj0iMjAiIGZpbGw9IiNmMWY1ZjkiLz4KPHN2ZyB3aWR0aD0iMjQiIGhlaWdodD0iMjQiIHZpZXdCb3g9IjAgMCAyNCAyNCIgZmlsbD0ibm9uZSIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIiB4PSI4IiB5PSI4Ij4KPHBhdGggZD0iTTIwIDIxdi0yYTQgNCAwIDAgMC00LTRIOGE0IDQgMCAwIDAtNCA0djIiIHN0cm9rZT0iIzY0NzQ4YiIgc3Ryb2tlLXdpZHRoPSIyIiBzdHJva2UtbGluZWNhcD0icm91bmQiIHN0cm9rZS1saW5lam9pbj0icm91bmQiLz4KPGNpcmNsZSBjeD0iMTIiIGN5PSI3IiByPSI0IiBzdHJva2U9IiM2NDc0OGIiIHN0cm9rZS13aWR0aD0iMiIgc3Ryb2tlLWxpbmVjYXA9InJvdW5kIiBzdHJva2UtbGluZWpvaW49InJvdW5kIi8+Cjwvc3ZnPgo8L3N2Zz4K'">
+            </div>
+            <div class="admin-user-details">
+              <div class="admin-user-name">{currentUser.name}</div>
+              <div class="admin-user-role">{currentUser.role}</div>
+            </div>
+          </div>
+
+          <!-- Navigation Links -->
+          <nav class="admin-nav-links">
+            <a href="/admin/dashboard" class="admin-nav-item">
+              <svg class="admin-nav-icon" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 7v10a2 2 0 002 2h14a2 2 0 002-2V9a2 2 0 00-2-2H5a2 2 0 00-2-2z"></path>
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 5a2 2 0 012-2h4a2 2 0 012 2v6H8V5z"></path>
+              </svg>
+              <span>Dashboard</span>
+            </a>
+            
+            <a href="/admin/security" class="admin-nav-item">
+              <svg class="admin-nav-icon" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z"></path>
+              </svg>
+              <span>Seguridad</span>
+            </a>
+            
+            <a href="/admin/analytics" class="admin-nav-item active">
+              <svg class="admin-nav-icon" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z"></path>
+              </svg>
+              <span>Analytics</span>
+            </a>
+            
+            <a href="/admin/system" class="admin-nav-item">
+              <svg class="admin-nav-icon" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.065 2.572c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.572 1.065c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.065-2.572c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z"></path>
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"></path>
+              </svg>
+              <span>Sistema</span>
+            </a>
+          </nav>
+
+          <!-- Logout -->
+          <div class="admin-nav-footer">
+            <form action="/admin/logout" method="POST" class="admin-logout-form">
+              <button type="submit" class="admin-nav-item admin-logout-btn">
+                <svg class="admin-nav-icon" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1"></path>
+                </svg>
+                <span>Cerrar Sesión</span>
+              </button>
+            </form>
+          </div>
+        </div>
+      </aside>
+
+      <!-- Main Content -->
+      <main class="admin-main">
+        <!-- Header -->
+        <header class="admin-header">
+          <div class="admin-header-left">
+            <button class="admin-sidebar-toggle" id="sidebarToggle">
+              <svg width="24" height="24" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16"></path>
+              </svg>
+            </button>
+            <h1>Analytics y Estadísticas</h1>
+          </div>
+          
+          <div class="admin-header-right">
+            <div class="admin-theme-toggle" id="themeToggle"></div>
+            <div class="admin-header-time" id="currentTime"></div>
+          </div>
+        </header>
+
+        <!-- Content -->
+        <div class="admin-content">
+          <!-- Overview Metrics -->
+          <section class="admin-metrics-grid">
+            <div class="admin-metric-card">
+              <div class="admin-metric-value">{analyticsData.overview.totalVisits.toLocaleString()}</div>
+              <div class="admin-metric-label">Total de Visitas</div>
+              <div class="admin-metric-change positive">+12.5% vs mes anterior</div>
+            </div>
+            
+            <div class="admin-metric-card">
+              <div class="admin-metric-value">{analyticsData.overview.uniqueVisitors.toLocaleString()}</div>
+              <div class="admin-metric-label">Visitantes Únicos</div>
+              <div class="admin-metric-change positive">+8.3% vs mes anterior</div>
+            </div>
+            
+            <div class="admin-metric-card">
+              <div class="admin-metric-value">{analyticsData.overview.pageViews.toLocaleString()}</div>
+              <div class="admin-metric-label">Páginas Vistas</div>
+              <div class="admin-metric-change positive">+15.7% vs mes anterior</div>
+            </div>
+            
+            <div class="admin-metric-card">
+              <div class="admin-metric-value">{analyticsData.overview.bounceRate}%</div>
+              <div class="admin-metric-label">Tasa de Rebote</div>
+              <div class="admin-metric-change negative">-2.1% vs mes anterior</div>
+            </div>
+            
+            <div class="admin-metric-card">
+              <div class="admin-metric-value">{analyticsData.overview.avgSessionDuration}</div>
+              <div class="admin-metric-label">Duración Promedio</div>
+              <div class="admin-metric-change positive">+0:23 vs mes anterior</div>
+            </div>
+            
+            <div class="admin-metric-card">
+              <div class="admin-metric-value">{analyticsData.overview.conversionRate}%</div>
+              <div class="admin-metric-label">Tasa de Conversión</div>
+              <div class="admin-metric-change positive">+0.4% vs mes anterior</div>
+            </div>
+          </section>
+
+          <!-- Charts Section -->
+          <section class="admin-charts-section">
+            <div class="admin-charts-grid">
+              <!-- Traffic Chart -->
+              <div class="admin-card">
+                <div class="admin-card-header">
+                  <h3 class="admin-card-title">Tráfico por Tiempo</h3>
+                  <select class="admin-select" id="trafficPeriod">
+                    <option value="7d">Últimos 7 días</option>
+                    <option value="30d" selected>Últimos 30 días</option>
+                    <option value="90d">Últimos 90 días</option>
+                  </select>
+                </div>
+                <div class="admin-chart-container">
+                  <canvas id="trafficChart" width="400" height="200"></canvas>
+                </div>
+              </div>
+
+              <!-- Device Distribution -->
+              <div class="admin-card">
+                <div class="admin-card-header">
+                  <h3 class="admin-card-title">Distribución por Dispositivo</h3>
+                </div>
+                <div class="admin-chart-container">
+                  <canvas id="deviceChart" width="300" height="300"></canvas>
+                </div>
+                <div class="admin-device-stats">
+                  <div class="admin-device-stat">
+                    <span class="admin-device-label">Desktop</span>
+                    <span class="admin-device-value">{analyticsData.devices.desktop}%</span>
+                  </div>
+                  <div class="admin-device-stat">
+                    <span class="admin-device-label">Mobile</span>
+                    <span class="admin-device-value">{analyticsData.devices.mobile}%</span>
+                  </div>
+                  <div class="admin-device-stat">
+                    <span class="admin-device-label">Tablet</span>
+                    <span class="admin-device-value">{analyticsData.devices.tablet}%</span>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </section>
+
+          <!-- Data Tables Section -->
+          <section class="admin-tables-section">
+            <div class="admin-tables-grid">
+              <!-- Top Pages -->
+              <div class="admin-card">
+                <div class="admin-card-header">
+                  <h3 class="admin-card-title">Páginas Más Visitadas</h3>
+                  <button class="admin-btn admin-btn-secondary" id="exportPages">
+                    <svg width="16" height="16" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 10v6m0 0l-3-3m3 3l3-3m2 8H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"></path>
+                    </svg>
+                    Exportar
+                  </button>
+                </div>
+                <div class="admin-table-container">
+                  <table class="admin-table">
+                    <thead>
+                      <tr>
+                        <th>Página</th>
+                        <th>Visitas</th>
+                        <th>Porcentaje</th>
+                      </tr>
+                    </thead>
+                    <tbody>
+                      {analyticsData.topPages.map(page => (
+                        <tr>
+                          <td>{page.path}</td>
+                          <td>{page.views.toLocaleString()}</td>
+                          <td>{page.percentage}%</td>
+                        </tr>
+                      ))}
+                    </tbody>
+                  </table>
+                </div>
+              </div>
+
+              <!-- Countries -->
+              <div class="admin-card">
+                <div class="admin-card-header">
+                  <h3 class="admin-card-title">Tráfico por País</h3>
+                </div>
+                <div class="admin-table-container">
+                  <table class="admin-table">
+                    <thead>
+                      <tr>
+                        <th>País</th>
+                        <th>Visitas</th>
+                        <th>Porcentaje</th>
+                      </tr>
+                    </thead>
+                    <tbody>
+                      {analyticsData.countries.map(country => (
+                        <tr>
+                          <td>{country.name}</td>
+                          <td>{country.visits.toLocaleString()}</td>
+                          <td>{country.percentage}%</td>
+                        </tr>
+                      ))}
+                    </tbody>
+                  </table>
+                </div>
+              </div>
+            </div>
+          </section>
+
+          <!-- Recent Activity -->
+          <section class="admin-activity-section">
+            <div class="admin-card">
+              <div class="admin-card-header">
+                <h3 class="admin-card-title">Actividad Reciente</h3>
+                <div class="admin-activity-controls">
+                  <button class="admin-btn admin-btn-secondary" id="refreshActivity">
+                    <svg width="16" height="16" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15"></path>
+                    </svg>
+                    Actualizar
+                  </button>
+                  <select class="admin-select" id="activityFilter">
+                    <option value="all">Todas las actividades</option>
+                    <option value="visits">Solo visitas</option>
+                    <option value="forms">Solo formularios</option>
+                    <option value="searches">Solo búsquedas</option>
+                  </select>
+                </div>
+              </div>
+              <div class="admin-activity-list" id="activityList">
+                {analyticsData.recentActivity.map(activity => (
+                  <div class="admin-activity-item">
+                    <div class="admin-activity-time">{activity.time}</div>
+                    <div class="admin-activity-details">
+                      <div class="admin-activity-action">{activity.action}</div>
+                      <div class="admin-activity-info">{activity.details}</div>
+                    </div>
+                    <div class="admin-activity-ip">{activity.ip}</div>
+                  </div>
+                ))}
+              </div>
+            </div>
+          </section>
+        </div>
+      </main>
+    </div>
+  </div>
+
+  <style>
+    /* Analytics-specific styles */
+    .admin-content {
+      padding: var(--admin-spacing-xl);
+      max-width: 1400px;
+      margin: 0 auto;
+    }
+
+    .admin-charts-section {
+      margin-bottom: var(--admin-spacing-xl);
+    }
+
+    .admin-charts-grid {
+      display: grid;
+      grid-template-columns: 2fr 1fr;
+      gap: var(--admin-spacing-lg);
+    }
+
+    .admin-chart-container {
+      position: relative;
+      height: 300px;
+      margin: var(--admin-spacing-lg) 0;
+    }
+
+    .admin-device-stats {
+      display: flex;
+      flex-direction: column;
+      gap: var(--admin-spacing-sm);
+      margin-top: var(--admin-spacing-md);
+    }
+
+    .admin-device-stat {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: var(--admin-spacing-sm);
+      background-color: var(--admin-bg-tertiary);
+      border-radius: var(--admin-radius-md);
+    }
+
+    .admin-device-label {
+      font-weight: 500;
+      color: var(--admin-text-primary);
+    }
+
+    .admin-device-value {
+      font-weight: 600;
+      color: var(--admin-primary);
+    }
+
+    .admin-tables-section {
+      margin-bottom: var(--admin-spacing-xl);
+    }
+
+    .admin-tables-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: var(--admin-spacing-lg);
+    }
+
+    .admin-table-container {
+      overflow-x: auto;
+    }
+
+    .admin-activity-section {
+      margin-bottom: var(--admin-spacing-xl);
+    }
+
+    .admin-activity-controls {
+      display: flex;
+      gap: var(--admin-spacing-md);
+      align-items: center;
+    }
+
+    .admin-activity-list {
+      max-height: 400px;
+      overflow-y: auto;
+    }
+
+    .admin-activity-item {
+      display: grid;
+      grid-template-columns: 150px 1fr 120px;
+      gap: var(--admin-spacing-md);
+      padding: var(--admin-spacing-md);
+      border-bottom: 1px solid var(--admin-border-light);
+      align-items: center;
+    }
+
+    .admin-activity-item:hover {
+      background-color: var(--admin-bg-tertiary);
+    }
+
+    .admin-activity-time {
+      font-size: var(--admin-font-size-sm);
+      color: var(--admin-text-muted);
+      font-family: monospace;
+    }
+
+    .admin-activity-action {
+      font-weight: 500;
+      color: var(--admin-text-primary);
+    }
+
+    .admin-activity-info {
+      font-size: var(--admin-font-size-sm);
+      color: var(--admin-text-secondary);
+    }
+
+    .admin-activity-ip {
+      font-size: var(--admin-font-size-sm);
+      color: var(--admin-text-muted);
+      font-family: monospace;
+      text-align: right;
+    }
+
+    /* User Info Styles */
+    .admin-user-info {
+      display: flex;
+      align-items: center;
+      gap: var(--admin-spacing-md);
+      padding: var(--admin-spacing-lg);
+      border-bottom: 1px solid var(--admin-border-light);
+      margin-bottom: var(--admin-spacing-lg);
+    }
+
+    .admin-user-avatar img {
+      width: 40px;
+      height: 40px;
+      border-radius: 50%;
+      object-fit: cover;
+    }
+
+    .admin-user-name {
+      font-weight: 600;
+      color: var(--admin-text-primary);
+    }
+
+    .admin-user-role {
+      font-size: var(--admin-font-size-sm);
+      color: var(--admin-text-secondary);
+    }
+
+    .admin-nav-footer {
+      margin-top: auto;
+      padding-top: var(--admin-spacing-lg);
+      border-top: 1px solid var(--admin-border-light);
+    }
+
+    .admin-logout-form {
+      width: 100%;
+    }
+
+    .admin-logout-btn {
+      width: 100%;
+      background: none;
+      border: none;
+      text-align: left;
+      color: var(--admin-danger);
+    }
+
+    .admin-logout-btn:hover {
+      background-color: rgb(239 68 68 / 0.1);
+    }
+
+    .admin-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+
+    .admin-header-left {
+      display: flex;
+      align-items: center;
+      gap: var(--admin-spacing-md);
+    }
+
+    .admin-header-right {
+      display: flex;
+      align-items: center;
+      gap: var(--admin-spacing-md);
+    }
+
+    .admin-sidebar-toggle {
+      display: none;
+      background: none;
+      border: none;
+      color: var(--admin-text-primary);
+      cursor: pointer;
+      padding: var(--admin-spacing-sm);
+      border-radius: var(--admin-radius-md);
+    }
+
+    .admin-sidebar-toggle:hover {
+      background-color: var(--admin-bg-tertiary);
+    }
+
+    .admin-header-time {
+      font-size: var(--admin-font-size-sm);
+      color: var(--admin-text-secondary);
+      font-family: monospace;
+    }
+
+    /* Responsive Design */
+    @media (max-width: 1024px) {
+      .admin-charts-grid {
+        grid-template-columns: 1fr;
+      }
+      
+      .admin-tables-grid {
+        grid-template-columns: 1fr;
+      }
+      
+      .admin-sidebar-toggle {
+        display: block;
+      }
+      
+      .admin-activity-item {
+        grid-template-columns: 1fr;
+        gap: var(--admin-spacing-sm);
+      }
+      
+      .admin-activity-ip {
+        text-align: left;
+      }
+    }
+
+    @media (max-width: 768px) {
+      .admin-content {
+        padding: var(--admin-spacing-md);
+      }
+      
+      .admin-metrics-grid {
+        grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+      }
+      
+      .admin-activity-controls {
+        flex-direction: column;
+        align-items: stretch;
+      }
+    }
+  </style>
+
+  <script>
+    // Theme toggle functionality
+    const themeToggle = document.getElementById('themeToggle');
+    const body = document.body;
+    
+    // Check for saved theme preference
+    const savedTheme = localStorage.getItem('admin-theme');
+    if (savedTheme) {
+      body.setAttribute('data-theme', savedTheme);
+      if (savedTheme === 'dark') {
+        themeToggle.classList.add('dark');
+      }
+    }
+    
+    themeToggle.addEventListener('click', () => {
+      const currentTheme = body.getAttribute('data-theme');
+      const newTheme = currentTheme === 'dark' ? 'light' : 'dark';
+      
+      body.setAttribute('data-theme', newTheme);
+      localStorage.setItem('admin-theme', newTheme);
+      
+      if (newTheme === 'dark') {
+        themeToggle.classList.add('dark');
+      } else {
+        themeToggle.classList.remove('dark');
+      }
+    });
+    
+    // Sidebar toggle functionality
+    const sidebarToggle = document.getElementById('sidebarToggle');
+    const sidebar = document.getElementById('adminSidebar');
+    const mainContent = document.querySelector('.admin-main');
+    
+    sidebarToggle.addEventListener('click', () => {
+      sidebar.classList.toggle('mobile-open');
+    });
+    
+    // Current time display
+    function updateTime() {
+      const now = new Date();
+      const timeString = now.toLocaleString('es-ES', {
+        year: 'numeric',
+        month: '2-digit',
+        day: '2-digit',
+        hour: '2-digit',
+        minute: '2-digit',
+        second: '2-digit'
+      });
+      document.getElementById('currentTime').textContent = timeString;
+    }
+    
+    updateTime();
+    setInterval(updateTime, 1000);
+    
+    // Chart initialization (using Chart.js)
+    function initCharts() {
+      // Traffic Chart
+      const trafficCtx = document.getElementById('trafficChart').getContext('2d');
+      new Chart(trafficCtx, {
+        type: 'line',
+        data: {
+          labels: ['Sem 1', 'Sem 2', 'Sem 3', 'Sem 4'],
+          datasets: [{
+            label: 'Visitas',
+            data: [8234, 9156, 8934, 9847],
+            borderColor: 'rgb(37, 99, 235)',
+            backgroundColor: 'rgba(37, 99, 235, 0.1)',
+            tension: 0.4,
+            fill: true
+          }]
+        },
+        options: {
+          responsive: true,
+          maintainAspectRatio: false,
+          plugins: {
+            legend: {
+              display: false
+            }
+          },
+          scales: {
+            y: {
+              beginAtZero: true
+            }
+          }
+        }
+      });
+      
+      // Device Chart
+      const deviceCtx = document.getElementById('deviceChart').getContext('2d');
+      new Chart(deviceCtx, {
+        type: 'doughnut',
+        data: {
+          labels: ['Desktop', 'Mobile', 'Tablet'],
+          datasets: [{
+            data: [45.6, 42.3, 12.1],
+            backgroundColor: [
+              'rgb(37, 99, 235)',
+              'rgb(16, 185, 129)',
+              'rgb(245, 158, 11)'
+            ]
+          }]
+        },
+        options: {
+          responsive: true,
+          maintainAspectRatio: false,
+          plugins: {
+            legend: {
+              display: false
+            }
+          }
+        }
+      });
+    }
+    
+    // Load Chart.js and initialize charts
+    const script = document.createElement('script');
+    script.src = 'https://cdn.jsdelivr.net/npm/chart.js';
+    script.onload = initCharts;
+    document.head.appendChild(script);
+    
+    // Activity refresh
+    document.getElementById('refreshActivity').addEventListener('click', () => {
+      // Simulate activity refresh
+      const button = document.getElementById('refreshActivity');
+      button.innerHTML = '<div class="admin-loading"></div> Actualizando...';
+      
+      setTimeout(() => {
+        button.innerHTML = `
+          <svg width="16" height="16" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15"></path>
+          </svg>
+          Actualizar
+        `;
+      }, 2000);
+    });
+    
+    // Export functionality
+    document.getElementById('exportPages').addEventListener('click', () => {
+      // Simulate export
+      alert('Exportando datos de páginas más visitadas...');
+    });
+    
+    // Activity filter
+    document.getElementById('activityFilter').addEventListener('change', (e) => {
+      const filter = e.target.value;
+      const items = document.querySelectorAll('.admin-activity-item');
+      
+      items.forEach(item => {
+        const action = item.querySelector('.admin-activity-action').textContent.toLowerCase();
+        
+        if (filter === 'all') {
+          item.style.display = 'grid';
+        } else if (filter === 'visits' && action.includes('visitada')) {
+          item.style.display = 'grid';
+        } else if (filter === 'forms' && action.includes('formulario')) {
+          item.style.display = 'grid';
+        } else if (filter === 'searches' && action.includes('búsqueda')) {
+          item.style.display = 'grid';
+        } else {
+          item.style.display = 'none';
+        }
+      });
+    });
+    
+    // Traffic period change
+    document.getElementById('trafficPeriod').addEventListener('change', (e) => {
+      // In a real app, this would update the chart with new data
+      console.log('Changing traffic period to:', e.target.value);
+    });
+  </script>
+</Layout>

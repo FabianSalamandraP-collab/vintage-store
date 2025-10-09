@@ -1,0 +1,708 @@
+---
+/**
+ * Dashboard de Monitoreo de Seguridad
+ * Componente para visualizar estadísticas y eventos de seguridad
+ */
+---
+
+<div class="security-dashboard" id="securityDashboard">
+  <div class="dashboard-header">
+    <h2>🛡️ Dashboard de Seguridad</h2>
+    <div class="dashboard-controls">
+      <button class="btn-refresh" id="refreshStats">🔄 Actualizar</button>
+      <button class="btn-export" id="exportLogs">📊 Exportar</button>
+      <button class="btn-clear" id="clearLogs">🗑️ Limpiar</button>
+    </div>
+  </div>
+  
+  <div class="dashboard-grid">
+    <!-- Estadísticas generales -->
+    <div class="stats-card">
+      <h3>📈 Estadísticas Generales</h3>
+      <div class="stats-grid">
+        <div class="stat-item">
+          <span class="stat-value" id="totalEvents">0</span>
+          <span class="stat-label">Eventos Totales</span>
+        </div>
+        <div class="stat-item critical">
+          <span class="stat-value" id="criticalEvents">0</span>
+          <span class="stat-label">Eventos Críticos</span>
+        </div>
+        <div class="stat-item warning">
+          <span class="stat-value" id="warningEvents">0</span>
+          <span class="stat-label">Advertencias</span>
+        </div>
+        <div class="stat-item alert">
+          <span class="stat-value" id="alertsGenerated">0</span>
+          <span class="stat-label">Alertas Generadas</span>
+        </div>
+      </div>
+    </div>
+    
+    <!-- Eventos recientes -->
+    <div class="events-card">
+      <h3>🕒 Eventos Recientes</h3>
+      <div class="events-list" id="recentEvents">
+        <div class="no-events">No hay eventos recientes</div>
+      </div>
+    </div>
+    
+    <!-- Tipos de eventos -->
+    <div class="event-types-card">
+      <h3>📊 Tipos de Eventos</h3>
+      <div class="event-types-chart" id="eventTypesChart">
+        <div class="no-data">No hay datos disponibles</div>
+      </div>
+    </div>
+    
+    <!-- Alertas activas -->
+    <div class="alerts-card">
+      <h3>🚨 Alertas Activas</h3>
+      <div class="alerts-list" id="activeAlerts">
+        <div class="no-alerts">No hay alertas activas</div>
+      </div>
+    </div>
+    
+    <!-- Distribución horaria -->
+    <div class="hourly-card">
+      <h3>⏰ Distribución Horaria</h3>
+      <div class="hourly-chart" id="hourlyChart">
+        <div class="no-data">No hay datos disponibles</div>
+      </div>
+    </div>
+    
+    <!-- Estado del sistema -->
+    <div class="system-status-card">
+      <h3>⚡ Estado del Sistema</h3>
+      <div class="status-indicators">
+        <div class="status-item">
+          <span class="status-indicator" id="securityStatus">🟢</span>
+          <span class="status-label">Seguridad</span>
+        </div>
+        <div class="status-item">
+          <span class="status-indicator" id="monitoringStatus">🟢</span>
+          <span class="status-label">Monitoreo</span>
+        </div>
+        <div class="status-item">
+          <span class="status-indicator" id="loggingStatus">🟢</span>
+          <span class="status-label">Logging</span>
+        </div>
+      </div>
+      <div class="session-info">
+        <div class="session-item">
+          <span class="session-label">Sesión:</span>
+          <span class="session-value" id="sessionId">-</span>
+        </div>
+        <div class="session-item">
+          <span class="session-label">Duración:</span>
+          <span class="session-value" id="sessionDuration">-</span>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<style>
+  .security-dashboard {
+    background: #f8f9fa;
+    border-radius: 12px;
+    padding: 24px;
+    margin: 20px 0;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+  }
+  
+  .dashboard-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 24px;
+    padding-bottom: 16px;
+    border-bottom: 2px solid #e9ecef;
+  }
+  
+  .dashboard-header h2 {
+    margin: 0;
+    color: #2c3e50;
+    font-size: 1.5rem;
+  }
+  
+  .dashboard-controls {
+    display: flex;
+    gap: 8px;
+  }
+  
+  .dashboard-controls button {
+    padding: 8px 16px;
+    border: none;
+    border-radius: 6px;
+    cursor: pointer;
+    font-size: 0.875rem;
+    font-weight: 500;
+    transition: all 0.2s ease;
+  }
+  
+  .btn-refresh {
+    background: #28a745;
+    color: white;
+  }
+  
+  .btn-refresh:hover {
+    background: #218838;
+  }
+  
+  .btn-export {
+    background: #007bff;
+    color: white;
+  }
+  
+  .btn-export:hover {
+    background: #0056b3;
+  }
+  
+  .btn-clear {
+    background: #dc3545;
+    color: white;
+  }
+  
+  .btn-clear:hover {
+    background: #c82333;
+  }
+  
+  .dashboard-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+    gap: 20px;
+  }
+  
+  .stats-card,
+  .events-card,
+  .event-types-card,
+  .alerts-card,
+  .hourly-card,
+  .system-status-card {
+    background: white;
+    border-radius: 8px;
+    padding: 20px;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+    border-left: 4px solid #007bff;
+  }
+  
+  .stats-card h3,
+  .events-card h3,
+  .event-types-card h3,
+  .alerts-card h3,
+  .hourly-card h3,
+  .system-status-card h3 {
+    margin: 0 0 16px 0;
+    color: #2c3e50;
+    font-size: 1.1rem;
+  }
+  
+  .stats-grid {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 16px;
+  }
+  
+  .stat-item {
+    text-align: center;
+    padding: 16px;
+    border-radius: 6px;
+    background: #f8f9fa;
+  }
+  
+  .stat-item.critical {
+    background: #fff5f5;
+    border: 1px solid #fed7d7;
+  }
+  
+  .stat-item.warning {
+    background: #fffbf0;
+    border: 1px solid #feebc8;
+  }
+  
+  .stat-item.alert {
+    background: #fff0f0;
+    border: 1px solid #fbb6ce;
+  }
+  
+  .stat-value {
+    display: block;
+    font-size: 2rem;
+    font-weight: bold;
+    color: #2c3e50;
+  }
+  
+  .stat-item.critical .stat-value {
+    color: #e53e3e;
+  }
+  
+  .stat-item.warning .stat-value {
+    color: #dd6b20;
+  }
+  
+  .stat-item.alert .stat-value {
+    color: #d53f8c;
+  }
+  
+  .stat-label {
+    font-size: 0.875rem;
+    color: #6c757d;
+    margin-top: 4px;
+  }
+  
+  .events-list {
+    max-height: 300px;
+    overflow-y: auto;
+  }
+  
+  .event-item {
+    padding: 12px;
+    border-bottom: 1px solid #e9ecef;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+  }
+  
+  .event-item:last-child {
+    border-bottom: none;
+  }
+  
+  .event-type {
+    font-weight: 500;
+    color: #2c3e50;
+  }
+  
+  .event-time {
+    font-size: 0.75rem;
+    color: #6c757d;
+  }
+  
+  .event-level {
+    padding: 2px 8px;
+    border-radius: 12px;
+    font-size: 0.75rem;
+    font-weight: 500;
+  }
+  
+  .event-level.info {
+    background: #d1ecf1;
+    color: #0c5460;
+  }
+  
+  .event-level.warning {
+    background: #fff3cd;
+    color: #856404;
+  }
+  
+  .event-level.critical {
+    background: #f8d7da;
+    color: #721c24;
+  }
+  
+  .event-level.alert {
+    background: #f5c6cb;
+    color: #721c24;
+  }
+  
+  .event-types-chart,
+  .hourly-chart {
+    min-height: 200px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+  
+  .chart-bar {
+    display: flex;
+    align-items: center;
+    margin-bottom: 8px;
+  }
+  
+  .chart-label {
+    width: 120px;
+    font-size: 0.875rem;
+    color: #6c757d;
+  }
+  
+  .chart-bar-fill {
+    height: 20px;
+    background: #007bff;
+    border-radius: 4px;
+    margin-right: 8px;
+    transition: width 0.3s ease;
+  }
+  
+  .chart-value {
+    font-size: 0.875rem;
+    font-weight: 500;
+    color: #2c3e50;
+  }
+  
+  .alerts-list {
+    max-height: 250px;
+    overflow-y: auto;
+  }
+  
+  .alert-item {
+    padding: 12px;
+    border-left: 4px solid #dc3545;
+    background: #fff5f5;
+    margin-bottom: 8px;
+    border-radius: 4px;
+  }
+  
+  .alert-type {
+    font-weight: 600;
+    color: #dc3545;
+    margin-bottom: 4px;
+  }
+  
+  .alert-time {
+    font-size: 0.75rem;
+    color: #6c757d;
+  }
+  
+  .status-indicators {
+    display: flex;
+    gap: 16px;
+    margin-bottom: 16px;
+  }
+  
+  .status-item {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 4px;
+  }
+  
+  .status-indicator {
+    font-size: 1.5rem;
+  }
+  
+  .status-label {
+    font-size: 0.75rem;
+    color: #6c757d;
+  }
+  
+  .session-info {
+    border-top: 1px solid #e9ecef;
+    padding-top: 16px;
+  }
+  
+  .session-item {
+    display: flex;
+    justify-content: space-between;
+    margin-bottom: 8px;
+  }
+  
+  .session-label {
+    font-size: 0.875rem;
+    color: #6c757d;
+  }
+  
+  .session-value {
+    font-size: 0.875rem;
+    font-weight: 500;
+    color: #2c3e50;
+    font-family: monospace;
+  }
+  
+  .no-events,
+  .no-alerts,
+  .no-data {
+    text-align: center;
+    color: #6c757d;
+    font-style: italic;
+    padding: 40px 20px;
+  }
+  
+  @media (max-width: 768px) {
+    .dashboard-header {
+      flex-direction: column;
+      gap: 16px;
+      align-items: stretch;
+    }
+    
+    .dashboard-controls {
+      justify-content: center;
+    }
+    
+    .dashboard-grid {
+      grid-template-columns: 1fr;
+    }
+    
+    .stats-grid {
+      grid-template-columns: 1fr;
+    }
+    
+    .status-indicators {
+      justify-content: center;
+    }
+  }
+</style>
+
+<script is:inline>
+  // Sistema de logging de seguridad simplificado para dashboard
+  const DashboardLogger = {
+    logs: JSON.parse(localStorage.getItem('security_logs') || '[]'),
+    alerts: JSON.parse(localStorage.getItem('security_alerts') || '[]'),
+    sessionId: 'session-' + Date.now(),
+    sessionStart: Date.now(),
+    
+    getStats() {
+      const logs = this.logs;
+      const now = Date.now();
+      const oneHour = 60 * 60 * 1000;
+      
+      const recentLogs = logs.filter(log => (now - log.timestamp) < oneHour);
+      const criticalEvents = recentLogs.filter(log => log.level === 'critical').length;
+      const warningEvents = recentLogs.filter(log => log.level === 'warning').length;
+      
+      const eventsByType = {};
+      recentLogs.forEach(log => {
+        eventsByType[log.type] = (eventsByType[log.type] || 0) + 1;
+      });
+      
+      return {
+        totalEvents: recentLogs.length,
+        criticalEvents,
+        warningEvents,
+        alertsGenerated: this.alerts.length,
+        eventsByType,
+        hourlyDistribution: this.getHourlyDistribution(recentLogs),
+        sessionDuration: now - this.sessionStart,
+        sessionId: this.sessionId
+      };
+    },
+    
+    getHourlyDistribution(logs) {
+      const distribution = {};
+      logs.forEach(log => {
+        const hour = new Date(log.timestamp).getHours();
+        distribution[hour] = (distribution[hour] || 0) + 1;
+      });
+      return distribution;
+    },
+    
+    exportLogs() {
+      return JSON.stringify({
+        logs: this.logs,
+        alerts: this.alerts,
+        exportTime: Date.now()
+      }, null, 2);
+    },
+    
+    clearLogs() {
+      this.logs = [];
+      this.alerts = [];
+      localStorage.removeItem('security_logs');
+      localStorage.removeItem('security_alerts');
+    }
+  };
+  
+  class SecurityDashboard {
+    constructor() {
+      this.dashboard = document.getElementById('securityDashboard');
+      this.refreshInterval = null;
+      this.init();
+    }
+    
+    init() {
+      this.bindEvents();
+      this.updateDashboard();
+      this.startAutoRefresh();
+    }
+    
+    bindEvents() {
+      document.getElementById('refreshStats')?.addEventListener('click', () => {
+        this.updateDashboard();
+      });
+      
+      document.getElementById('exportLogs')?.addEventListener('click', () => {
+        this.exportLogs();
+      });
+      
+      document.getElementById('clearLogs')?.addEventListener('click', () => {
+        this.clearLogs();
+      });
+    }
+    
+    updateDashboard() {
+      const stats = DashboardLogger.getStats();
+      this.updateGeneralStats(stats);
+      this.updateRecentEvents();
+      this.updateEventTypes(stats.eventsByType);
+      this.updateActiveAlerts();
+      this.updateHourlyDistribution(stats.hourlyDistribution);
+      this.updateSystemStatus(stats);
+    }
+    
+    updateGeneralStats(stats) {
+      document.getElementById('totalEvents').textContent = stats.totalEvents;
+      document.getElementById('criticalEvents').textContent = stats.criticalEvents;
+      document.getElementById('warningEvents').textContent = stats.warningEvents;
+      document.getElementById('alertsGenerated').textContent = stats.alertsGenerated;
+    }
+    
+    updateRecentEvents() {
+      const container = document.getElementById('recentEvents');
+      const recentLogs = DashboardLogger.logs.slice(-10).reverse();
+      
+      if (recentLogs.length === 0) {
+        container.innerHTML = '<div class="no-events">No hay eventos recientes</div>';
+        return;
+      }
+      
+      container.innerHTML = recentLogs.map(log => `
+        <div class="event-item">
+          <div>
+            <div class="event-type">${log.eventType}</div>
+            <div class="event-time">${new Date(log.timestamp).toLocaleString()}</div>
+          </div>
+          <span class="event-level ${log.level}">${log.level.toUpperCase()}</span>
+        </div>
+      `).join('');
+    }
+    
+    updateEventTypes(eventsByType) {
+      const container = document.getElementById('eventTypesChart');
+      
+      if (Object.keys(eventsByType).length === 0) {
+        container.innerHTML = '<div class="no-data">No hay datos disponibles</div>';
+        return;
+      }
+      
+      const maxCount = Math.max(...Object.values(eventsByType));
+      const chartHtml = Object.entries(eventsByType)
+        .sort(([,a], [,b]) => b - a)
+        .slice(0, 8)
+        .map(([type, count]) => {
+          const percentage = (count / maxCount) * 100;
+          return `
+            <div class="chart-bar">
+              <div class="chart-label">${type}</div>
+              <div class="chart-bar-fill" style="width: ${percentage}%"></div>
+              <div class="chart-value">${count}</div>
+            </div>
+          `;
+        }).join('');
+      
+      container.innerHTML = chartHtml;
+    }
+    
+    updateActiveAlerts() {
+      const container = document.getElementById('activeAlerts');
+      const alerts = DashboardLogger.alerts.slice(-5).reverse();
+      
+      if (alerts.length === 0) {
+        container.innerHTML = '<div class="no-alerts">No hay alertas activas</div>';
+        return;
+      }
+      
+      container.innerHTML = alerts.map(alert => `
+        <div class="alert-item">
+          <div class="alert-type">${alert.type}</div>
+          <div class="alert-time">${new Date(alert.timestamp).toLocaleString()}</div>
+        </div>
+      `).join('');
+    }
+    
+    updateHourlyDistribution(hourlyData) {
+      const container = document.getElementById('hourlyChart');
+      
+      if (Object.keys(hourlyData).length === 0) {
+        container.innerHTML = '<div class="no-data">No hay datos disponibles</div>';
+        return;
+      }
+      
+      const maxCount = Math.max(...Object.values(hourlyData));
+      const chartHtml = Array.from({length: 24}, (_, hour) => {
+        const count = hourlyData[hour] || 0;
+        const percentage = maxCount > 0 ? (count / maxCount) * 100 : 0;
+        return `
+          <div class="chart-bar">
+            <div class="chart-label">${hour}:00</div>
+            <div class="chart-bar-fill" style="width: ${percentage}%"></div>
+            <div class="chart-value">${count}</div>
+          </div>
+        `;
+      }).join('');
+      
+      container.innerHTML = chartHtml;
+    }
+    
+    updateSystemStatus(stats) {
+      // Determinar estado de seguridad
+      const securityStatus = stats.criticalEvents > 0 ? '🔴' : 
+                           stats.warningEvents > 5 ? '🟡' : '🟢';
+      document.getElementById('securityStatus').textContent = securityStatus;
+      
+      // Estado de monitoreo
+      document.getElementById('monitoringStatus').textContent = '🟢';
+      
+      // Estado de logging
+      const loggingStatus = stats.totalEvents > 0 ? '🟢' : '🟡';
+      document.getElementById('loggingStatus').textContent = loggingStatus;
+      
+      // Información de sesión
+      document.getElementById('sessionId').textContent = DashboardLogger.sessionId.substring(0, 12) + '...';
+      
+      const duration = Math.floor(stats.sessionDuration / 1000);
+      const minutes = Math.floor(duration / 60);
+      const seconds = duration % 60;
+      document.getElementById('sessionDuration').textContent = `${minutes}m ${seconds}s`;
+    }
+    
+    exportLogs() {
+      const format = prompt('Formato de exportación (json/csv):', 'json');
+      if (!format) return;
+      
+      try {
+        const data = DashboardLogger.exportLogs();
+        const blob = new Blob([data], { 
+          type: format === 'json' ? 'application/json' : 'text/csv' 
+        });
+        
+        const url = URL.createObjectURL(blob);
+        const a = document.createElement('a');
+        a.href = url;
+        a.download = `security-logs-${new Date().toISOString().split('T')[0]}.${format}`;
+        document.body.appendChild(a);
+        a.click();
+        document.body.removeChild(a);
+        URL.revokeObjectURL(url);
+        
+        alert('Logs exportados exitosamente');
+      } catch (error) {
+        alert('Error al exportar logs: ' + error.message);
+      }
+    }
+    
+    clearLogs() {
+      if (confirm('¿Estás seguro de que quieres limpiar todos los logs de seguridad?')) {
+        DashboardLogger.clearLogs();
+        this.updateDashboard();
+        alert('Logs de seguridad limpiados');
+      }
+    }
+    
+    startAutoRefresh() {
+      this.refreshInterval = setInterval(() => {
+        this.updateDashboard();
+      }, 30000); // Actualizar cada 30 segundos
+    }
+    
+    destroy() {
+      if (this.refreshInterval) {
+        clearInterval(this.refreshInterval);
+      }
+    }
+  }
+  
+  // Inicializar dashboard cuando el DOM esté listo
+  document.addEventListener('DOMContentLoaded', () => {
+    new SecurityDashboard();
+  });
+</script>

@@ -1,0 +1,55 @@
+{
+  "siteStats": {
+    "totalVisits": 1247,
+    "todayVisits": 23,
+    "weekVisits": 156,
+    "monthVisits": 678,
+    "lastUpdated": "2024-01-15T16:00:00Z"
+  },
+  "contactStats": {
+    "totalMessages": 2,
+    "unreadMessages": 1,
+    "todayMessages": 1,
+    "weekMessages": 2,
+    "monthMessages": 2
+  },
+  "productStats": {
+    "totalProducts": 12,
+    "activeProducts": 12,
+    "inactiveProducts": 0,
+    "mostViewed": [
+      {
+        "id": "vintage-jacket-80s",
+        "name": "Chaqueta Vintage 80s",
+        "views": 89
+      },
+      {
+        "id": "retro-sunglasses",
+        "name": "Gafas Retro",
+        "views": 67
+      },
+      {
+        "id": "vintage-boots",
+        "name": "Botas Vintage",
+        "views": 54
+      }
+    ]
+  },
+  "recentActivity": [
+    {
+      "type": "message",
+      "description": "Nuevo mensaje de María González",
+      "timestamp": "2024-01-15T10:30:00Z"
+    },
+    {
+      "type": "visit",
+      "description": "23 visitas hoy",
+      "timestamp": "2024-01-15T16:00:00Z"
+    },
+    {
+      "type": "message",
+      "description": "Nuevo mensaje de Carlos Rodríguez",
+      "timestamp": "2024-01-14T15:45:00Z"
+    }
+  ]
+}

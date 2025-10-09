@@ -17,7 +17,7 @@ const primaryImage = product.images.find(img => img.primary) || product.images[0
   <div class="product-image-container">
     <a href={`/producto/${product.id}`} class="product-link">
       <img 
-        src={primaryImage?.url || '/images/placeholder.jpg'} 
+        src={primaryImage?.url || '/images/placeholder.svg'} 
         alt={primaryImage?.alt || product.name}
         class="product-image"
         loading="lazy"

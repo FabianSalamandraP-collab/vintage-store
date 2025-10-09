@@ -1,0 +1,1186 @@
+---
+// Admin Users Management Page
+import Layout from '../../layouts/Layout.astro';
+
+// Server-side authentication check
+const cookies = Astro.cookies;
+const sessionToken = cookies.get('admin_session')?.value;
+
+if (!sessionToken) {
+  return Astro.redirect('/admin/login');
+}
+
+// Mock users data (in production, fetch from database)
+const usersData = {
+  users: [
+    {
+      id: 1,
+      name: 'Juan Pérez',
+      email: 'juan.perez@email.com',
+      role: 'customer',
+      status: 'active',
+      lastLogin: '2024-01-15 14:30',
+      registeredAt: '2024-01-10 09:15',
+      orders: 12,
+      totalSpent: 1250.50,
+      avatar: '/images/user1.jpg'
+    },
+    {
+      id: 2,
+      name: 'María García',
+      email: 'maria.garcia@email.com',
+      role: 'customer',
+      status: 'active',
+      lastLogin: '2024-01-15 12:45',
+      registeredAt: '2024-01-08 16:20',
+      orders: 8,
+      totalSpent: 890.25,
+      avatar: '/images/user2.jpg'
+    },
+    {
+      id: 3,
+      name: 'Carlos López',
+      email: 'carlos.lopez@email.com',
+      role: 'customer',
+      status: 'inactive',
+      lastLogin: '2024-01-10 08:30',
+      registeredAt: '2024-01-05 11:45',
+      orders: 3,
+      totalSpent: 245.75,
+      avatar: '/images/user3.jpg'
+    },
+    {
+      id: 4,
+      name: 'Ana Martín',
+      email: 'ana.martin@email.com',
+      role: 'customer',
+      status: 'active',
+      lastLogin: '2024-01-15 16:15',
+      registeredAt: '2024-01-12 14:30',
+      orders: 5,
+      totalSpent: 567.80,
+      avatar: '/images/user4.jpg'
+    },
+    {
+      id: 5,
+      name: 'Admin Usuario',
+      email: 'admin@vintage-store.com',
+      role: 'admin',
+      status: 'active',
+      lastLogin: '2024-01-15 09:30',
+      registeredAt: '2024-01-01 10:00',
+      orders: 0,
+      totalSpent: 0,
+      avatar: '/images/admin.jpg'
+    },
+    {
+      id: 6,
+      name: 'Moderador Test',
+      email: 'moderador@vintage-store.com',
+      role: 'moderator',
+      status: 'active',
+      lastLogin: '2024-01-14 15:20',
+      registeredAt: '2024-01-02 12:00',
+      orders: 0,
+      totalSpent: 0,
+      avatar: '/images/moderator.jpg'
+    }
+  ],
+  stats: {
+    totalUsers: 6,
+    activeUsers: 5,
+    newUsersThisMonth: 4,
+    totalCustomers: 4,
+    totalAdmins: 2
+  }
+};
+
+const currentUser = {
+  name: 'Admin Usuario',
+  role: 'Administrador',
+  avatar: '/images/admin-avatar.jpg'
+};
+---
+
+<Layout title="Gestión de Usuarios - Admin Panel">
+  <link rel="stylesheet" href="/src/styles/admin.css">
+  
+  <div class="admin-container">
+    <div class="admin-layout">
+      <!-- Sidebar -->
+      <aside class="admin-sidebar" id="adminSidebar">
+        <div class="admin-nav">
+          <!-- User Info -->
+          <div class="admin-user-info">
+            <div class="admin-user-avatar">
+              <img src={currentUser.avatar} alt={currentUser.name} onerror="this.src='data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iNDAiIGhlaWdodD0iNDAiIHZpZXdCb3g9IjAgMCA0MCA0MCIgZmlsbD0ibm9uZSIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj4KPGNpcmNsZSBjeD0iMjAiIGN5PSIyMCIgcj0iMjAiIGZpbGw9IiNmMWY1ZjkiLz4KPHN2ZyB3aWR0aD0iMjQiIGhlaWdodD0iMjQiIHZpZXdCb3g9IjAgMCAyNCAyNCIgZmlsbD0ibm9uZSIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIiB4PSI4IiB5PSI4Ij4KPHBhdGggZD0iTTIwIDIxdi0yYTQgNCAwIDAgMC00LTRIOGE0IDQgMCAwIDAtNCA0djIiIHN0cm9rZT0iIzY0NzQ4YiIgc3Ryb2tlLXdpZHRoPSIyIiBzdHJva2UtbGluZWNhcD0icm91bmQiIHN0cm9rZS1saW5lam9pbj0icm91bmQiLz4KPGNpcmNsZSBjeD0iMTIiIGN5PSI3IiByPSI0IiBzdHJva2U9IiM2NDc0OGIiIHN0cm9rZS13aWR0aD0iMiIgc3Ryb2tlLWxpbmVjYXA9InJvdW5kIiBzdHJva2UtbGluZWpvaW49InJvdW5kIi8+Cjwvc3ZnPgo8L3N2Zz4K'">
+            </div>
+            <div class="admin-user-details">
+              <div class="admin-user-name">{currentUser.name}</div>
+              <div class="admin-user-role">{currentUser.role}</div>
+            </div>
+          </div>
+
+          <!-- Navigation Links -->
+          <nav class="admin-nav-links">
+            <a href="/admin/dashboard" class="admin-nav-item">
+              <svg class="admin-nav-icon" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 7v10a2 2 0 002 2h14a2 2 0 002-2V9a2 2 0 00-2-2H5a2 2 0 00-2-2z"></path>
+              </svg>
+              <span>Dashboard</span>
+            </a>
+            
+            <a href="/admin/security" class="admin-nav-item">
+              <svg class="admin-nav-icon" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z"></path>
+              </svg>
+              <span>Seguridad</span>
+            </a>
+            
+            <a href="/admin/analytics" class="admin-nav-item">
+              <svg class="admin-nav-icon" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z"></path>
+              </svg>
+              <span>Analytics</span>
+            </a>
+            
+            <a href="/admin/system" class="admin-nav-item">
+              <svg class="admin-nav-icon" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.065 2.572c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.572 1.065c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.065-2.572c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z"></path>
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"></path>
+              </svg>
+              <span>Sistema</span>
+            </a>
+            
+            <div class="admin-nav-divider"></div>
+            
+            <a href="/admin/users" class="admin-nav-item active">
+              <svg class="admin-nav-icon" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4.354a4 4 0 110 5.292M15 21H3v-1a6 6 0 0112 0v1zm0 0h6v-1a6 6 0 00-9-5.197m13.5-9a2.5 2.5 0 11-5 0 2.5 2.5 0 015 0z"></path>
+              </svg>
+              <span>Usuarios</span>
+            </a>
+            
+            <a href="/admin/products" class="admin-nav-item">
+              <svg class="admin-nav-icon" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M20 7l-8-4-8 4m16 0l-8 4m8-4v10l-8 4m0-10L4 7m8 4v10M4 7v10l8 4"></path>
+              </svg>
+              <span>Productos</span>
+            </a>
+            
+            <a href="/admin/orders" class="admin-nav-item">
+              <svg class="admin-nav-icon" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5H7a2 2 0 00-2 2v10a2 2 0 002 2h8a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2m-3 7h3m-3 4h3m-6-4h.01M9 16h.01"></path>
+              </svg>
+              <span>Pedidos</span>
+            </a>
+          </nav>
+
+          <!-- Logout -->
+          <div class="admin-nav-footer">
+            <form action="/admin/logout" method="POST" class="admin-logout-form">
+              <button type="submit" class="admin-nav-item admin-logout-btn">
+                <svg class="admin-nav-icon" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1"></path>
+                </svg>
+                <span>Cerrar Sesión</span>
+              </button>
+            </form>
+          </div>
+        </div>
+      </aside>
+
+      <!-- Main Content -->
+      <main class="admin-main">
+        <!-- Header -->
+        <header class="admin-header">
+          <div class="admin-header-left">
+            <button class="admin-sidebar-toggle" id="sidebarToggle">
+              <svg width="24" height="24" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16"></path>
+              </svg>
+            </button>
+            <h1>Gestión de Usuarios</h1>
+          </div>
+          
+          <div class="admin-header-right">
+            <div class="admin-theme-toggle" id="themeToggle"></div>
+            <div class="admin-header-time" id="currentTime"></div>
+          </div>
+        </header>
+
+        <!-- Content -->
+        <div class="admin-content">
+          <!-- Stats Cards -->
+          <section class="admin-users-stats">
+            <div class="admin-metrics-grid">
+              <div class="admin-metric-card">
+                <div class="admin-metric-icon">
+                  <svg width="24" height="24" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4.354a4 4 0 110 5.292M15 21H3v-1a6 6 0 0112 0v1zm0 0h6v-1a6 6 0 00-9-5.197m13.5-9a2.5 2.5 0 11-5 0 2.5 2.5 0 015 0z"></path>
+                  </svg>
+                </div>
+                <div class="admin-metric-value">{usersData.stats.totalUsers}</div>
+                <div class="admin-metric-label">Total Usuarios</div>
+                <div class="admin-metric-change positive">+{usersData.stats.newUsersThisMonth} este mes</div>
+              </div>
+              
+              <div class="admin-metric-card">
+                <div class="admin-metric-icon">
+                  <svg width="24" height="24" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+                  </svg>
+                </div>
+                <div class="admin-metric-value">{usersData.stats.activeUsers}</div>
+                <div class="admin-metric-label">Usuarios Activos</div>
+                <div class="admin-metric-change positive">{Math.round((usersData.stats.activeUsers / usersData.stats.totalUsers) * 100)}% del total</div>
+              </div>
+              
+              <div class="admin-metric-card">
+                <div class="admin-metric-icon">
+                  <svg width="24" height="24" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"></path>
+                  </svg>
+                </div>
+                <div class="admin-metric-value">{usersData.stats.totalCustomers}</div>
+                <div class="admin-metric-label">Clientes</div>
+                <div class="admin-metric-change">Usuarios compradores</div>
+              </div>
+              
+              <div class="admin-metric-card">
+                <div class="admin-metric-icon">
+                  <svg width="24" height="24" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z"></path>
+                  </svg>
+                </div>
+                <div class="admin-metric-value">{usersData.stats.totalAdmins}</div>
+                <div class="admin-metric-label">Administradores</div>
+                <div class="admin-metric-change">Staff del sistema</div>
+              </div>
+            </div>
+          </section>
+
+          <!-- Users Management -->
+          <section class="admin-users-section">
+            <div class="admin-card">
+              <div class="admin-card-header">
+                <h3 class="admin-card-title">Lista de Usuarios</h3>
+                <div class="admin-users-actions">
+                  <div class="admin-search-box">
+                    <svg width="20" height="20" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"></path>
+                    </svg>
+                    <input type="text" placeholder="Buscar usuarios..." id="userSearch" class="admin-search-input">
+                  </div>
+                  <select class="admin-select" id="roleFilter">
+                    <option value="">Todos los roles</option>
+                    <option value="admin">Administradores</option>
+                    <option value="moderator">Moderadores</option>
+                    <option value="customer">Clientes</option>
+                  </select>
+                  <select class="admin-select" id="statusFilter">
+                    <option value="">Todos los estados</option>
+                    <option value="active">Activos</option>
+                    <option value="inactive">Inactivos</option>
+                  </select>
+                  <button class="admin-btn admin-btn-primary" id="addUserBtn">
+                    <svg width="16" height="16" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6v6m0 0v6m0-6h6m-6 0H6"></path>
+                    </svg>
+                    Nuevo Usuario
+                  </button>
+                </div>
+              </div>
+              
+              <div class="admin-users-table-container">
+                <table class="admin-table" id="usersTable">
+                  <thead>
+                    <tr>
+                      <th class="admin-table-sortable" data-sort="name">
+                        Usuario
+                        <svg width="16" height="16" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 16V4m0 0L3 8m4-4l4 4m6 0v12m0 0l4-4m-4 4l-4-4"></path>
+                        </svg>
+                      </th>
+                      <th class="admin-table-sortable" data-sort="role">
+                        Rol
+                        <svg width="16" height="16" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 16V4m0 0L3 8m4-4l4 4m6 0v12m0 0l4-4m-4 4l-4-4"></path>
+                        </svg>
+                      </th>
+                      <th class="admin-table-sortable" data-sort="status">
+                        Estado
+                        <svg width="16" height="16" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 16V4m0 0L3 8m4-4l4 4m6 0v12m0 0l4-4m-4 4l-4-4"></path>
+                        </svg>
+                      </th>
+                      <th class="admin-table-sortable" data-sort="lastLogin">
+                        Último Acceso
+                        <svg width="16" height="16" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 16V4m0 0L3 8m4-4l4 4m6 0v12m0 0l4-4m-4 4l-4-4"></path>
+                        </svg>
+                      </th>
+                      <th>Estadísticas</th>
+                      <th>Acciones</th>
+                    </tr>
+                  </thead>
+                  <tbody id="usersTableBody">
+                    {usersData.users.map(user => (
+                      <tr class="admin-table-row" data-user-id={user.id}>
+                        <td>
+                          <div class="admin-user-cell">
+                            <div class="admin-user-avatar-small">
+                              <img src={user.avatar} alt={user.name} onerror="this.src='data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iMzIiIGhlaWdodD0iMzIiIHZpZXdCb3g9IjAgMCAzMiAzMiIgZmlsbD0ibm9uZSIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj4KPGNpcmNsZSBjeD0iMTYiIGN5PSIxNiIgcj0iMTYiIGZpbGw9IiNmMWY1ZjkiLz4KPHN2ZyB3aWR0aD0iMjAiIGhlaWdodD0iMjAiIHZpZXdCb3g9IjAgMCAyNCAyNCIgZmlsbD0ibm9uZSIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIiB4PSI2IiB5PSI2Ij4KPHBhdGggZD0iTTIwIDIxdi0yYTQgNCAwIDAgMC00LTRIOGE0IDQgMCAwIDAtNCA0djIiIHN0cm9rZT0iIzY0NzQ4YiIgc3Ryb2tlLXdpZHRoPSIyIiBzdHJva2UtbGluZWNhcD0icm91bmQiIHN0cm9rZS1saW5lam9pbj0icm91bmQiLz4KPGNpcmNsZSBjeD0iMTIiIGN5PSI3IiByPSI0IiBzdHJva2U9IiM2NDc0OGIiIHN0cm9rZS13aWR0aD0iMiIgc3Ryb2tlLWxpbmVjYXA9InJvdW5kIiBzdHJva2UtbGluZWpvaW49InJvdW5kIi8+Cjwvc3ZnPgo8L3N2Zz4K'">
+                            </div>
+                            <div class="admin-user-info-cell">
+                              <div class="admin-user-name-cell">{user.name}</div>
+                              <div class="admin-user-email-cell">{user.email}</div>
+                            </div>
+                          </div>
+                        </td>
+                        <td>
+                          <span class={`admin-badge admin-badge-${user.role === 'admin' ? 'primary' : user.role === 'moderator' ? 'warning' : 'secondary'}`}>
+                            {user.role === 'admin' ? 'Administrador' : user.role === 'moderator' ? 'Moderador' : 'Cliente'}
+                          </span>
+                        </td>
+                        <td>
+                          <span class={`admin-status admin-status-${user.status}`}>
+                            <span class="admin-status-dot"></span>
+                            {user.status === 'active' ? 'Activo' : 'Inactivo'}
+                          </span>
+                        </td>
+                        <td>
+                          <div class="admin-date-cell">
+                            <div class="admin-date-primary">{user.lastLogin}</div>
+                            <div class="admin-date-secondary">Registrado: {user.registeredAt}</div>
+                          </div>
+                        </td>
+                        <td>
+                          <div class="admin-stats-cell">
+                            <div class="admin-stat-item">
+                              <span class="admin-stat-value">{user.orders}</span>
+                              <span class="admin-stat-label">Pedidos</span>
+                            </div>
+                            <div class="admin-stat-item">
+                              <span class="admin-stat-value">${user.totalSpent.toFixed(2)}</span>
+                              <span class="admin-stat-label">Gastado</span>
+                            </div>
+                          </div>
+                        </td>
+                        <td>
+                          <div class="admin-actions-cell">
+                            <button class="admin-btn admin-btn-sm admin-btn-secondary" onclick={`viewUser(${user.id})`}>
+                              <svg width="16" height="16" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"></path>
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z"></path>
+                              </svg>
+                            </button>
+                            <button class="admin-btn admin-btn-sm admin-btn-primary" onclick={`editUser(${user.id})`}>
+                              <svg width="16" height="16" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z"></path>
+                              </svg>
+                            </button>
+                            <button class="admin-btn admin-btn-sm admin-btn-danger" onclick={`deleteUser(${user.id})`}>
+                              <svg width="16" height="16" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"></path>
+                              </svg>
+                            </button>
+                          </div>
+                        </td>
+                      </tr>
+                    ))}
+                  </tbody>
+                </table>
+              </div>
+              
+              <!-- Pagination -->
+              <div class="admin-pagination">
+                <div class="admin-pagination-info">
+                  Mostrando 1-{usersData.users.length} de {usersData.users.length} usuarios
+                </div>
+                <div class="admin-pagination-controls">
+                  <button class="admin-btn admin-btn-secondary" disabled>
+                    <svg width="16" height="16" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7"></path>
+                    </svg>
+                    Anterior
+                  </button>
+                  <span class="admin-pagination-current">Página 1 de 1</span>
+                  <button class="admin-btn admin-btn-secondary" disabled>
+                    Siguiente
+                    <svg width="16" height="16" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"></path>
+                    </svg>
+                  </button>
+                </div>
+              </div>
+            </div>
+          </section>
+        </div>
+      </main>
+    </div>
+  </div>
+
+  <!-- User Modal -->
+  <div class="admin-modal" id="userModal" style="display: none;">
+    <div class="admin-modal-overlay" onclick="closeUserModal()"></div>
+    <div class="admin-modal-content">
+      <div class="admin-modal-header">
+        <h3 id="modalTitle">Detalles del Usuario</h3>
+        <button class="admin-modal-close" onclick="closeUserModal()">
+          <svg width="24" height="24" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path>
+          </svg>
+        </button>
+      </div>
+      <div class="admin-modal-body" id="modalBody">
+        <!-- Content will be populated by JavaScript -->
+      </div>
+    </div>
+  </div>
+
+  <style>
+    /* Users page specific styles */
+    .admin-content {
+      padding: var(--admin-spacing-xl);
+      max-width: 1400px;
+      margin: 0 auto;
+    }
+
+    .admin-users-stats {
+      margin-bottom: var(--admin-spacing-xl);
+    }
+
+    .admin-users-section {
+      margin-bottom: var(--admin-spacing-xl);
+    }
+
+    .admin-users-actions {
+      display: flex;
+      gap: var(--admin-spacing-md);
+      align-items: center;
+    }
+
+    .admin-search-box {
+      position: relative;
+      display: flex;
+      align-items: center;
+    }
+
+    .admin-search-box svg {
+      position: absolute;
+      left: var(--admin-spacing-md);
+      color: var(--admin-text-muted);
+      z-index: 1;
+    }
+
+    .admin-search-input {
+      padding: var(--admin-spacing-sm) var(--admin-spacing-md) var(--admin-spacing-sm) var(--admin-spacing-2xl);
+      border: 1px solid var(--admin-border-light);
+      border-radius: var(--admin-radius-md);
+      background-color: var(--admin-bg-secondary);
+      color: var(--admin-text-primary);
+      font-size: var(--admin-font-size-sm);
+      width: 250px;
+      transition: all var(--admin-transition-fast);
+    }
+
+    .admin-search-input:focus {
+      outline: none;
+      border-color: var(--admin-primary);
+      box-shadow: 0 0 0 3px rgba(99, 102, 241, 0.1);
+    }
+
+    .admin-users-table-container {
+      overflow-x: auto;
+      border-radius: var(--admin-radius-lg);
+      border: 1px solid var(--admin-border-light);
+    }
+
+    .admin-table {
+      width: 100%;
+      border-collapse: collapse;
+      background-color: var(--admin-bg-primary);
+    }
+
+    .admin-table th {
+      background-color: var(--admin-bg-tertiary);
+      padding: var(--admin-spacing-md) var(--admin-spacing-lg);
+      text-align: left;
+      font-weight: 600;
+      color: var(--admin-text-primary);
+      border-bottom: 1px solid var(--admin-border-light);
+      font-size: var(--admin-font-size-sm);
+    }
+
+    .admin-table-sortable {
+      cursor: pointer;
+      user-select: none;
+      position: relative;
+      transition: background-color var(--admin-transition-fast);
+    }
+
+    .admin-table-sortable:hover {
+      background-color: var(--admin-bg-secondary);
+    }
+
+    .admin-table-sortable svg {
+      position: absolute;
+      right: var(--admin-spacing-sm);
+      top: 50%;
+      transform: translateY(-50%);
+      opacity: 0.5;
+      transition: opacity var(--admin-transition-fast);
+    }
+
+    .admin-table-sortable:hover svg {
+      opacity: 1;
+    }
+
+    .admin-table td {
+      padding: var(--admin-spacing-md) var(--admin-spacing-lg);
+      border-bottom: 1px solid var(--admin-border-light);
+      vertical-align: middle;
+    }
+
+    .admin-table-row:hover {
+      background-color: var(--admin-bg-tertiary);
+    }
+
+    .admin-user-cell {
+      display: flex;
+      align-items: center;
+      gap: var(--admin-spacing-md);
+    }
+
+    .admin-user-avatar-small img {
+      width: 40px;
+      height: 40px;
+      border-radius: 50%;
+      object-fit: cover;
+    }
+
+    .admin-user-name-cell {
+      font-weight: 500;
+      color: var(--admin-text-primary);
+    }
+
+    .admin-user-email-cell {
+      font-size: var(--admin-font-size-sm);
+      color: var(--admin-text-secondary);
+    }
+
+    .admin-status {
+      display: flex;
+      align-items: center;
+      gap: var(--admin-spacing-xs);
+      font-size: var(--admin-font-size-sm);
+      font-weight: 500;
+    }
+
+    .admin-status-dot {
+      width: 8px;
+      height: 8px;
+      border-radius: 50%;
+    }
+
+    .admin-status-active {
+      color: var(--admin-success);
+    }
+
+    .admin-status-active .admin-status-dot {
+      background-color: var(--admin-success);
+    }
+
+    .admin-status-inactive {
+      color: var(--admin-text-muted);
+    }
+
+    .admin-status-inactive .admin-status-dot {
+      background-color: var(--admin-text-muted);
+    }
+
+    .admin-date-cell {
+      font-size: var(--admin-font-size-sm);
+    }
+
+    .admin-date-primary {
+      color: var(--admin-text-primary);
+      font-weight: 500;
+    }
+
+    .admin-date-secondary {
+      color: var(--admin-text-muted);
+      font-size: var(--admin-font-size-xs);
+      margin-top: var(--admin-spacing-xs);
+    }
+
+    .admin-stats-cell {
+      display: flex;
+      gap: var(--admin-spacing-md);
+    }
+
+    .admin-stat-item {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+    }
+
+    .admin-stat-value {
+      font-weight: 600;
+      color: var(--admin-text-primary);
+      font-size: var(--admin-font-size-sm);
+    }
+
+    .admin-stat-label {
+      font-size: var(--admin-font-size-xs);
+      color: var(--admin-text-muted);
+    }
+
+    .admin-actions-cell {
+      display: flex;
+      gap: var(--admin-spacing-xs);
+    }
+
+    .admin-pagination {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: var(--admin-spacing-lg);
+      border-top: 1px solid var(--admin-border-light);
+      background-color: var(--admin-bg-tertiary);
+    }
+
+    .admin-pagination-info {
+      font-size: var(--admin-font-size-sm);
+      color: var(--admin-text-secondary);
+    }
+
+    .admin-pagination-controls {
+      display: flex;
+      align-items: center;
+      gap: var(--admin-spacing-md);
+    }
+
+    .admin-pagination-current {
+      font-size: var(--admin-font-size-sm);
+      color: var(--admin-text-primary);
+      font-weight: 500;
+    }
+
+    /* Modal Styles */
+    .admin-modal {
+      position: fixed;
+      top: 0;
+      left: 0;
+      right: 0;
+      bottom: 0;
+      z-index: 1000;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    .admin-modal-overlay {
+      position: absolute;
+      top: 0;
+      left: 0;
+      right: 0;
+      bottom: 0;
+      background-color: rgba(0, 0, 0, 0.5);
+      backdrop-filter: blur(4px);
+    }
+
+    .admin-modal-content {
+      position: relative;
+      background-color: var(--admin-bg-primary);
+      border-radius: var(--admin-radius-xl);
+      box-shadow: var(--admin-shadow-2xl);
+      max-width: 600px;
+      width: 90%;
+      max-height: 80vh;
+      overflow: hidden;
+    }
+
+    .admin-modal-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: var(--admin-spacing-lg) var(--admin-spacing-xl);
+      border-bottom: 1px solid var(--admin-border-light);
+    }
+
+    .admin-modal-header h3 {
+      margin: 0;
+      font-size: var(--admin-font-size-xl);
+      font-weight: 600;
+      color: var(--admin-text-primary);
+    }
+
+    .admin-modal-close {
+      background: none;
+      border: none;
+      color: var(--admin-text-secondary);
+      cursor: pointer;
+      padding: var(--admin-spacing-sm);
+      border-radius: var(--admin-radius-md);
+      transition: all var(--admin-transition-fast);
+    }
+
+    .admin-modal-close:hover {
+      background-color: var(--admin-bg-tertiary);
+      color: var(--admin-text-primary);
+    }
+
+    .admin-modal-body {
+      padding: var(--admin-spacing-xl);
+      max-height: 60vh;
+      overflow-y: auto;
+    }
+
+    /* Responsive Design */
+    @media (max-width: 1024px) {
+      .admin-users-actions {
+        flex-wrap: wrap;
+      }
+      
+      .admin-search-input {
+        width: 200px;
+      }
+    }
+
+    @media (max-width: 768px) {
+      .admin-content {
+        padding: var(--admin-spacing-md);
+      }
+      
+      .admin-users-actions {
+        flex-direction: column;
+        align-items: stretch;
+      }
+      
+      .admin-search-input {
+        width: 100%;
+      }
+      
+      .admin-table {
+        font-size: var(--admin-font-size-sm);
+      }
+      
+      .admin-table th,
+      .admin-table td {
+        padding: var(--admin-spacing-sm);
+      }
+      
+      .admin-stats-cell {
+        flex-direction: column;
+        gap: var(--admin-spacing-xs);
+      }
+      
+      .admin-pagination {
+        flex-direction: column;
+        gap: var(--admin-spacing-md);
+      }
+    }
+  </style>
+
+  <script>
+    // Users data for JavaScript operations
+    const usersData = {
+      users: [
+        {
+          id: 1,
+          name: 'Juan Pérez',
+          email: 'juan.perez@email.com',
+          role: 'customer',
+          status: 'active',
+          lastLogin: '2024-01-15 14:30',
+          registeredAt: '2024-01-10 09:15',
+          orders: 12,
+          totalSpent: 1250.50,
+          avatar: '/images/user1.jpg'
+        },
+        {
+          id: 2,
+          name: 'María García',
+          email: 'maria.garcia@email.com',
+          role: 'customer',
+          status: 'active',
+          lastLogin: '2024-01-15 12:45',
+          registeredAt: '2024-01-08 16:20',
+          orders: 8,
+          totalSpent: 890.25,
+          avatar: '/images/user2.jpg'
+        },
+        {
+          id: 3,
+          name: 'Carlos López',
+          email: 'carlos.lopez@email.com',
+          role: 'customer',
+          status: 'inactive',
+          lastLogin: '2024-01-10 08:30',
+          registeredAt: '2024-01-05 11:45',
+          orders: 3,
+          totalSpent: 245.75,
+          avatar: '/images/user3.jpg'
+        },
+        {
+          id: 4,
+          name: 'Ana Martín',
+          email: 'ana.martin@email.com',
+          role: 'customer',
+          status: 'active',
+          lastLogin: '2024-01-15 16:15',
+          registeredAt: '2024-01-12 14:30',
+          orders: 5,
+          totalSpent: 567.80,
+          avatar: '/images/user4.jpg'
+        },
+        {
+          id: 5,
+          name: 'Admin Usuario',
+          email: 'admin@vintage-store.com',
+          role: 'admin',
+          status: 'active',
+          lastLogin: '2024-01-15 09:30',
+          registeredAt: '2024-01-01 10:00',
+          orders: 0,
+          totalSpent: 0,
+          avatar: '/images/admin.jpg'
+        },
+        {
+          id: 6,
+          name: 'Moderador Test',
+          email: 'moderador@vintage-store.com',
+          role: 'moderator',
+          status: 'active',
+          lastLogin: '2024-01-14 15:20',
+          registeredAt: '2024-01-02 12:00',
+          orders: 0,
+          totalSpent: 0,
+          avatar: '/images/moderator.jpg'
+        }
+      ]
+    };
+    
+    // Theme toggle functionality
+    const themeToggle = document.getElementById('themeToggle');
+    const body = document.body;
+    
+    const savedTheme = localStorage.getItem('admin-theme');
+    if (savedTheme) {
+      body.setAttribute('data-theme', savedTheme);
+    }
+    
+    themeToggle.addEventListener('click', () => {
+      const currentTheme = body.getAttribute('data-theme');
+      const newTheme = currentTheme === 'dark' ? 'light' : 'dark';
+      
+      body.setAttribute('data-theme', newTheme);
+      localStorage.setItem('admin-theme', newTheme);
+    });
+    
+    // Sidebar toggle functionality
+    const sidebarToggle = document.getElementById('sidebarToggle');
+    const sidebar = document.getElementById('adminSidebar');
+    
+    sidebarToggle.addEventListener('click', () => {
+      sidebar.classList.toggle('mobile-open');
+    });
+    
+    // Current time display
+    function updateTime() {
+      const now = new Date();
+      const timeString = now.toLocaleString('es-ES', {
+        year: 'numeric',
+        month: '2-digit',
+        day: '2-digit',
+        hour: '2-digit',
+        minute: '2-digit',
+        second: '2-digit'
+      });
+      document.getElementById('currentTime').textContent = timeString;
+    }
+    
+    updateTime();
+    setInterval(updateTime, 1000);
+    
+    // Search functionality
+    const searchInput = document.getElementById('userSearch');
+    const roleFilter = document.getElementById('roleFilter');
+    const statusFilter = document.getElementById('statusFilter');
+    const tableBody = document.getElementById('usersTableBody');
+    
+    function filterUsers() {
+      const searchTerm = searchInput.value.toLowerCase();
+      const roleFilterValue = roleFilter.value;
+      const statusFilterValue = statusFilter.value;
+      
+      const rows = tableBody.querySelectorAll('.admin-table-row');
+      
+      rows.forEach(row => {
+        const userId = parseInt(row.dataset.userId);
+        const user = usersData.users.find(u => u.id === userId);
+        
+        if (!user) return;
+        
+        const matchesSearch = user.name.toLowerCase().includes(searchTerm) || 
+                             user.email.toLowerCase().includes(searchTerm);
+        const matchesRole = !roleFilterValue || user.role === roleFilterValue;
+        const matchesStatus = !statusFilterValue || user.status === statusFilterValue;
+        
+        if (matchesSearch && matchesRole && matchesStatus) {
+          row.style.display = '';
+        } else {
+          row.style.display = 'none';
+        }
+      });
+    }
+    
+    searchInput.addEventListener('input', filterUsers);
+    roleFilter.addEventListener('change', filterUsers);
+    statusFilter.addEventListener('change', filterUsers);
+    
+    // Table sorting
+    const sortableHeaders = document.querySelectorAll('.admin-table-sortable');
+    let currentSort = { column: null, direction: 'asc' };
+    
+    sortableHeaders.forEach(header => {
+      header.addEventListener('click', () => {
+        const column = header.dataset.sort;
+        
+        if (currentSort.column === column) {
+          currentSort.direction = currentSort.direction === 'asc' ? 'desc' : 'asc';
+        } else {
+          currentSort.column = column;
+          currentSort.direction = 'asc';
+        }
+        
+        sortTable(column, currentSort.direction);
+      });
+    });
+    
+    function sortTable(column, direction) {
+      const rows = Array.from(tableBody.querySelectorAll('.admin-table-row'));
+      
+      rows.sort((a, b) => {
+        const aUserId = parseInt(a.dataset.userId);
+        const bUserId = parseInt(b.dataset.userId);
+        const aUser = usersData.users.find(u => u.id === aUserId);
+        const bUser = usersData.users.find(u => u.id === bUserId);
+        
+        let aValue, bValue;
+        
+        switch (column) {
+          case 'name':
+            aValue = aUser.name;
+            bValue = bUser.name;
+            break;
+          case 'role':
+            aValue = aUser.role;
+            bValue = bUser.role;
+            break;
+          case 'status':
+            aValue = aUser.status;
+            bValue = bUser.status;
+            break;
+          case 'lastLogin':
+            aValue = new Date(aUser.lastLogin);
+            bValue = new Date(bUser.lastLogin);
+            break;
+          default:
+            return 0;
+        }
+        
+        if (aValue < bValue) return direction === 'asc' ? -1 : 1;
+        if (aValue > bValue) return direction === 'asc' ? 1 : -1;
+        return 0;
+      });
+      
+      rows.forEach(row => tableBody.appendChild(row));
+    }
+    
+    // User actions
+    window.viewUser = function(userId) {
+      const user = usersData.users.find(u => u.id === userId);
+      if (!user) return;
+      
+      document.getElementById('modalTitle').textContent = `Detalles de ${user.name}`;
+      document.getElementById('modalBody').innerHTML = `
+        <div class="admin-user-details">
+          <div class="admin-user-header">
+            <img src="${user.avatar}" alt="${user.name}" class="admin-user-avatar-large" onerror="this.src='data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iODAiIGhlaWdodD0iODAiIHZpZXdCb3g9IjAgMCA4MCA4MCIgZmlsbD0ibm9uZSIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj4KPGNpcmNsZSBjeD0iNDAiIGN5PSI0MCIgcj0iNDAiIGZpbGw9IiNmMWY1ZjkiLz4KPHN2ZyB3aWR0aD0iNDAiIGhlaWdodD0iNDAiIHZpZXdCb3g9IjAgMCAyNCAyNCIgZmlsbD0ibm9uZSIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIiB4PSIyMCIgeT0iMjAiPgo8cGF0aCBkPSJNMjAgMjF2LTJhNCA0IDAgMCAwLTQtNEg4YTQgNCAwIDAgMC00IDR2MiIgc3Ryb2tlPSIjNjQ3NDhiIiBzdHJva2Utd2lkdGg9IjIiIHN0cm9rZS1saW5lY2FwPSJyb3VuZCIgc3Ryb2tlLWxpbmVqb2luPSJyb3VuZCIvPgo8Y2lyY2xlIGN4PSIxMiIgY3k9IjciIHI9IjQiIHN0cm9rZT0iIzY0NzQ4YiIgc3Ryb2tlLXdpZHRoPSIyIiBzdHJva2UtbGluZWNhcD0icm91bmQiIHN0cm9rZS1saW5lam9pbj0icm91bmQiLz4KPC9zdmc+Cjwvc3ZnPgo='">
+            <div class="admin-user-info-large">
+              <h4>${user.name}</h4>
+              <p>${user.email}</p>
+              <span class="admin-badge admin-badge-${user.role === 'admin' ? 'primary' : user.role === 'moderator' ? 'warning' : 'secondary'}">
+                ${user.role === 'admin' ? 'Administrador' : user.role === 'moderator' ? 'Moderador' : 'Cliente'}
+              </span>
+            </div>
+          </div>
+          <div class="admin-user-stats-grid">
+            <div class="admin-user-stat">
+              <div class="admin-user-stat-value">${user.orders}</div>
+              <div class="admin-user-stat-label">Pedidos Realizados</div>
+            </div>
+            <div class="admin-user-stat">
+              <div class="admin-user-stat-value">$${user.totalSpent.toFixed(2)}</div>
+              <div class="admin-user-stat-label">Total Gastado</div>
+            </div>
+            <div class="admin-user-stat">
+              <div class="admin-user-stat-value">${user.status === 'active' ? 'Activo' : 'Inactivo'}</div>
+              <div class="admin-user-stat-label">Estado</div>
+            </div>
+          </div>
+          <div class="admin-user-timeline">
+            <h5>Información de Cuenta</h5>
+            <div class="admin-timeline-item">
+              <strong>Último acceso:</strong> ${user.lastLogin}
+            </div>
+            <div class="admin-timeline-item">
+              <strong>Fecha de registro:</strong> ${user.registeredAt}
+            </div>
+          </div>
+        </div>
+      `;
+      
+      document.getElementById('userModal').style.display = 'flex';
+    };
+    
+    window.editUser = function(userId) {
+      const user = usersData.users.find(u => u.id === userId);
+      if (!user) return;
+      
+      document.getElementById('modalTitle').textContent = `Editar ${user.name}`;
+      document.getElementById('modalBody').innerHTML = `
+        <form class="admin-user-form" onsubmit="saveUser(event, ${userId})">
+          <div class="admin-form-group">
+            <label class="admin-form-label">Nombre</label>
+            <input type="text" class="admin-form-input" value="${user.name}" name="name" required>
+          </div>
+          <div class="admin-form-group">
+            <label class="admin-form-label">Email</label>
+            <input type="email" class="admin-form-input" value="${user.email}" name="email" required>
+          </div>
+          <div class="admin-form-group">
+            <label class="admin-form-label">Rol</label>
+            <select class="admin-form-select" name="role" required>
+              <option value="customer" ${user.role === 'customer' ? 'selected' : ''}>Cliente</option>
+              <option value="moderator" ${user.role === 'moderator' ? 'selected' : ''}>Moderador</option>
+              <option value="admin" ${user.role === 'admin' ? 'selected' : ''}>Administrador</option>
+            </select>
+          </div>
+          <div class="admin-form-group">
+            <label class="admin-form-label">Estado</label>
+            <select class="admin-form-select" name="status" required>
+              <option value="active" ${user.status === 'active' ? 'selected' : ''}>Activo</option>
+              <option value="inactive" ${user.status === 'inactive' ? 'selected' : ''}>Inactivo</option>
+            </select>
+          </div>
+          <div class="admin-form-actions">
+            <button type="button" class="admin-btn admin-btn-secondary" onclick="closeUserModal()">Cancelar</button>
+            <button type="submit" class="admin-btn admin-btn-primary">Guardar Cambios</button>
+          </div>
+        </form>
+      `;
+      
+      document.getElementById('userModal').style.display = 'flex';
+    };
+    
+    window.deleteUser = function(userId) {
+      const user = usersData.users.find(u => u.id === userId);
+      if (!user) return;
+      
+      if (confirm(`¿Estás seguro de que quieres eliminar al usuario ${user.name}?`)) {
+        // In production, make API call to delete user
+        console.log('Deleting user:', userId);
+        alert('Usuario eliminado correctamente');
+        // Refresh the page or update the table
+        location.reload();
+      }
+    };
+    
+    window.saveUser = function(event, userId) {
+      event.preventDefault();
+      const formData = new FormData(event.target);
+      const userData = {
+        name: formData.get('name'),
+        email: formData.get('email'),
+        role: formData.get('role'),
+        status: formData.get('status')
+      };
+      
+      // In production, make API call to update user
+      console.log('Updating user:', userId, userData);
+      alert('Usuario actualizado correctamente');
+      closeUserModal();
+      // Refresh the page or update the table
+      location.reload();
+    };
+    
+    window.closeUserModal = function() {
+      document.getElementById('userModal').style.display = 'none';
+    };
+    
+    // Add new user functionality
+    document.getElementById('addUserBtn').addEventListener('click', () => {
+      document.getElementById('modalTitle').textContent = 'Nuevo Usuario';
+      document.getElementById('modalBody').innerHTML = `
+        <form class="admin-user-form" onsubmit="createUser(event)">
+          <div class="admin-form-group">
+            <label class="admin-form-label">Nombre</label>
+            <input type="text" class="admin-form-input" name="name" required>
+          </div>
+          <div class="admin-form-group">
+            <label class="admin-form-label">Email</label>
+            <input type="email" class="admin-form-input" name="email" required>
+          </div>
+          <div class="admin-form-group">
+            <label class="admin-form-label">Contraseña</label>
+            <input type="password" class="admin-form-input" name="password" required>
+          </div>
+          <div class="admin-form-group">
+            <label class="admin-form-label">Rol</label>
+            <select class="admin-form-select" name="role" required>
+              <option value="customer">Cliente</option>
+              <option value="moderator">Moderador</option>
+              <option value="admin">Administrador</option>
+            </select>
+          </div>
+          <div class="admin-form-group">
+            <label class="admin-form-label">Estado</label>
+            <select class="admin-form-select" name="status" required>
+              <option value="active">Activo</option>
+              <option value="inactive">Inactivo</option>
+            </select>
+          </div>
+          <div class="admin-form-actions">
+            <button type="button" class="admin-btn admin-btn-secondary" onclick="closeUserModal()">Cancelar</button>
+            <button type="submit" class="admin-btn admin-btn-primary">Crear Usuario</button>
+          </div>
+        </form>
+      `;
+      
+      document.getElementById('userModal').style.display = 'flex';
+    });
+    
+    window.createUser = function(event) {
+      event.preventDefault();
+      const formData = new FormData(event.target);
+      const userData = {
+        name: formData.get('name'),
+        email: formData.get('email'),
+        password: formData.get('password'),
+        role: formData.get('role'),
+        status: formData.get('status')
+      };
+      
+      // In production, make API call to create user
+      console.log('Creating user:', userData);
+      alert('Usuario creado correctamente');
+      closeUserModal();
+      // Refresh the page or update the table
+      location.reload();
+    };
+  </script>
+</Layout>

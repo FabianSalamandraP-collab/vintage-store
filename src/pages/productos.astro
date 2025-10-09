@@ -4,19 +4,64 @@ import ProductCard from '../components/ProductCard.astro';
 import ProductFilter from '../components/ProductFilter.astro';
 import { getAllProducts, getAllCategories, filterProducts, getCategoryById } from '../utils/data';
 import type { ProductFilter as ProductFilterType } from '../types';
+import { sanitizeInput, validateUrlParams, logSecurityEvent } from '../utils/security';
 
 // Obtener parámetros de filtro de la URL
 const url = new URL(Astro.request.url);
 const searchParams = url.searchParams;
 
-const currentFilter: ProductFilterType = {
-  category: searchParams.get('category') || undefined,
-  condition: searchParams.get('condition') || undefined,
-  minPrice: searchParams.get('minPrice') ? parseFloat(searchParams.get('minPrice')!) : undefined,
-  maxPrice: searchParams.get('maxPrice') ? parseFloat(searchParams.get('maxPrice')!) : undefined,
-  sizes: searchParams.get('sizes')?.split(',').filter(Boolean) || undefined,
-  search: searchParams.get('search') || undefined,
+// Sanitizar y validar parámetros URL
+const rawParams = {
+  category: searchParams.get('category'),
+  condition: searchParams.get('condition'),
+  minPrice: searchParams.get('minPrice'),
+  maxPrice: searchParams.get('maxPrice'),
+  sizes: searchParams.get('sizes'),
+  search: searchParams.get('search'),
+  sort: searchParams.get('sort')
 };
+
+// Validar parámetros URL
+const validationResult = validateUrlParams(rawParams, {
+  category: { type: 'string', maxLength: 50, pattern: /^[a-zA-Z0-9-_]+$/ },
+  condition: { type: 'string', maxLength: 20, pattern: /^(nuevo|usado|vintage)$/ },
+  minPrice: { type: 'number', min: 0, max: 1000000 },
+  maxPrice: { type: 'number', min: 0, max: 1000000 },
+  sizes: { type: 'string', maxLength: 100, pattern: /^[a-zA-Z0-9,-]+$/ },
+  search: { type: 'string', maxLength: 100 },
+  sort: { type: 'string', maxLength: 20, pattern: /^(newest|price-low|price-high|name)$/ }
+});
+
+if (!validationResult.isValid) {
+  logSecurityEvent('URL_PARAM_VALIDATION_FAILED', {
+    url: url.pathname,
+    params: rawParams,
+    errors: validationResult.errors,
+    userAgent: Astro.request.headers.get('user-agent') || 'unknown',
+    ip: Astro.clientAddress
+  });
+}
+
+// Crear filtro con parámetros sanitizados
+const currentFilter: ProductFilterType = {
+  category: rawParams.category ? sanitizeInput(rawParams.category, 'text') : undefined,
+  condition: rawParams.condition ? sanitizeInput(rawParams.condition, 'text') : undefined,
+  minPrice: rawParams.minPrice ? Math.max(0, Math.min(1000000, parseFloat(rawParams.minPrice))) : undefined,
+  maxPrice: rawParams.maxPrice ? Math.max(0, Math.min(1000000, parseFloat(rawParams.maxPrice))) : undefined,
+  sizes: rawParams.sizes ? rawParams.sizes.split(',').map(s => sanitizeInput(s.trim(), 'text')).filter(Boolean) : undefined,
+  search: rawParams.search ? sanitizeInput(rawParams.search, 'text') : undefined,
+};
+
+// Validar rangos de precios
+if (currentFilter.minPrice && currentFilter.maxPrice && currentFilter.minPrice > currentFilter.maxPrice) {
+  logSecurityEvent('INVALID_PRICE_RANGE', {
+    minPrice: currentFilter.minPrice,
+    maxPrice: currentFilter.maxPrice,
+    url: url.pathname
+  });
+  // Intercambiar valores si están invertidos
+  [currentFilter.minPrice, currentFilter.maxPrice] = [currentFilter.maxPrice, currentFilter.minPrice];
+}
 
 // Obtener productos filtrados
 const allProducts = getAllProducts();
@@ -479,6 +524,8 @@ const breadcrumbs = [
 </style>
 
 <script>
+  import { sanitizeInput, logSecurityEvent } from '../utils/security.js';
+  
   document.addEventListener('DOMContentLoaded', function() {
     const searchForm = document.getElementById('searchForm');
     const searchInput = document.getElementById('searchInput');
@@ -486,27 +533,104 @@ const breadcrumbs = [
     const clearAllBtn = document.getElementById('clearAllFilters');
     const productsGrid = document.getElementById('productsGrid');
     
+    // Validar parámetros de entrada
+    function validateParam(key, value) {
+      const validations = {
+        category: { maxLength: 50, pattern: /^[a-zA-Z0-9-_]*$/ },
+        condition: { maxLength: 20, pattern: /^(nuevo|usado|vintage)?$/ },
+        minPrice: { type: 'number', min: 0, max: 1000000 },
+        maxPrice: { type: 'number', min: 0, max: 1000000 },
+        sizes: { maxLength: 100, pattern: /^[a-zA-Z0-9,-]*$/ },
+        search: { maxLength: 100 },
+        sort: { maxLength: 20, pattern: /^(newest|price-low|price-high|name)?$/ }
+      };
+      
+      const validation = validations[key];
+      if (!validation) return false;
+      
+      if (validation.type === 'number') {
+        const num = parseFloat(value);
+        return !isNaN(num) && num >= validation.min && num <= validation.max;
+      }
+      
+      if (validation.maxLength && value.length > validation.maxLength) {
+        return false;
+      }
+      
+      if (validation.pattern && !validation.pattern.test(value)) {
+        return false;
+      }
+      
+      return true;
+    }
+    
     // Manejar búsqueda
     searchForm?.addEventListener('submit', function(e) {
       e.preventDefault();
-      const searchTerm = searchInput?.value.trim();
-      updateURL({ search: searchTerm || undefined });
+      const searchTerm = searchInput?.value.trim() || '';
+      
+      if (searchTerm && !validateParam('search', searchTerm)) {
+        logSecurityEvent('INVALID_SEARCH_PARAM', {
+          searchTerm,
+          url: window.location.pathname
+        });
+        alert('Término de búsqueda no válido');
+        return;
+      }
+      
+      const sanitizedSearch = searchTerm ? sanitizeInput(searchTerm, 'text') : undefined;
+      updateURL({ search: sanitizedSearch });
     });
     
     // Manejar ordenamiento
     sortSelect?.addEventListener('change', function() {
       const sortValue = this.value;
+      
+      if (!validateParam('sort', sortValue)) {
+        logSecurityEvent('INVALID_SORT_PARAM', {
+          sortValue,
+          url: window.location.pathname
+        });
+        this.value = 'newest'; // Reset a valor por defecto
+        return;
+      }
+      
       updateURL({ sort: sortValue });
     });
     
     // Limpiar todos los filtros
     clearAllBtn?.addEventListener('click', function() {
+      logSecurityEvent('FILTERS_CLEARED', {
+        url: window.location.pathname,
+        previousParams: Object.fromEntries(new URLSearchParams(window.location.search))
+      });
       window.location.href = '/productos';
     });
     
     // Escuchar cambios de filtros
     window.addEventListener('filtersChanged', function(e) {
-      updateURL(e.detail);
+      const sanitizedParams = {};
+      
+      Object.entries(e.detail).forEach(([key, value]) => {
+        if (value !== undefined && value !== null && value !== '') {
+          if (!validateParam(key, value.toString())) {
+            logSecurityEvent('INVALID_FILTER_PARAM', {
+              key,
+              value,
+              url: window.location.pathname
+            });
+            return;
+          }
+          
+          if (typeof value === 'string') {
+            sanitizedParams[key] = sanitizeInput(value, 'text');
+          } else {
+            sanitizedParams[key] = value;
+          }
+        }
+      });
+      
+      updateURL(sanitizedParams);
     });
     
     function updateURL(params) {
@@ -516,7 +640,8 @@ const breadcrumbs = [
       Object.entries(params).forEach(([key, value]) => {
         if (value !== undefined && value !== null && value !== '') {
           if (Array.isArray(value)) {
-            url.searchParams.set(key, value.join(','));
+            const sanitizedArray = value.map(v => sanitizeInput(v.toString(), 'text'));
+            url.searchParams.set(key, sanitizedArray.join(','));
           } else {
             url.searchParams.set(key, value.toString());
           }
@@ -525,8 +650,19 @@ const breadcrumbs = [
         }
       });
       
+      // Validar URL final antes de navegar
+      const finalUrl = url.toString();
+      if (finalUrl.length > 2048) {
+        logSecurityEvent('URL_TOO_LONG', {
+          urlLength: finalUrl.length,
+          url: window.location.pathname
+        });
+        alert('Los filtros seleccionados generan una URL demasiado larga');
+        return;
+      }
+      
       // Navegar a la nueva URL
-      window.location.href = url.toString();
+      window.location.href = finalUrl;
     }
   });
 </script>

@@ -93,8 +93,14 @@ const siteUrl = "https://sur-occidente.com";
 		<!-- Barras laterales negras -->
 		<div class="sidebar-left">
 			<span class="sidebar-text">SUR OCCIDENTE</span>
+			<span class="sidebar-text">SUR OCCIDENTE</span>
+			<span class="sidebar-text">SUR OCCIDENTE</span>
+			<span class="sidebar-text">SUR OCCIDENTE</span>
 		</div>
 		<div class="sidebar-right">
+			<span class="sidebar-text">SUR OCCIDENTE</span>
+			<span class="sidebar-text">SUR OCCIDENTE</span>
+			<span class="sidebar-text">SUR OCCIDENTE</span>
 			<span class="sidebar-text">SUR OCCIDENTE</span>
 		</div>
 		
@@ -217,10 +223,12 @@ const siteUrl = "https://sur-occidente.com";
 		background: #000;
 		z-index: 1000;
 		display: flex;
+		flex-direction: column;
 		align-items: center;
-		justify-content: center;
-		writing-mode: vertical-rl;
+		justify-content: space-evenly;
+		writing-mode: horizontal-tb;
 		text-orientation: mixed;
+		overflow: hidden;
 	}
 
 	.sidebar-left {
@@ -234,9 +242,11 @@ const siteUrl = "https://sur-occidente.com";
 	.sidebar-text {
 		color: #F5DEB3;
 		font-weight: bold;
-		font-size: 0.9rem;
-		letter-spacing: 2px;
-		transform: rotate(180deg);
+		font-size: 0.7rem;
+		letter-spacing: 1px;
+		transform: rotate(90deg);
+		margin: 30px 0;
+		white-space: nowrap;
 	}
 
 	/* Ajustar el contenido principal para las barras laterales */

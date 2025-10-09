@@ -1,0 +1,1515 @@
+---
+// Enhanced Admin Security Management Page
+import Layout from '../../layouts/Layout.astro';
+
+// Server-side authentication check
+const cookies = Astro.cookies;
+const sessionToken = cookies.get('admin_session')?.value;
+
+if (!sessionToken) {
+  return Astro.redirect('/admin/login');
+}
+
+// Mock security data (in production, fetch from actual security monitoring)
+const securityData = {
+  overview: {
+    threatLevel: 'low',
+    activeThreats: 2,
+    blockedIPs: 15,
+    failedLogins: 8,
+    lastScan: '2024-01-15 16:30:00'
+  },
+  recentThreats: [
+    {
+      id: 1,
+      type: 'Brute Force',
+      ip: '192.168.1.100',
+      timestamp: '2024-01-15 16:25:30',
+      status: 'blocked',
+      severity: 'high',
+      details: 'Multiple failed login attempts detected'
+    },
+    {
+      id: 2,
+      type: 'SQL Injection',
+      ip: '10.0.0.50',
+      timestamp: '2024-01-15 15:45:12',
+      status: 'blocked',
+      severity: 'critical',
+      details: 'Malicious SQL query detected in contact form'
+    },
+    {
+      id: 3,
+      type: 'XSS Attempt',
+      ip: '172.16.0.25',
+      timestamp: '2024-01-15 14:30:45',
+      status: 'blocked',
+      severity: 'medium',
+      details: 'Script injection attempt in product search'
+    },
+    {
+      id: 4,
+      type: 'DDoS',
+      ip: '203.0.113.0',
+      timestamp: '2024-01-15 13:15:20',
+      status: 'mitigated',
+      severity: 'high',
+      details: 'High volume of requests from single IP'
+    }
+  ],
+  blockedIPs: [
+    {
+      ip: '192.168.1.100',
+      reason: 'Brute force attack',
+      blockedAt: '2024-01-15 16:25:30',
+      expiresAt: '2024-01-16 16:25:30',
+      attempts: 25,
+      status: 'active'
+    },
+    {
+      ip: '10.0.0.50',
+      reason: 'SQL injection attempt',
+      blockedAt: '2024-01-15 15:45:12',
+      expiresAt: '2024-01-16 15:45:12',
+      attempts: 5,
+      status: 'active'
+    },
+    {
+      ip: '172.16.0.25',
+      reason: 'XSS attempt',
+      blockedAt: '2024-01-15 14:30:45',
+      expiresAt: '2024-01-16 14:30:45',
+      attempts: 3,
+      status: 'active'
+    },
+    {
+      ip: '203.0.113.0',
+      reason: 'DDoS attack',
+      blockedAt: '2024-01-15 13:15:20',
+      expiresAt: 'permanent',
+      attempts: 1000,
+      status: 'permanent'
+    }
+  ],
+  whitelist: [
+    {
+      ip: '192.168.1.1',
+      description: 'Office Gateway',
+      addedAt: '2024-01-01 10:00:00',
+      addedBy: 'admin@vintage-store.com'
+    },
+    {
+      ip: '10.0.0.1',
+      description: 'Development Server',
+      addedAt: '2024-01-01 10:00:00',
+      addedBy: 'admin@vintage-store.com'
+    },
+    {
+      ip: '172.16.0.1',
+      description: 'Monitoring System',
+      addedAt: '2024-01-01 10:00:00',
+      addedBy: 'admin@vintage-store.com'
+    }
+  ],
+  failedLogins: [
+    {
+      id: 1,
+      username: 'admin',
+      ip: '192.168.1.100',
+      timestamp: '2024-01-15 16:25:30',
+      userAgent: 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36',
+      reason: 'Invalid password'
+    },
+    {
+      id: 2,
+      username: 'administrator',
+      ip: '192.168.1.100',
+      timestamp: '2024-01-15 16:25:25',
+      userAgent: 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36',
+      reason: 'Invalid username'
+    },
+    {
+      id: 3,
+      username: 'root',
+      ip: '192.168.1.100',
+      timestamp: '2024-01-15 16:25:20',
+      userAgent: 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36',
+      reason: 'Invalid username'
+    },
+    {
+      id: 4,
+      username: 'admin',
+      ip: '10.0.0.50',
+      timestamp: '2024-01-15 15:45:12',
+      userAgent: 'curl/7.68.0',
+      reason: 'Invalid password'
+    }
+  ],
+  securitySettings: {
+    maxLoginAttempts: 5,
+    lockoutDuration: 30,
+    sessionTimeout: 24,
+    passwordMinLength: 8,
+    requireSpecialChars: true,
+    require2FA: false,
+    enableCaptcha: true,
+    enableRateLimit: true,
+    rateLimitRequests: 100,
+    rateLimitWindow: 15
+  },
+  auditLog: [
+    {
+      id: 1,
+      action: 'Login Success',
+      user: 'admin@vintage-store.com',
+      ip: '192.168.1.10',
+      timestamp: '2024-01-15 16:30:00',
+      details: 'Successful admin login'
+    },
+    {
+      id: 2,
+      action: 'IP Blocked',
+      user: 'system',
+      ip: '192.168.1.100',
+      timestamp: '2024-01-15 16:25:30',
+      details: 'IP blocked due to brute force attack'
+    },
+    {
+      id: 3,
+      action: 'Security Scan',
+      user: 'system',
+      ip: 'localhost',
+      timestamp: '2024-01-15 16:00:00',
+      details: 'Automated security scan completed'
+    },
+    {
+      id: 4,
+      action: 'Settings Updated',
+      user: 'admin@vintage-store.com',
+      ip: '192.168.1.10',
+      timestamp: '2024-01-15 15:30:00',
+      details: 'Security settings updated'
+    }
+  ]
+};
+
+const currentUser = {
+  name: 'Admin Usuario',
+  role: 'Administrador',
+  avatar: '/images/admin-avatar.jpg'
+};
+---
+
+<Layout title="Seguridad - Admin Panel">
+  <link rel="stylesheet" href="/src/styles/admin.css">
+  
+  <div class="admin-container">
+    <div class="admin-layout">
+      <!-- Sidebar -->
+      <aside class="admin-sidebar" id="adminSidebar">
+        <div class="admin-nav">
+          <!-- User Info -->
+          <div class="admin-user-info">
+            <div class="admin-user-avatar">
+              <img src={currentUser.avatar} alt={currentUser.name} onerror="this.src='data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iNDAiIGhlaWdodD0iNDAiIHZpZXdCb3g9IjAgMCA0MCA0MCIgZmlsbD0ibm9uZSIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj4KPGNpcmNsZSBjeD0iMjAiIGN5PSIyMCIgcj0iMjAiIGZpbGw9IiNmMWY1ZjkiLz4KPHN2ZyB3aWR0aD0iMjQiIGhlaWdodD0iMjQiIHZpZXdCb3g9IjAgMCAyNCAyNCIgZmlsbD0ibm9uZSIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIiB4PSI4IiB5PSI4Ij4KPHBhdGggZD0iTTIwIDIxdi0yYTQgNCAwIDAgMC00LTRIOGE0IDQgMCAwIDAtNCA0djIiIHN0cm9rZT0iIzY0NzQ4YiIgc3Ryb2tlLXdpZHRoPSIyIiBzdHJva2UtbGluZWNhcD0icm91bmQiIHN0cm9rZS1saW5lam9pbj0icm91bmQiLz4KPGNpcmNsZSBjeD0iMTIiIGN5PSI3IiByPSI0IiBzdHJva2U9IiM2NDc0OGIiIHN0cm9rZS13aWR0aD0iMiIgc3Ryb2tlLWxpbmVjYXA9InJvdW5kIiBzdHJva2UtbGluZWpvaW49InJvdW5kIi8+Cjwvc3ZnPgo8L3N2Zz4K'">
+            </div>
+            <div class="admin-user-details">
+              <div class="admin-user-name">{currentUser.name}</div>
+              <div class="admin-user-role">{currentUser.role}</div>
+            </div>
+          </div>
+
+          <!-- Navigation Links -->
+          <nav class="admin-nav-links">
+            <a href="/admin/dashboard" class="admin-nav-item">
+              <svg class="admin-nav-icon" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 7v10a2 2 0 002 2h14a2 2 0 002-2V9a2 2 0 00-2-2H5a2 2 0 00-2-2z"></path>
+              </svg>
+              <span>Dashboard</span>
+            </a>
+            
+            <a href="/admin/security" class="admin-nav-item active">
+              <svg class="admin-nav-icon" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z"></path>
+              </svg>
+              <span>Seguridad</span>
+            </a>
+            
+            <a href="/admin/analytics" class="admin-nav-item">
+              <svg class="admin-nav-icon" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z"></path>
+              </svg>
+              <span>Analytics</span>
+            </a>
+            
+            <a href="/admin/system" class="admin-nav-item">
+              <svg class="admin-nav-icon" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.065 2.572c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.572 1.065c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.065-2.572c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z"></path>
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"></path>
+              </svg>
+              <span>Sistema</span>
+            </a>
+            
+            <div class="admin-nav-divider"></div>
+            
+            <a href="/admin/users" class="admin-nav-item">
+              <svg class="admin-nav-icon" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4.354a4 4 0 110 5.292M15 21H3v-1a6 6 0 0112 0v1zm0 0h6v-1a6 6 0 00-9-5.197m13.5-9a2.5 2.5 0 11-5 0 2.5 2.5 0 015 0z"></path>
+              </svg>
+              <span>Usuarios</span>
+            </a>
+            
+            <a href="/admin/products" class="admin-nav-item">
+              <svg class="admin-nav-icon" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M20 7l-8-4-8 4m16 0l-8 4m8-4v10l-8 4m0-10L4 7m8 4v10M4 7v10l8 4"></path>
+              </svg>
+              <span>Productos</span>
+            </a>
+            
+            <a href="/admin/orders" class="admin-nav-item">
+              <svg class="admin-nav-icon" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5H7a2 2 0 00-2 2v10a2 2 0 002 2h8a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2m-3 7h3m-3 4h3m-6-4h.01M9 16h.01"></path>
+              </svg>
+              <span>Pedidos</span>
+            </a>
+          </nav>
+
+          <!-- Logout -->
+          <div class="admin-nav-footer">
+            <form action="/admin/logout" method="POST" class="admin-logout-form">
+              <button type="submit" class="admin-nav-item admin-logout-btn">
+                <svg class="admin-nav-icon" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1"></path>
+                </svg>
+                <span>Cerrar Sesión</span>
+              </button>
+            </form>
+          </div>
+        </div>
+      </aside>
+
+      <!-- Main Content -->
+      <main class="admin-main">
+        <!-- Header -->
+        <header class="admin-header">
+          <div class="admin-header-left">
+            <button class="admin-sidebar-toggle" id="sidebarToggle">
+              <svg width="24" height="24" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16"></path>
+              </svg>
+            </button>
+            <h1>Centro de Seguridad</h1>
+          </div>
+          
+          <div class="admin-header-right">
+            <div class="admin-theme-toggle" id="themeToggle"></div>
+            <div class="admin-header-time" id="currentTime"></div>
+          </div>
+        </header>
+
+        <!-- Content -->
+        <div class="admin-content">
+          <!-- Security Overview -->
+          <section class="admin-security-overview">
+            <div class="admin-card">
+              <div class="admin-card-header">
+                <h3 class="admin-card-title">Resumen de Seguridad</h3>
+                <div class="admin-threat-level">
+                  <span class={`admin-threat-indicator admin-threat-${securityData.overview.threatLevel}`}>
+                    <span class="admin-threat-dot"></span>
+                    Nivel de Amenaza: {securityData.overview.threatLevel === 'low' ? 'Bajo' : securityData.overview.threatLevel === 'medium' ? 'Medio' : 'Alto'}
+                  </span>
+                </div>
+              </div>
+              
+              <div class="admin-security-metrics">
+                <div class="admin-security-metric">
+                  <div class="admin-metric-icon admin-metric-danger">
+                    <svg width="24" height="24" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-2.5L13.732 4c-.77-.833-1.732-.833-2.464 0L4.35 16.5c-.77.833.192 2.5 1.732 2.5z"></path>
+                    </svg>
+                  </div>
+                  <div class="admin-metric-content">
+                    <div class="admin-metric-value">{securityData.overview.activeThreats}</div>
+                    <div class="admin-metric-label">Amenazas Activas</div>
+                  </div>
+                </div>
+                
+                <div class="admin-security-metric">
+                  <div class="admin-metric-icon admin-metric-warning">
+                    <svg width="24" height="24" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M18.364 18.364A9 9 0 005.636 5.636m12.728 12.728L5.636 5.636m12.728 12.728L18 21l3-3m-3-3l-3-3m3 3l3 3"></path>
+                    </svg>
+                  </div>
+                  <div class="admin-metric-content">
+                    <div class="admin-metric-value">{securityData.overview.blockedIPs}</div>
+                    <div class="admin-metric-label">IPs Bloqueadas</div>
+                  </div>
+                </div>
+                
+                <div class="admin-security-metric">
+                  <div class="admin-metric-icon admin-metric-info">
+                    <svg width="24" height="24" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z"></path>
+                    </svg>
+                  </div>
+                  <div class="admin-metric-content">
+                    <div class="admin-metric-value">{securityData.overview.failedLogins}</div>
+                    <div class="admin-metric-label">Intentos Fallidos</div>
+                  </div>
+                </div>
+                
+                <div class="admin-security-metric">
+                  <div class="admin-metric-icon admin-metric-success">
+                    <svg width="24" height="24" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+                    </svg>
+                  </div>
+                  <div class="admin-metric-content">
+                    <div class="admin-metric-value">Último Escaneo</div>
+                    <div class="admin-metric-label">{securityData.overview.lastScan}</div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </section>
+
+          <!-- Recent Threats -->
+          <section class="admin-threats-section">
+            <div class="admin-card">
+              <div class="admin-card-header">
+                <h3 class="admin-card-title">Amenazas Recientes</h3>
+                <div class="admin-threats-actions">
+                  <button class="admin-btn admin-btn-secondary" id="refreshThreats">
+                    <svg width="16" height="16" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15"></path>
+                    </svg>
+                    Actualizar
+                  </button>
+                  <button class="admin-btn admin-btn-primary" id="runSecurityScan">
+                    <svg width="16" height="16" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"></path>
+                    </svg>
+                    Escanear Ahora
+                  </button>
+                </div>
+              </div>
+              
+              <div class="admin-threats-list">
+                {securityData.recentThreats.map(threat => (
+                  <div class={`admin-threat-item admin-threat-${threat.severity}`}>
+                    <div class="admin-threat-header">
+                      <div class="admin-threat-info">
+                        <h4 class="admin-threat-type">{threat.type}</h4>
+                        <span class="admin-threat-ip">{threat.ip}</span>
+                      </div>
+                      <div class="admin-threat-meta">
+                        <span class={`admin-threat-severity admin-severity-${threat.severity}`}>
+                          {threat.severity === 'critical' ? 'Crítico' : threat.severity === 'high' ? 'Alto' : threat.severity === 'medium' ? 'Medio' : 'Bajo'}
+                        </span>
+                        <span class={`admin-threat-status admin-status-${threat.status}`}>
+                          {threat.status === 'blocked' ? 'Bloqueado' : threat.status === 'mitigated' ? 'Mitigado' : 'Activo'}
+                        </span>
+                      </div>
+                    </div>
+                    <div class="admin-threat-details">
+                      <div class="admin-threat-description">{threat.details}</div>
+                      <div class="admin-threat-timestamp">{threat.timestamp}</div>
+                    </div>
+                    <div class="admin-threat-actions">
+                      <button class="admin-btn admin-btn-sm admin-btn-secondary" onclick={`viewThreatDetails(${threat.id})`}>
+                        Ver Detalles
+                      </button>
+                      <button class="admin-btn admin-btn-sm admin-btn-danger" onclick={`blockIP('${threat.ip}')`}>
+                        Bloquear IP
+                      </button>
+                    </div>
+                  </div>
+                ))}
+              </div>
+            </div>
+          </section>
+
+          <!-- IP Management -->
+          <section class="admin-ip-management">
+            <div class="admin-grid admin-grid-2">
+              <!-- Blocked IPs -->
+              <div class="admin-card">
+                <div class="admin-card-header">
+                  <h3 class="admin-card-title">IPs Bloqueadas</h3>
+                  <button class="admin-btn admin-btn-secondary" id="addBlockedIP">
+                    <svg width="16" height="16" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6v6m0 0v6m0-6h6m-6 0H6"></path>
+                    </svg>
+                    Bloquear IP
+                  </button>
+                </div>
+                
+                <div class="admin-ip-list">
+                  {securityData.blockedIPs.map(blockedIP => (
+                    <div class="admin-ip-item">
+                      <div class="admin-ip-header">
+                        <span class="admin-ip-address">{blockedIP.ip}</span>
+                        <span class={`admin-ip-status admin-status-${blockedIP.status}`}>
+                          {blockedIP.status === 'active' ? 'Activo' : 'Permanente'}
+                        </span>
+                      </div>
+                      <div class="admin-ip-details">
+                        <div class="admin-ip-reason">{blockedIP.reason}</div>
+                        <div class="admin-ip-meta">
+                          <span>Intentos: {blockedIP.attempts}</span>
+                          <span>Bloqueado: {blockedIP.blockedAt}</span>
+                          {blockedIP.expiresAt !== 'permanent' && (
+                            <span>Expira: {blockedIP.expiresAt}</span>
+                          )}
+                        </div>
+                      </div>
+                      <div class="admin-ip-actions">
+                        <button class="admin-btn admin-btn-sm admin-btn-secondary" onclick={`editBlockedIP('${blockedIP.ip}')`}>
+                          Editar
+                        </button>
+                        <button class="admin-btn admin-btn-sm admin-btn-success" onclick={`unblockIP('${blockedIP.ip}')`}>
+                          Desbloquear
+                        </button>
+                      </div>
+                    </div>
+                  ))}
+                </div>
+              </div>
+              
+              <!-- Whitelist -->
+              <div class="admin-card">
+                <div class="admin-card-header">
+                  <h3 class="admin-card-title">Lista Blanca</h3>
+                  <button class="admin-btn admin-btn-primary" id="addWhitelistIP">
+                    <svg width="16" height="16" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6v6m0 0v6m0-6h6m-6 0H6"></path>
+                    </svg>
+                    Agregar IP
+                  </button>
+                </div>
+                
+                <div class="admin-ip-list">
+                  {securityData.whitelist.map(whiteIP => (
+                    <div class="admin-ip-item admin-ip-whitelist">
+                      <div class="admin-ip-header">
+                        <span class="admin-ip-address">{whiteIP.ip}</span>
+                        <span class="admin-ip-status admin-status-active">Permitido</span>
+                      </div>
+                      <div class="admin-ip-details">
+                        <div class="admin-ip-description">{whiteIP.description}</div>
+                        <div class="admin-ip-meta">
+                          <span>Agregado: {whiteIP.addedAt}</span>
+                          <span>Por: {whiteIP.addedBy}</span>
+                        </div>
+                      </div>
+                      <div class="admin-ip-actions">
+                        <button class="admin-btn admin-btn-sm admin-btn-secondary" onclick={`editWhitelistIP('${whiteIP.ip}')`}>
+                          Editar
+                        </button>
+                        <button class="admin-btn admin-btn-sm admin-btn-danger" onclick={`removeWhitelistIP('${whiteIP.ip}')`}>
+                          Eliminar
+                        </button>
+                      </div>
+                    </div>
+                  ))}
+                </div>
+              </div>
+            </div>
+          </section>
+
+          <!-- Failed Login Attempts -->
+          <section class="admin-failed-logins">
+            <div class="admin-card">
+              <div class="admin-card-header">
+                <h3 class="admin-card-title">Intentos de Login Fallidos</h3>
+                <div class="admin-failed-logins-actions">
+                  <input type="text" class="admin-search-input" placeholder="Buscar por IP o usuario..." id="failedLoginsSearch">
+                  <button class="admin-btn admin-btn-secondary" id="clearFailedLogins">
+                    <svg width="16" height="16" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"></path>
+                    </svg>
+                    Limpiar Todo
+                  </button>
+                </div>
+              </div>
+              
+              <div class="admin-failed-logins-table">
+                <table class="admin-table">
+                  <thead>
+                    <tr>
+                      <th>Usuario</th>
+                      <th>IP</th>
+                      <th>Fecha/Hora</th>
+                      <th>Razón</th>
+                      <th>User Agent</th>
+                      <th>Acciones</th>
+                    </tr>
+                  </thead>
+                  <tbody id="failedLoginsTableBody">
+                    {securityData.failedLogins.map(login => (
+                      <tr>
+                        <td class="admin-failed-username">{login.username}</td>
+                        <td class="admin-failed-ip">{login.ip}</td>
+                        <td class="admin-failed-timestamp">{login.timestamp}</td>
+                        <td class="admin-failed-reason">{login.reason}</td>
+                        <td class="admin-failed-useragent" title={login.userAgent}>
+                          {login.userAgent.substring(0, 50)}...
+                        </td>
+                        <td>
+                          <div class="admin-failed-actions">
+                            <button class="admin-btn admin-btn-sm admin-btn-danger" onclick={`blockIP('${login.ip}')`}>
+                              Bloquear IP
+                            </button>
+                          </div>
+                        </td>
+                      </tr>
+                    ))}
+                  </tbody>
+                </table>
+              </div>
+            </div>
+          </section>
+
+          <!-- Security Settings -->
+          <section class="admin-security-settings">
+            <div class="admin-card">
+              <div class="admin-card-header">
+                <h3 class="admin-card-title">Configuración de Seguridad</h3>
+                <button class="admin-btn admin-btn-primary" id="saveSecuritySettings">
+                  <svg width="16" height="16" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7H5a2 2 0 00-2 2v9a2 2 0 002 2h14a2 2 0 002-2V9a2 2 0 00-2-2h-3m-1 4l-3 3m0 0l-3-3m3 3V4"></path>
+                  </svg>
+                  Guardar Configuración
+                </button>
+              </div>
+              
+              <form class="admin-security-form" id="securitySettingsForm">
+                <div class="admin-settings-grid">
+                  <div class="admin-form-group">
+                    <label class="admin-form-label">Máximo Intentos de Login</label>
+                    <input type="number" class="admin-form-input" value={securityData.securitySettings.maxLoginAttempts} name="maxLoginAttempts" min="1" max="10">
+                  </div>
+                  
+                  <div class="admin-form-group">
+                    <label class="admin-form-label">Duración de Bloqueo (minutos)</label>
+                    <input type="number" class="admin-form-input" value={securityData.securitySettings.lockoutDuration} name="lockoutDuration" min="5" max="1440">
+                  </div>
+                  
+                  <div class="admin-form-group">
+                    <label class="admin-form-label">Tiempo de Sesión (horas)</label>
+                    <input type="number" class="admin-form-input" value={securityData.securitySettings.sessionTimeout} name="sessionTimeout" min="1" max="168">
+                  </div>
+                  
+                  <div class="admin-form-group">
+                    <label class="admin-form-label">Longitud Mínima de Contraseña</label>
+                    <input type="number" class="admin-form-input" value={securityData.securitySettings.passwordMinLength} name="passwordMinLength" min="6" max="32">
+                  </div>
+                  
+                  <div class="admin-form-group">
+                    <label class="admin-form-label">Límite de Solicitudes</label>
+                    <input type="number" class="admin-form-input" value={securityData.securitySettings.rateLimitRequests} name="rateLimitRequests" min="10" max="1000">
+                  </div>
+                  
+                  <div class="admin-form-group">
+                    <label class="admin-form-label">Ventana de Tiempo (minutos)</label>
+                    <input type="number" class="admin-form-input" value={securityData.securitySettings.rateLimitWindow} name="rateLimitWindow" min="1" max="60">
+                  </div>
+                </div>
+                
+                <div class="admin-settings-toggles">
+                  <div class="admin-toggle-group">
+                    <label class="admin-toggle-label">
+                      <input type="checkbox" class="admin-toggle-input" name="requireSpecialChars" {securityData.securitySettings.requireSpecialChars ? 'checked' : ''}>
+                      <span class="admin-toggle-slider"></span>
+                      Requerir Caracteres Especiales en Contraseñas
+                    </label>
+                  </div>
+                  
+                  <div class="admin-toggle-group">
+                    <label class="admin-toggle-label">
+                      <input type="checkbox" class="admin-toggle-input" name="require2FA" {securityData.securitySettings.require2FA ? 'checked' : ''}>
+                      <span class="admin-toggle-slider"></span>
+                      Requerir Autenticación de Dos Factores
+                    </label>
+                  </div>
+                  
+                  <div class="admin-toggle-group">
+                    <label class="admin-toggle-label">
+                      <input type="checkbox" class="admin-toggle-input" name="enableCaptcha" {securityData.securitySettings.enableCaptcha ? 'checked' : ''}>
+                      <span class="admin-toggle-slider"></span>
+                      Habilitar CAPTCHA
+                    </label>
+                  </div>
+                  
+                  <div class="admin-toggle-group">
+                    <label class="admin-toggle-label">
+                      <input type="checkbox" class="admin-toggle-input" name="enableRateLimit" {securityData.securitySettings.enableRateLimit ? 'checked' : ''}>
+                      <span class="admin-toggle-slider"></span>
+                      Habilitar Límite de Velocidad
+                    </label>
+                  </div>
+                </div>
+              </form>
+            </div>
+          </section>
+
+          <!-- Audit Log -->
+          <section class="admin-audit-log">
+            <div class="admin-card">
+              <div class="admin-card-header">
+                <h3 class="admin-card-title">Registro de Auditoría</h3>
+                <div class="admin-audit-actions">
+                  <select class="admin-select" id="auditActionFilter">
+                    <option value="">Todas las acciones</option>
+                    <option value="Login Success">Login Exitoso</option>
+                    <option value="IP Blocked">IP Bloqueada</option>
+                    <option value="Security Scan">Escaneo de Seguridad</option>
+                    <option value="Settings Updated">Configuración Actualizada</option>
+                  </select>
+                  <button class="admin-btn admin-btn-secondary" id="exportAuditLog">
+                    <svg width="16" height="16" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 10v6m0 0l-3-3m3 3l3-3m2 8H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"></path>
+                    </svg>
+                    Exportar
+                  </button>
+                </div>
+              </div>
+              
+              <div class="admin-audit-list">
+                {securityData.auditLog.map(entry => (
+                  <div class="admin-audit-item">
+                    <div class="admin-audit-header">
+                      <div class="admin-audit-action">{entry.action}</div>
+                      <div class="admin-audit-timestamp">{entry.timestamp}</div>
+                    </div>
+                    <div class="admin-audit-details">
+                      <div class="admin-audit-user">Usuario: {entry.user}</div>
+                      <div class="admin-audit-ip">IP: {entry.ip}</div>
+                      <div class="admin-audit-description">{entry.details}</div>
+                    </div>
+                  </div>
+                ))}
+              </div>
+            </div>
+          </section>
+        </div>
+      </main>
+    </div>
+  </div>
+
+  <!-- Modals -->
+  <div class="admin-modal" id="blockIPModal">
+    <div class="admin-modal-content">
+      <div class="admin-modal-header">
+        <h3>Bloquear Dirección IP</h3>
+        <button class="admin-modal-close" onclick="closeModal('blockIPModal')">
+          <svg width="24" height="24" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path>
+          </svg>
+        </button>
+      </div>
+      <form class="admin-modal-form" id="blockIPForm">
+        <div class="admin-form-group">
+          <label class="admin-form-label">Dirección IP</label>
+          <input type="text" class="admin-form-input" name="ip" placeholder="192.168.1.100" required>
+        </div>
+        <div class="admin-form-group">
+          <label class="admin-form-label">Razón del Bloqueo</label>
+          <select class="admin-form-select" name="reason" required>
+            <option value="">Seleccionar razón</option>
+            <option value="Brute force attack">Ataque de fuerza bruta</option>
+            <option value="SQL injection attempt">Intento de inyección SQL</option>
+            <option value="XSS attempt">Intento de XSS</option>
+            <option value="DDoS attack">Ataque DDoS</option>
+            <option value="Suspicious activity">Actividad sospechosa</option>
+            <option value="Manual block">Bloqueo manual</option>
+          </select>
+        </div>
+        <div class="admin-form-group">
+          <label class="admin-form-label">Duración</label>
+          <select class="admin-form-select" name="duration" required>
+            <option value="1">1 hora</option>
+            <option value="24">24 horas</option>
+            <option value="168">1 semana</option>
+            <option value="720">1 mes</option>
+            <option value="permanent">Permanente</option>
+          </select>
+        </div>
+        <div class="admin-modal-actions">
+          <button type="button" class="admin-btn admin-btn-secondary" onclick="closeModal('blockIPModal')">Cancelar</button>
+          <button type="submit" class="admin-btn admin-btn-danger">Bloquear IP</button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <div class="admin-modal" id="whitelistIPModal">
+    <div class="admin-modal-content">
+      <div class="admin-modal-header">
+        <h3>Agregar IP a Lista Blanca</h3>
+        <button class="admin-modal-close" onclick="closeModal('whitelistIPModal')">
+          <svg width="24" height="24" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path>
+          </svg>
+        </button>
+      </div>
+      <form class="admin-modal-form" id="whitelistIPForm">
+        <div class="admin-form-group">
+          <label class="admin-form-label">Dirección IP</label>
+          <input type="text" class="admin-form-input" name="ip" placeholder="192.168.1.100" required>
+        </div>
+        <div class="admin-form-group">
+          <label class="admin-form-label">Descripción</label>
+          <input type="text" class="admin-form-input" name="description" placeholder="Oficina principal" required>
+        </div>
+        <div class="admin-modal-actions">
+          <button type="button" class="admin-btn admin-btn-secondary" onclick="closeModal('whitelistIPModal')">Cancelar</button>
+          <button type="submit" class="admin-btn admin-btn-primary">Agregar a Lista Blanca</button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <style>
+    /* Security page specific styles */
+    .admin-content {
+      padding: var(--admin-spacing-xl);
+      max-width: 1400px;
+      margin: 0 auto;
+      display: flex;
+      flex-direction: column;
+      gap: var(--admin-spacing-xl);
+    }
+
+    /* Security Overview */
+    .admin-security-metrics {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+      gap: var(--admin-spacing-lg);
+      padding: var(--admin-spacing-lg);
+    }
+
+    .admin-security-metric {
+      display: flex;
+      align-items: center;
+      gap: var(--admin-spacing-md);
+      padding: var(--admin-spacing-lg);
+      background-color: var(--admin-bg-tertiary);
+      border-radius: var(--admin-radius-lg);
+      border: 1px solid var(--admin-border-light);
+    }
+
+    .admin-metric-icon {
+      width: 48px;
+      height: 48px;
+      border-radius: var(--admin-radius-full);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: white;
+    }
+
+    .admin-metric-danger {
+      background-color: var(--admin-danger);
+    }
+
+    .admin-metric-warning {
+      background-color: var(--admin-warning);
+    }
+
+    .admin-metric-info {
+      background-color: var(--admin-info);
+    }
+
+    .admin-metric-success {
+      background-color: var(--admin-success);
+    }
+
+    .admin-metric-content {
+      flex: 1;
+    }
+
+    .admin-metric-value {
+      font-size: var(--admin-font-size-2xl);
+      font-weight: 700;
+      color: var(--admin-text-primary);
+      line-height: 1;
+    }
+
+    .admin-metric-label {
+      font-size: var(--admin-font-size-sm);
+      color: var(--admin-text-secondary);
+      margin-top: var(--admin-spacing-xs);
+    }
+
+    .admin-threat-level {
+      display: flex;
+      align-items: center;
+      gap: var(--admin-spacing-sm);
+    }
+
+    .admin-threat-indicator {
+      display: flex;
+      align-items: center;
+      gap: var(--admin-spacing-xs);
+      padding: var(--admin-spacing-xs) var(--admin-spacing-sm);
+      border-radius: var(--admin-radius-md);
+      font-size: var(--admin-font-size-sm);
+      font-weight: 600;
+    }
+
+    .admin-threat-low {
+      background-color: var(--admin-success);
+      color: white;
+    }
+
+    .admin-threat-medium {
+      background-color: var(--admin-warning);
+      color: white;
+    }
+
+    .admin-threat-high {
+      background-color: var(--admin-danger);
+      color: white;
+    }
+
+    .admin-threat-dot {
+      width: 8px;
+      height: 8px;
+      border-radius: 50%;
+      background-color: currentColor;
+      animation: pulse 2s infinite;
+    }
+
+    @keyframes pulse {
+      0%, 100% { opacity: 1; }
+      50% { opacity: 0.5; }
+    }
+
+    /* Threats */
+    .admin-threats-actions {
+      display: flex;
+      gap: var(--admin-spacing-sm);
+    }
+
+    .admin-threats-list {
+      padding: var(--admin-spacing-lg);
+    }
+
+    .admin-threat-item {
+      padding: var(--admin-spacing-lg);
+      border-left: 4px solid;
+      margin-bottom: var(--admin-spacing-md);
+      background-color: var(--admin-bg-tertiary);
+      border-radius: 0 var(--admin-radius-md) var(--admin-radius-md) 0;
+    }
+
+    .admin-threat-critical {
+      border-left-color: var(--admin-danger);
+    }
+
+    .admin-threat-high {
+      border-left-color: var(--admin-warning);
+    }
+
+    .admin-threat-medium {
+      border-left-color: var(--admin-info);
+    }
+
+    .admin-threat-low {
+      border-left-color: var(--admin-success);
+    }
+
+    .admin-threat-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: flex-start;
+      margin-bottom: var(--admin-spacing-md);
+    }
+
+    .admin-threat-type {
+      font-size: var(--admin-font-size-lg);
+      font-weight: 600;
+      color: var(--admin-text-primary);
+      margin: 0;
+    }
+
+    .admin-threat-ip {
+      font-family: monospace;
+      font-size: var(--admin-font-size-sm);
+      color: var(--admin-text-muted);
+      background-color: var(--admin-bg-secondary);
+      padding: 2px 6px;
+      border-radius: var(--admin-radius-sm);
+    }
+
+    .admin-threat-meta {
+      display: flex;
+      gap: var(--admin-spacing-sm);
+      align-items: center;
+    }
+
+    .admin-threat-severity {
+      font-size: var(--admin-font-size-xs);
+      font-weight: 600;
+      padding: 2px 6px;
+      border-radius: var(--admin-radius-sm);
+      text-transform: uppercase;
+    }
+
+    .admin-severity-critical {
+      background-color: var(--admin-danger);
+      color: white;
+    }
+
+    .admin-severity-high {
+      background-color: var(--admin-warning);
+      color: white;
+    }
+
+    .admin-severity-medium {
+      background-color: var(--admin-info);
+      color: white;
+    }
+
+    .admin-severity-low {
+      background-color: var(--admin-success);
+      color: white;
+    }
+
+    .admin-threat-status {
+      font-size: var(--admin-font-size-xs);
+      font-weight: 600;
+      padding: 2px 6px;
+      border-radius: var(--admin-radius-sm);
+    }
+
+    .admin-status-blocked {
+      background-color: var(--admin-danger);
+      color: white;
+    }
+
+    .admin-status-mitigated {
+      background-color: var(--admin-warning);
+      color: white;
+    }
+
+    .admin-status-active {
+      background-color: var(--admin-success);
+      color: white;
+    }
+
+    .admin-threat-details {
+      margin-bottom: var(--admin-spacing-md);
+    }
+
+    .admin-threat-description {
+      color: var(--admin-text-primary);
+      margin-bottom: var(--admin-spacing-xs);
+    }
+
+    .admin-threat-timestamp {
+      font-size: var(--admin-font-size-sm);
+      color: var(--admin-text-muted);
+      font-family: monospace;
+    }
+
+    .admin-threat-actions {
+      display: flex;
+      gap: var(--admin-spacing-sm);
+    }
+
+    /* IP Management */
+    .admin-ip-management {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: var(--admin-spacing-xl);
+    }
+
+    .admin-ip-list {
+      padding: var(--admin-spacing-lg);
+      max-height: 400px;
+      overflow-y: auto;
+    }
+
+    .admin-ip-item {
+      padding: var(--admin-spacing-md);
+      background-color: var(--admin-bg-tertiary);
+      border-radius: var(--admin-radius-md);
+      border: 1px solid var(--admin-border-light);
+      margin-bottom: var(--admin-spacing-md);
+    }
+
+    .admin-ip-whitelist {
+      border-left: 4px solid var(--admin-success);
+    }
+
+    .admin-ip-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: var(--admin-spacing-sm);
+    }
+
+    .admin-ip-address {
+      font-family: monospace;
+      font-weight: 600;
+      color: var(--admin-text-primary);
+    }
+
+    .admin-ip-status {
+      font-size: var(--admin-font-size-xs);
+      font-weight: 600;
+      padding: 2px 6px;
+      border-radius: var(--admin-radius-sm);
+    }
+
+    .admin-ip-details {
+      margin-bottom: var(--admin-spacing-sm);
+    }
+
+    .admin-ip-reason,
+    .admin-ip-description {
+      color: var(--admin-text-primary);
+      margin-bottom: var(--admin-spacing-xs);
+    }
+
+    .admin-ip-meta {
+      display: flex;
+      flex-direction: column;
+      gap: var(--admin-spacing-xs);
+      font-size: var(--admin-font-size-sm);
+      color: var(--admin-text-muted);
+    }
+
+    .admin-ip-actions {
+      display: flex;
+      gap: var(--admin-spacing-xs);
+    }
+
+    /* Failed Logins */
+    .admin-failed-logins-actions {
+      display: flex;
+      gap: var(--admin-spacing-sm);
+      align-items: center;
+    }
+
+    .admin-search-input {
+      padding: var(--admin-spacing-sm) var(--admin-spacing-md);
+      border: 1px solid var(--admin-border-light);
+      border-radius: var(--admin-radius-md);
+      background-color: var(--admin-bg-primary);
+      color: var(--admin-text-primary);
+      font-size: var(--admin-font-size-sm);
+      min-width: 250px;
+    }
+
+    .admin-failed-logins-table {
+      padding: var(--admin-spacing-lg);
+      overflow-x: auto;
+    }
+
+    .admin-failed-username,
+    .admin-failed-ip {
+      font-family: monospace;
+      font-size: var(--admin-font-size-sm);
+    }
+
+    .admin-failed-timestamp {
+      font-family: monospace;
+      font-size: var(--admin-font-size-sm);
+    }
+
+    .admin-failed-reason {
+      color: var(--admin-text-secondary);
+    }
+
+    .admin-failed-useragent {
+      max-width: 200px;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      white-space: nowrap;
+    }
+
+    .admin-failed-actions {
+      display: flex;
+      gap: var(--admin-spacing-xs);
+    }
+
+    /* Security Settings */
+    .admin-security-form {
+      padding: var(--admin-spacing-lg);
+    }
+
+    .admin-settings-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+      gap: var(--admin-spacing-lg);
+      margin-bottom: var(--admin-spacing-xl);
+    }
+
+    .admin-settings-toggles {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+      gap: var(--admin-spacing-md);
+    }
+
+    .admin-toggle-group {
+      display: flex;
+      align-items: center;
+    }
+
+    .admin-toggle-label {
+      display: flex;
+      align-items: center;
+      gap: var(--admin-spacing-sm);
+      cursor: pointer;
+      font-size: var(--admin-font-size-sm);
+      color: var(--admin-text-primary);
+    }
+
+    .admin-toggle-input {
+      display: none;
+    }
+
+    .admin-toggle-slider {
+      position: relative;
+      width: 44px;
+      height: 24px;
+      background-color: var(--admin-border-light);
+      border-radius: 12px;
+      transition: background-color 0.3s;
+    }
+
+    .admin-toggle-slider::before {
+      content: '';
+      position: absolute;
+      top: 2px;
+      left: 2px;
+      width: 20px;
+      height: 20px;
+      background-color: white;
+      border-radius: 50%;
+      transition: transform 0.3s;
+    }
+
+    .admin-toggle-input:checked + .admin-toggle-slider {
+      background-color: var(--admin-primary);
+    }
+
+    .admin-toggle-input:checked + .admin-toggle-slider::before {
+      transform: translateX(20px);
+    }
+
+    /* Audit Log */
+    .admin-audit-actions {
+      display: flex;
+      gap: var(--admin-spacing-sm);
+      align-items: center;
+    }
+
+    .admin-audit-list {
+      padding: var(--admin-spacing-lg);
+      max-height: 400px;
+      overflow-y: auto;
+    }
+
+    .admin-audit-item {
+      padding: var(--admin-spacing-md);
+      background-color: var(--admin-bg-tertiary);
+      border-radius: var(--admin-radius-md);
+      border: 1px solid var(--admin-border-light);
+      margin-bottom: var(--admin-spacing-md);
+    }
+
+    .admin-audit-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: var(--admin-spacing-sm);
+    }
+
+    .admin-audit-action {
+      font-weight: 600;
+      color: var(--admin-text-primary);
+    }
+
+    .admin-audit-timestamp {
+      font-family: monospace;
+      font-size: var(--admin-font-size-sm);
+      color: var(--admin-text-muted);
+    }
+
+    .admin-audit-details {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+      gap: var(--admin-spacing-sm);
+      font-size: var(--admin-font-size-sm);
+    }
+
+    .admin-audit-user,
+    .admin-audit-ip {
+      color: var(--admin-text-secondary);
+    }
+
+    .admin-audit-description {
+      color: var(--admin-text-primary);
+      grid-column: 1 / -1;
+    }
+
+    /* Responsive Design */
+    @media (max-width: 768px) {
+      .admin-security-metrics {
+        grid-template-columns: 1fr;
+      }
+
+      .admin-ip-management {
+        grid-template-columns: 1fr;
+      }
+
+      .admin-settings-grid {
+        grid-template-columns: 1fr;
+      }
+
+      .admin-settings-toggles {
+        grid-template-columns: 1fr;
+      }
+
+      .admin-failed-logins-actions {
+        flex-direction: column;
+        align-items: stretch;
+      }
+
+      .admin-search-input {
+        min-width: auto;
+      }
+
+      .admin-threats-actions {
+        flex-direction: column;
+      }
+
+      .admin-audit-actions {
+        flex-direction: column;
+      }
+    }
+  </style>
+
+  <script>
+    // Theme toggle functionality
+    function initThemeToggle() {
+      const themeToggle = document.getElementById('themeToggle');
+      const currentTheme = localStorage.getItem('admin-theme') || 'light';
+      
+      document.documentElement.setAttribute('data-theme', currentTheme);
+      
+      themeToggle.innerHTML = currentTheme === 'dark' 
+        ? '<svg width="20" height="20" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 3v1m0 16v1m9-9h-1M4 12H3m15.364 6.364l-.707-.707M6.343 6.343l-.707-.707m12.728 0l-.707.707M6.343 17.657l-.707.707"></path></svg>'
+        : '<svg width="20" height="20" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M20.354 15.354A9 9 0 018.646 3.646 9.003 9.003 0 0012 21a9.003 9.003 0 008.354-5.646z"></path></svg>';
+      
+      themeToggle.addEventListener('click', () => {
+        const newTheme = currentTheme === 'light' ? 'dark' : 'light';
+        document.documentElement.setAttribute('data-theme', newTheme);
+        localStorage.setItem('admin-theme', newTheme);
+        location.reload();
+      });
+    }
+
+    // Sidebar toggle functionality
+    function initSidebarToggle() {
+      const sidebarToggle = document.getElementById('sidebarToggle');
+      const sidebar = document.getElementById('adminSidebar');
+      
+      sidebarToggle.addEventListener('click', () => {
+        sidebar.classList.toggle('admin-sidebar-collapsed');
+      });
+    }
+
+    // Update current time
+    function updateCurrentTime() {
+      const timeElement = document.getElementById('currentTime');
+      const now = new Date();
+      const timeString = now.toLocaleString('es-ES', {
+        year: 'numeric',
+        month: '2-digit',
+        day: '2-digit',
+        hour: '2-digit',
+        minute: '2-digit',
+        second: '2-digit'
+      });
+      timeElement.textContent = timeString;
+    }
+
+    // Security functions
+    function refreshThreats() {
+      console.log('Actualizando amenazas...');
+      // Simulate refresh
+      setTimeout(() => {
+        location.reload();
+      }, 1000);
+    }
+
+    function runSecurityScan() {
+      console.log('Ejecutando escaneo de seguridad...');
+      alert('Escaneo de seguridad iniciado. Los resultados aparecerán en unos minutos.');
+    }
+
+    function viewThreatDetails(threatId) {
+      console.log('Ver detalles de amenaza:', threatId);
+      alert(`Mostrando detalles de la amenaza ${threatId}`);
+    }
+
+    function blockIP(ip) {
+      console.log('Bloqueando IP:', ip);
+      document.querySelector('#blockIPModal input[name="ip"]').value = ip;
+      openModal('blockIPModal');
+    }
+
+    function unblockIP(ip) {
+      console.log('Desbloqueando IP:', ip);
+      if (confirm(`¿Estás seguro de que quieres desbloquear la IP ${ip}?`)) {
+        alert(`IP ${ip} desbloqueada exitosamente.`);
+        location.reload();
+      }
+    }
+
+    function editBlockedIP(ip) {
+      console.log('Editando IP bloqueada:', ip);
+      alert(`Función de edición para IP ${ip} no implementada aún.`);
+    }
+
+    function editWhitelistIP(ip) {
+      console.log('Editando IP de lista blanca:', ip);
+      alert(`Función de edición para IP ${ip} no implementada aún.`);
+    }
+
+    function removeWhitelistIP(ip) {
+      console.log('Eliminando IP de lista blanca:', ip);
+      if (confirm(`¿Estás seguro de que quieres eliminar la IP ${ip} de la lista blanca?`)) {
+        alert(`IP ${ip} eliminada de la lista blanca exitosamente.`);
+        location.reload();
+      }
+    }
+
+    // Modal functions
+    function openModal(modalId) {
+      const modal = document.getElementById(modalId);
+      modal.style.display = 'flex';
+      document.body.style.overflow = 'hidden';
+    }
+
+    function closeModal(modalId) {
+      const modal = document.getElementById(modalId);
+      modal.style.display = 'none';
+      document.body.style.overflow = 'auto';
+    }
+
+    // Search functionality
+    function initFailedLoginsSearch() {
+      const searchInput = document.getElementById('failedLoginsSearch');
+      const tableBody = document.getElementById('failedLoginsTableBody');
+      const rows = Array.from(tableBody.querySelectorAll('tr'));
+
+      searchInput.addEventListener('input', (e) => {
+        const searchTerm = e.target.value.toLowerCase();
+        
+        rows.forEach(row => {
+          const text = row.textContent.toLowerCase();
+          row.style.display = text.includes(searchTerm) ? '' : 'none';
+        });
+      });
+    }
+
+    // Clear failed logins
+    function clearFailedLogins() {
+      if (confirm('¿Estás seguro de que quieres limpiar todos los intentos de login fallidos?')) {
+        alert('Intentos de login fallidos limpiados exitosamente.');
+        location.reload();
+      }
+    }
+
+    // Save security settings
+    function saveSecuritySettings() {
+      const form = document.getElementById('securitySettingsForm');
+      const formData = new FormData(form);
+      
+      console.log('Guardando configuración de seguridad...');
+      alert('Configuración de seguridad guardada exitosamente.');
+    }
+
+    // Export audit log
+    function exportAuditLog() {
+      console.log('Exportando registro de auditoría...');
+      alert('Registro de auditoría exportado exitosamente.');
+    }
+
+    // Filter audit log
+    function initAuditFilter() {
+      const filterSelect = document.getElementById('auditActionFilter');
+      const auditItems = document.querySelectorAll('.admin-audit-item');
+
+      filterSelect.addEventListener('change', (e) => {
+        const filterValue = e.target.value;
+        
+        auditItems.forEach(item => {
+          const action = item.querySelector('.admin-audit-action').textContent;
+          item.style.display = !filterValue || action.includes(filterValue) ? '' : 'none';
+        });
+      });
+    }
+
+    // Initialize page
+    document.addEventListener('DOMContentLoaded', () => {
+      initThemeToggle();
+      initSidebarToggle();
+      updateCurrentTime();
+      setInterval(updateCurrentTime, 1000);
+      initFailedLoginsSearch();
+      initAuditFilter();
+
+      // Event listeners
+      document.getElementById('refreshThreats').addEventListener('click', refreshThreats);
+      document.getElementById('runSecurityScan').addEventListener('click', runSecurityScan);
+      document.getElementById('addBlockedIP').addEventListener('click', () => openModal('blockIPModal'));
+      document.getElementById('addWhitelistIP').addEventListener('click', () => openModal('whitelistIPModal'));
+      document.getElementById('clearFailedLogins').addEventListener('click', clearFailedLogins);
+      document.getElementById('saveSecuritySettings').addEventListener('click', saveSecuritySettings);
+      document.getElementById('exportAuditLog').addEventListener('click', exportAuditLog);
+
+      // Form submissions
+      document.getElementById('blockIPForm').addEventListener('submit', (e) => {
+        e.preventDefault();
+        const formData = new FormData(e.target);
+        const ip = formData.get('ip');
+        const reason = formData.get('reason');
+        const duration = formData.get('duration');
+        
+        console.log('Bloqueando IP:', { ip, reason, duration });
+        alert(`IP ${ip} bloqueada exitosamente por ${reason}.`);
+        closeModal('blockIPModal');
+        location.reload();
+      });
+
+      document.getElementById('whitelistIPForm').addEventListener('submit', (e) => {
+        e.preventDefault();
+        const formData = new FormData(e.target);
+        const ip = formData.get('ip');
+        const description = formData.get('description');
+        
+        console.log('Agregando IP a lista blanca:', { ip, description });
+        alert(`IP ${ip} agregada a la lista blanca exitosamente.`);
+        closeModal('whitelistIPModal');
+        location.reload();
+      });
+
+      // Close modals when clicking outside
+      document.querySelectorAll('.admin-modal').forEach(modal => {
+        modal.addEventListener('click', (e) => {
+          if (e.target === modal) {
+            closeModal(modal.id);
+          }
+        });
+      });
+    });
+  </script>
+</Layout>

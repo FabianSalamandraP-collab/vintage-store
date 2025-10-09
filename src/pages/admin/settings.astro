@@ -1,0 +1,632 @@
+---
+import Layout from '../../layouts/Layout.astro';
+
+// Check authentication
+const isAuthenticated = Astro.cookies.get('admin-session')?.value === 'authenticated';
+if (!isAuthenticated) {
+  return Astro.redirect('/admin/login');
+}
+
+// Mock settings data
+const generalSettings = {
+  siteName: 'Vintage Store',
+  siteDescription: 'Tienda de productos vintage y retro',
+  siteUrl: 'https://vintage-store.com',
+  adminEmail: 'admin@vintage-store.com',
+  timezone: 'America/Bogota',
+  language: 'es',
+  currency: 'COP',
+  dateFormat: 'DD/MM/YYYY',
+  timeFormat: '24h'
+};
+
+const emailSettings = {
+  smtpHost: 'smtp.gmail.com',
+  smtpPort: 587,
+  smtpUser: 'noreply@vintage-store.com',
+  smtpPassword: '••••••••',
+  fromName: 'Vintage Store',
+  fromEmail: 'noreply@vintage-store.com',
+  enableNotifications: true,
+  enableOrderEmails: true,
+  enableNewsletters: true
+};
+
+const securitySettings = {
+  enableTwoFactor: false,
+  sessionTimeout: 30,
+  maxLoginAttempts: 5,
+  enableCaptcha: true,
+  enableSSL: true,
+  enableFirewall: true,
+  allowedIPs: ['192.168.1.0/24'],
+  blockedIPs: ['10.0.0.1', '172.16.0.1']
+};
+
+const backupSettings = {
+  enableAutoBackup: true,
+  backupFrequency: 'daily',
+  backupTime: '02:00',
+  retentionDays: 30,
+  backupLocation: 'cloud',
+  enableDatabaseBackup: true,
+  enableFileBackup: true,
+  lastBackup: '2024-01-15 02:00:00'
+};
+
+const performanceSettings = {
+  enableCaching: true,
+  cacheExpiry: 3600,
+  enableCompression: true,
+  enableMinification: true,
+  enableCDN: false,
+  maxFileSize: 10,
+  enableLazyLoading: true,
+  enableImageOptimization: true
+};
+
+const integrationSettings = {
+  googleAnalytics: 'GA-XXXXXXXXX',
+  facebookPixel: '',
+  stripePublicKey: 'pk_test_xxxxxxxxx',
+  stripeSecretKey: '••••••••',
+  paypalClientId: '',
+  enableSocialLogin: false,
+  enablePayments: true,
+  enableShipping: true
+};
+---
+
+<Layout title="Configuración - Admin">
+  <link rel="stylesheet" href="/src/styles/admin.css">
+  
+  <div class="admin-layout">
+    <!-- Sidebar -->
+    <aside class="admin-sidebar" id="adminSidebar">
+      <div class="admin-sidebar-header">
+        <div class="admin-logo">
+          <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <path d="M12 2L2 7l10 5 10-5-10-5z"></path>
+            <path d="M2 17l10 5 10-5"></path>
+            <path d="M2 12l10 5 10-5"></path>
+          </svg>
+          <span>Admin Panel</span>
+        </div>
+        <button class="admin-sidebar-toggle" id="sidebarToggle">
+          <svg width="20" height="20" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16"></path>
+          </svg>
+        </button>
+      </div>
+      
+      <nav class="admin-sidebar-nav">
+        <a href="/admin/dashboard" class="admin-nav-item">
+          <svg width="20" height="20" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6"></path>
+          </svg>
+          <span>Dashboard</span>
+        </a>
+        
+        <a href="/admin/users" class="admin-nav-item">
+          <svg width="20" height="20" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4.354a4 4 0 110 5.292M15 21H3v-1a6 6 0 0112 0v1zm0 0h6v-1a6 6 0 00-9-5.197m13.5-9a2.5 2.5 0 11-5 0 2.5 2.5 0 015 0z"></path>
+          </svg>
+          <span>Usuarios</span>
+        </a>
+        
+        <a href="/admin/analytics" class="admin-nav-item">
+          <svg width="20" height="20" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z"></path>
+          </svg>
+          <span>Analíticas</span>
+        </a>
+        
+        <a href="/admin/security" class="admin-nav-item">
+          <svg width="20" height="20" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z"></path>
+          </svg>
+          <span>Seguridad</span>
+        </a>
+        
+        <a href="/admin/system" class="admin-nav-item">
+          <svg width="20" height="20" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.065 2.572c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.572 1.065c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.065-2.572c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z"></path>
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"></path>
+          </svg>
+          <span>Sistema</span>
+        </a>
+        
+        <a href="/admin/settings" class="admin-nav-item admin-nav-active">
+          <svg width="20" height="20" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6V4m0 2a2 2 0 100 4m0-4a2 2 0 110 4m-6 8a2 2 0 100-4m0 4a2 2 0 100-4m0 4v2m0-6V4m6 6v10m6-2a2 2 0 100-4m0 4a2 2 0 100-4m0 4v2m0-6V4"></path>
+          </svg>
+          <span>Configuración</span>
+        </a>
+      </nav>
+      
+      <div class="admin-sidebar-footer">
+        <a href="/admin/login" class="admin-logout-btn">
+          <svg width="20" height="20" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1"></path>
+          </svg>
+          <span>Cerrar Sesión</span>
+        </a>
+      </div>
+    </aside>
+
+    <!-- Main Content -->
+    <main class="admin-main">
+      <!-- Header -->
+      <header class="admin-header">
+        <div class="admin-header-left">
+          <h1 class="admin-page-title">Configuración del Sistema</h1>
+          <div class="admin-breadcrumb">
+            <span>Admin</span>
+            <svg width="16" height="16" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"></path>
+            </svg>
+            <span>Configuración</span>
+          </div>
+        </div>
+        
+        <div class="admin-header-right">
+          <div class="admin-header-time">
+            <svg width="20" height="20" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <circle cx="12" cy="12" r="10"></circle>
+              <polyline points="12,6 12,12 16,14"></polyline>
+            </svg>
+            <span id="currentTime"></span>
+          </div>
+          
+          <button class="admin-theme-toggle" id="themeToggle">
+            <svg width="20" height="20" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M20.354 15.354A9 9 0 018.646 3.646 9.003 9.003 0 0012 21a9.003 9.003 0 008.354-5.646z"></path>
+            </svg>
+          </button>
+        </div>
+      </header>
+
+      <!-- Settings Content -->
+      <div class="admin-content">
+        <!-- Settings Navigation -->
+        <div class="admin-settings-nav">
+          <button class="admin-settings-tab admin-settings-tab-active" data-tab="general">General</button>
+          <button class="admin-settings-tab" data-tab="email">Email</button>
+          <button class="admin-settings-tab" data-tab="security">Seguridad</button>
+          <button class="admin-settings-tab" data-tab="backup">Respaldos</button>
+          <button class="admin-settings-tab" data-tab="performance">Rendimiento</button>
+          <button class="admin-settings-tab" data-tab="integrations">Integraciones</button>
+        </div>
+
+        <!-- General Settings -->
+        <div class="admin-settings-panel admin-settings-panel-active" id="general">
+          <div class="admin-card">
+            <div class="admin-card-header">
+              <h3>Configuración General</h3>
+              <p>Configuración básica del sitio web</p>
+            </div>
+            <div class="admin-card-body">
+              <form class="admin-settings-form" id="generalSettingsForm">
+                <div class="admin-form-grid">
+                  <div class="admin-form-group">
+                    <label for="siteName">Nombre del Sitio</label>
+                    <input type="text" id="siteName" name="siteName" value="{generalSettings.siteName}" required>
+                  </div>
+                  
+                  <div class="admin-form-group">
+                    <label for="siteUrl">URL del Sitio</label>
+                    <input type="url" id="siteUrl" name="siteUrl" value="{generalSettings.siteUrl}" required>
+                  </div>
+                  
+                  <div class="admin-form-group admin-form-group-full">
+                    <label for="siteDescription">Descripción</label>
+                    <textarea id="siteDescription" name="siteDescription" rows="3">{generalSettings.siteDescription}</textarea>
+                  </div>
+                  
+                  <div class="admin-form-group">
+                    <label for="adminEmail">Email del Administrador</label>
+                    <input type="email" id="adminEmail" name="adminEmail" value="{generalSettings.adminEmail}" required>
+                  </div>
+                  
+                  <div class="admin-form-group">
+                    <label for="timezone">Zona Horaria</label>
+                    <select id="timezone" name="timezone">
+                      <option value="America/Bogota" selected>América/Bogotá</option>
+                      <option value="America/Mexico_City">América/Ciudad de México</option>
+                      <option value="America/New_York">América/Nueva York</option>
+                      <option value="Europe/Madrid">Europa/Madrid</option>
+                    </select>
+                  </div>
+                  
+                  <div class="admin-form-group">
+                    <label for="language">Idioma</label>
+                    <select id="language" name="language">
+                      <option value="es" selected>Español</option>
+                      <option value="en">English</option>
+                      <option value="fr">Français</option>
+                    </select>
+                  </div>
+                  
+                  <div class="admin-form-group">
+                    <label for="currency">Moneda</label>
+                    <select id="currency" name="currency">
+                      <option value="COP" selected>COP - Peso Colombiano</option>
+                      <option value="USD">USD - Dólar Americano</option>
+                      <option value="EUR">EUR - Euro</option>
+                      <option value="MXN">MXN - Peso Mexicano</option>
+                    </select>
+                  </div>
+                  
+                  <div class="admin-form-group">
+                    <label for="dateFormat">Formato de Fecha</label>
+                    <select id="dateFormat" name="dateFormat">
+                      <option value="DD/MM/YYYY" selected>DD/MM/YYYY</option>
+                      <option value="MM/DD/YYYY">MM/DD/YYYY</option>
+                      <option value="YYYY-MM-DD">YYYY-MM-DD</option>
+                    </select>
+                  </div>
+                  
+                  <div class="admin-form-group">
+                    <label for="timeFormat">Formato de Hora</label>
+                    <select id="timeFormat" name="timeFormat">
+                      <option value="24h" selected>24 horas</option>
+                      <option value="12h">12 horas (AM/PM)</option>
+                    </select>
+                  </div>
+                </div>
+                
+                <div class="admin-form-actions">
+                  <button type="button" class="admin-btn admin-btn-secondary" onclick="resetGeneralSettings()">Restablecer</button>
+                  <button type="submit" class="admin-btn admin-btn-primary">Guardar Cambios</button>
+                </div>
+              </form>
+            </div>
+          </div>
+        </div>
+
+        <!-- Email Settings -->
+        <div class="admin-settings-panel" id="email">
+          <div class="admin-card">
+            <div class="admin-card-header">
+              <h3>Configuración de Email</h3>
+              <p>Configuración del servidor SMTP y notificaciones</p>
+            </div>
+            <div class="admin-card-body">
+              <form class="admin-settings-form" id="emailSettingsForm">
+                <div class="admin-form-grid">
+                  <div class="admin-form-group">
+                    <label for="smtpHost">Servidor SMTP</label>
+                    <input type="text" id="smtpHost" name="smtpHost" value="{emailSettings.smtpHost}" required>
+                  </div>
+                  
+                  <div class="admin-form-group">
+                    <label for="smtpPort">Puerto SMTP</label>
+                    <input type="number" id="smtpPort" name="smtpPort" value="{emailSettings.smtpPort}" required>
+                  </div>
+                  
+                  <div class="admin-form-group">
+                    <label for="smtpUser">Usuario SMTP</label>
+                    <input type="email" id="smtpUser" name="smtpUser" value="{emailSettings.smtpUser}" required>
+                  </div>
+                  
+                  <div class="admin-form-group">
+                    <label for="smtpPassword">Contraseña SMTP</label>
+                    <input type="password" id="smtpPassword" name="smtpPassword" value="{emailSettings.smtpPassword}">
+                  </div>
+                  
+                  <div class="admin-form-group">
+                    <label for="fromName">Nombre del Remitente</label>
+                    <input type="text" id="fromName" name="fromName" value="{emailSettings.fromName}" required>
+                  </div>
+                  
+                  <div class="admin-form-group">
+                    <label for="fromEmail">Email del Remitente</label>
+                    <input type="email" id="fromEmail" name="fromEmail" value="{emailSettings.fromEmail}" required>
+                  </div>
+                </div>
+                
+                <div class="admin-settings-toggles">
+                  <div class="admin-toggle-group">
+                    <label class="admin-toggle-label">
+                      <input type="checkbox" class="admin-toggle-input" name="enableNotifications" checked>
+                      <span class="admin-toggle-slider"></span>
+                      Habilitar Notificaciones
+                    </label>
+                  </div>
+                  
+                  <div class="admin-toggle-group">
+                    <label class="admin-toggle-label">
+                      <input type="checkbox" class="admin-toggle-input" name="enableOrderEmails" checked>
+                      <span class="admin-toggle-slider"></span>
+                      Emails de Pedidos
+                    </label>
+                  </div>
+                  
+                  <div class="admin-toggle-group">
+                    <label class="admin-toggle-label">
+                      <input type="checkbox" class="admin-toggle-input" name="enableNewsletters" checked>
+                      <span class="admin-toggle-slider"></span>
+                      Newsletters
+                    </label>
+                  </div>
+                </div>
+                
+                <div class="admin-form-actions">
+                  <button type="button" class="admin-btn admin-btn-secondary" onclick="testEmailConnection()">Probar Conexión</button>
+                  <button type="submit" class="admin-btn admin-btn-primary">Guardar Configuración</button>
+                </div>
+              </form>
+            </div>
+          </div>
+        </div>
+
+        <!-- Security Settings -->
+        <div class="admin-settings-panel" id="security">
+          <div class="admin-card">
+            <div class="admin-card-header">
+              <h3>Configuración de Seguridad</h3>
+              <p>Configuración de autenticación y protección</p>
+            </div>
+            <div class="admin-card-body">
+              <form class="admin-settings-form" id="securitySettingsForm">
+                <div class="admin-form-grid">
+                  <div class="admin-form-group">
+                    <label for="sessionTimeout">Tiempo de Sesión (minutos)</label>
+                    <input type="number" id="sessionTimeout" name="sessionTimeout" value="{securitySettings.sessionTimeout}" min="5" max="1440">
+                  </div>
+                  
+                  <div class="admin-form-group">
+                    <label for="maxLoginAttempts">Máximo Intentos de Login</label>
+                    <input type="number" id="maxLoginAttempts" name="maxLoginAttempts" value="{securitySettings.maxLoginAttempts}" min="3" max="10">
+                  </div>
+                  
+                  <div class="admin-form-group admin-form-group-full">
+                    <label for="allowedIPs">IPs Permitidas (una por línea)</label>
+                    <textarea id="allowedIPs" name="allowedIPs" rows="3" placeholder="192.168.1.0/24">{securitySettings.allowedIPs.join('\n')}</textarea>
+                  </div>
+                  
+                  <div class="admin-form-group admin-form-group-full">
+                    <label for="blockedIPs">IPs Bloqueadas (una por línea)</label>
+                    <textarea id="blockedIPs" name="blockedIPs" rows="3" placeholder="10.0.0.1">{securitySettings.blockedIPs.join('\n')}</textarea>
+                  </div>
+                </div>
+                
+                <div class="admin-settings-toggles">
+                  <div class="admin-toggle-group">
+                    <label class="admin-toggle-label">
+                      <input type="checkbox" class="admin-toggle-input" name="enableTwoFactor">
+                      <span class="admin-toggle-slider"></span>
+                      Autenticación de Dos Factores
+                    </label>
+                  </div>
+                  
+                  <div class="admin-toggle-group">
+                    <label class="admin-toggle-label">
+                      <input type="checkbox" class="admin-toggle-input" name="enableCaptcha" checked>
+                      <span class="admin-toggle-slider"></span>
+                      CAPTCHA en Login
+                    </label>
+                  </div>
+                  
+                  <div class="admin-toggle-group">
+                    <label class="admin-toggle-label">
+                      <input type="checkbox" class="admin-toggle-input" name="enableSSL" checked>
+                      <span class="admin-toggle-slider"></span>
+                      Forzar HTTPS
+                    </label>
+                  </div>
+                  
+                  <div class="admin-toggle-group">
+                    <label class="admin-toggle-label">
+                      <input type="checkbox" class="admin-toggle-input" name="enableFirewall" checked>
+                      <span class="admin-toggle-slider"></span>
+                      Firewall Web
+                    </label>
+                  </div>
+                </div>
+                
+                <div class="admin-form-actions">
+                  <button type="button" class="admin-btn admin-btn-secondary" onclick="resetSecuritySettings()">Restablecer</button>
+                  <button type="submit" class="admin-btn admin-btn-primary">Guardar Configuración</button>
+                </div>
+              </form>
+            </div>
+          </div>
+        </div>
+
+        <!-- Backup Settings -->
+        <div class="admin-settings-panel" id="backup">
+          <div class="admin-card">
+            <div class="admin-card-header">
+              <h3>Configuración de Respaldos</h3>
+              <p>Configuración de copias de seguridad automáticas</p>
+            </div>
+            <div class="admin-card-body">
+              <form class="admin-settings-form" id="backupSettingsForm">
+                <div class="admin-form-grid">
+                  <div class="admin-form-group">
+                    <label for="backupFrequency">Frecuencia de Respaldo</label>
+                    <select id="backupFrequency" name="backupFrequency">
+                      <option value="hourly">Cada Hora</option>
+                      <option value="daily" selected>Diario</option>
+                      <option value="weekly">Semanal</option>
+                      <option value="monthly">Mensual</option>
+                    </select>
+                  </div>
+                  
+                  <div class="admin-form-group">
+                    <label for="backupTime">Hora de Respaldo</label>
+                    <input type="time" id="backupTime" name="backupTime" value="{backupSettings.backupTime}">
+                  </div>
+                  
+                  <div class="admin-form-group">
+                    <label for="retentionDays">Días de Retención</label>
+                    <input type="number" id="retentionDays" name="retentionDays" value="{backupSettings.retentionDays}" min="1" max="365">
+                  </div>
+                  
+                  <div class="admin-form-group">
+                    <label for="backupLocation">Ubicación de Respaldo</label>
+                    <select id="backupLocation" name="backupLocation">
+                      <option value="local">Local</option>
+                      <option value="cloud" selected>Nube</option>
+                      <option value="ftp">FTP</option>
+                      <option value="s3">Amazon S3</option>
+                    </select>
+                  </div>
+                </div>
+                
+                <div class="admin-settings-toggles">
+                  <div class="admin-toggle-group">
+                    <label class="admin-toggle-label">
+                      <input type="checkbox" class="admin-toggle-input" name="enableAutoBackup" checked>
+                      <span class="admin-toggle-slider"></span>
+                      Respaldo Automático
+                    </label>
+                  </div>
+                  
+                  <div class="admin-toggle-group">
+                    <label class="admin-toggle-label">
+                      <input type="checkbox" class="admin-toggle-input" name="enableDatabaseBackup" checked>
+                      <span class="admin-toggle-slider"></span>
+                      Respaldar Base de Datos
+                    </label>
+                  </div>
+                  
+                  <div class="admin-toggle-group">
+                    <label class="admin-toggle-label">
+                      <input type="checkbox" class="admin-toggle-input" name="enableFileBackup" checked>
+                      <span class="admin-toggle-slider"></span>
+                      Respaldar Archivos
+                    </label>
+                  </div>
+                </div>
+                
+                <div class="admin-backup-status">
+                  <div class="admin-status-item">
+                    <span class="admin-status-label">Último Respaldo:</span>
+                    <span class="admin-status-value">{backupSettings.lastBackup}</span>
+                  </div>
+                </div>
+                
+                <div class="admin-form-actions">
+                  <button type="button" class="admin-btn admin-btn-secondary" onclick="runManualBackup()">Respaldo Manual</button>
+                  <button type="submit" class="admin-btn admin-btn-primary">Guardar Configuración</button>
+                </div>
+              </form>
+            </div>
+          </div>
+        </div>
+
+        <!-- Performance Settings -->
+        <div class="admin-settings-panel" id="performance">
+          <div class="admin-card">
+            <div class="admin-card-header">
+              <h3>Configuración de Rendimiento</h3>
+              <p>Optimización y configuración de caché</p>
+            </div>
+            <div class="admin-card-body">
+              <form class="admin-settings-form" id="performanceSettingsForm">
+                <div class="admin-form-grid">
+                  <div class="admin-form-group">
+                    <label for="cacheExpiry">Tiempo de Caché (segundos)</label>
+                    <input type="number" id="cacheExpiry" name="cacheExpiry" value="{performanceSettings.cacheExpiry}" min="60">
+                  </div>
+                  
+                  <div class="admin-form-group">
+                    <label for="maxFileSize">Tamaño Máximo de Archivo (MB)</label>
+                    <input type="number" id="maxFileSize" name="maxFileSize" value="{performanceSettings.maxFileSize}" min="1" max="100">
+                  </div>
+                </div>
+                
+                <div class="admin-settings-toggles">
+                  <div class="admin-toggle-group">
+                    <label class="admin-toggle-label">
+                      <input type="checkbox" class="admin-toggle-input" name="enableCaching" checked>
+                      <span class="admin-toggle-slider"></span>
+                      Habilitar Caché
+                    </label>
+                  </div>
+                  
+                  <div class="admin-toggle-group">
+                    <label class="admin-toggle-label">
+                      <input type="checkbox" class="admin-toggle-input" name="enableCompression" checked>
+                      <span class="admin-toggle-slider"></span>
+                      Compresión GZIP
+                    </label>
+                  </div>
+                  
+                  <div class="admin-toggle-group">
+                    <label class="admin-toggle-label">
+                      <input type="checkbox" class="admin-toggle-input" name="enableMinification" checked>
+                      <span class="admin-toggle-slider"></span>
+                      Minificación
+                    </label>
+                  </div>
+                  
+                  <div class="admin-toggle-group">
+                    <label class="admin-toggle-label">
+                      <input type="checkbox" class="admin-toggle-input" name="enableCDN">
+                      <span class="admin-toggle-slider"></span>
+                      CDN
+                    </label>
+                  </div>
+                  
+                  <div class="admin-toggle-group">
+                    <label class="admin-toggle-label">
+                      <input type="checkbox" class="admin-toggle-input" name="enableLazyLoading" checked>
+                      <span class="admin-toggle-slider"></span>
+                      Carga Diferida
+                    </label>
+                  </div>
+                  
+                  <div class="admin-toggle-group">
+                    <label class="admin-toggle-label">
+                      <input type="checkbox" class="admin-toggle-input" name="enableImageOptimization" checked>
+                      <span class="admin-toggle-slider"></span>
+                      Optimización de Imágenes
+                    </label>
+                  </div>
+                </div>
+                
+                <div class="admin-form-actions">
+                  <button type="button" class="admin-btn admin-btn-secondary" onclick="clearCache()">Limpiar Caché</button>
+                  <button type="submit" class="admin-btn admin-btn-primary">Guardar Configuración</button>
+                </div>
+              </form>
+            </div>
+          </div>
+        </div>
+
+        <!-- Integration Settings -->
+        <div class="admin-settings-panel" id="integrations">
+          <div class="admin-card">
+            <div class="admin-card-header">
+              <h3>Integraciones</h3>
+              <p>Configuración de servicios externos</p>
+            </div>
+            <div class="admin-card-body">
+              <form class="admin-settings-form" id="integrationSettingsForm">
+                <div class="admin-form-grid">
+                  <div class="admin-form-group">
+                    <label for="googleAnalytics">Google Analytics ID</label>
+                    <input type="text" id="googleAnalytics" name="googleAnalytics" value="{integrationSettings.googleAnalytics}" placeholder="GA-XXXXXXXXX">
+                  </div>
+                  
+                  <div class="admin-form-group">
+                    <label for="facebookPixel">Facebook Pixel ID</label>
+                    <input type="text" id="facebookPixel" name="facebookPixel" value="{integrationSettings.facebookPixel}" placeholder="123456789">
+                  </div>
+                  
+                  <div class="admin-form-group">
+                    <label for="stripePublicKey">Stripe Public Key</label>
+                    <input type="text" id="stripePublicKey" name="stripePublicKey" value="{integrationSettings.stripePublicKey}" placeholder="pk_test_...">
+                  </div>
+                  
+                  <div class="admin-form-group">
+                    <label for="stripeSecretKey">Stripe Secret Key</label>
+                    <input type="password" id="stripeSecretKey" name="stripeSecretKey" value="{integrationSettings.stripeSecretKey}" placeholder="sk_test_...">
+                  </div>
+                  
+                  <div class="admin-form-group">
+                    <label for="paypalClientId">PayPal Client ID</label>
+                    <input type="text" id="paypalClientId" name="paypalClientId" value="{integrationSettings.paypalClientId}" placeholder="AXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX

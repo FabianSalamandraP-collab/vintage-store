@@ -1,0 +1,1183 @@
+---
+// Admin System Management Page
+import Layout from '../../layouts/Layout.astro';
+
+// Server-side authentication check
+const cookies = Astro.cookies;
+const sessionToken = cookies.get('admin_session')?.value;
+
+if (!sessionToken) {
+  return Astro.redirect('/admin/login');
+}
+
+// Mock system data (in production, fetch from actual system monitoring)
+const systemData = {
+  health: {
+    status: 'healthy',
+    uptime: '15 días, 8 horas, 32 minutos',
+    lastRestart: '2024-01-01 10:00:00',
+    version: '1.2.3'
+  },
+  performance: {
+    cpuUsage: 45,
+    memoryUsage: 68,
+    diskUsage: 32,
+    networkIn: 1250,
+    networkOut: 890
+  },
+  database: {
+    status: 'connected',
+    connections: 12,
+    maxConnections: 100,
+    queryTime: 45,
+    size: '2.3 GB'
+  },
+  services: [
+    { name: 'Web Server', status: 'running', port: 4321, uptime: '15d 8h' },
+    { name: 'Database', status: 'running', port: 5432, uptime: '15d 8h' },
+    { name: 'Cache Redis', status: 'running', port: 6379, uptime: '15d 8h' },
+    { name: 'Email Service', status: 'running', port: 587, uptime: '15d 8h' },
+    { name: 'File Storage', status: 'running', port: 9000, uptime: '15d 8h' }
+  ],
+  logs: [
+    {
+      id: 1,
+      timestamp: '2024-01-15 16:30:25',
+      level: 'info',
+      service: 'web-server',
+      message: 'Usuario admin@vintage-store.com inició sesión exitosamente',
+      details: 'IP: 192.168.1.100, User-Agent: Mozilla/5.0...'
+    },
+    {
+      id: 2,
+      timestamp: '2024-01-15 16:25:12',
+      level: 'warning',
+      service: 'database',
+      message: 'Consulta lenta detectada: SELECT * FROM products',
+      details: 'Tiempo de ejecución: 2.3s, Optimización recomendada'
+    },
+    {
+      id: 3,
+      timestamp: '2024-01-15 16:20:08',
+      level: 'error',
+      service: 'email',
+      message: 'Error al enviar email de confirmación',
+      details: 'SMTP Error: Connection timeout to smtp.gmail.com:587'
+    },
+    {
+      id: 4,
+      timestamp: '2024-01-15 16:15:45',
+      level: 'info',
+      service: 'cache',
+      message: 'Cache limpiado automáticamente',
+      details: 'Liberados 150MB de memoria cache'
+    },
+    {
+      id: 5,
+      timestamp: '2024-01-15 16:10:30',
+      level: 'info',
+      service: 'backup',
+      message: 'Backup automático completado',
+      details: 'Archivo: backup_20240115_1610.sql.gz (45MB)'
+    }
+  ],
+  backups: [
+    {
+      id: 1,
+      filename: 'backup_20240115_1610.sql.gz',
+      size: '45 MB',
+      created: '2024-01-15 16:10:30',
+      type: 'automatic',
+      status: 'completed'
+    },
+    {
+      id: 2,
+      filename: 'backup_20240114_1610.sql.gz',
+      size: '44 MB',
+      created: '2024-01-14 16:10:30',
+      type: 'automatic',
+      status: 'completed'
+    },
+    {
+      id: 3,
+      filename: 'backup_20240113_1610.sql.gz',
+      size: '43 MB',
+      created: '2024-01-13 16:10:30',
+      type: 'automatic',
+      status: 'completed'
+    },
+    {
+      id: 4,
+      filename: 'backup_manual_20240112.sql.gz',
+      size: '42 MB',
+      created: '2024-01-12 14:30:15',
+      type: 'manual',
+      status: 'completed'
+    }
+  ],
+  config: {
+    siteName: 'Vintage Store',
+    siteUrl: 'https://vintage-store.com',
+    adminEmail: 'admin@vintage-store.com',
+    maintenanceMode: false,
+    debugMode: false,
+    cacheEnabled: true,
+    backupFrequency: 'daily',
+    maxFileSize: '10MB',
+    sessionTimeout: '24h'
+  }
+};
+
+const currentUser = {
+  name: 'Admin Usuario',
+  role: 'Administrador',
+  avatar: '/images/admin-avatar.jpg'
+};
+---
+
+<Layout title="Gestión del Sistema - Admin Panel">
+  <link rel="stylesheet" href="/src/styles/admin.css">
+  
+  <div class="admin-container">
+    <div class="admin-layout">
+      <!-- Sidebar -->
+      <aside class="admin-sidebar" id="adminSidebar">
+        <div class="admin-nav">
+          <!-- User Info -->
+          <div class="admin-user-info">
+            <div class="admin-user-avatar">
+              <img src={currentUser.avatar} alt={currentUser.name} onerror="this.src='data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iNDAiIGhlaWdodD0iNDAiIHZpZXdCb3g9IjAgMCA0MCA0MCIgZmlsbD0ibm9uZSIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj4KPGNpcmNsZSBjeD0iMjAiIGN5PSIyMCIgcj0iMjAiIGZpbGw9IiNmMWY1ZjkiLz4KPHN2ZyB3aWR0aD0iMjQiIGhlaWdodD0iMjQiIHZpZXdCb3g9IjAgMCAyNCAyNCIgZmlsbD0ibm9uZSIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIiB4PSI4IiB5PSI4Ij4KPHBhdGggZD0iTTIwIDIxdi0yYTQgNCAwIDAgMC00LTRIOGE0IDQgMCAwIDAtNCA0djIiIHN0cm9rZT0iIzY0NzQ4YiIgc3Ryb2tlLXdpZHRoPSIyIiBzdHJva2UtbGluZWNhcD0icm91bmQiIHN0cm9rZS1saW5lam9pbj0icm91bmQiLz4KPGNpcmNsZSBjeD0iMTIiIGN5PSI3IiByPSI0IiBzdHJva2U9IiM2NDc0OGIiIHN0cm9rZS13aWR0aD0iMiIgc3Ryb2tlLWxpbmVjYXA9InJvdW5kIiBzdHJva2UtbGluZWpvaW49InJvdW5kIi8+Cjwvc3ZnPgo8L3N2Zz4K'">
+            </div>
+            <div class="admin-user-details">
+              <div class="admin-user-name">{currentUser.name}</div>
+              <div class="admin-user-role">{currentUser.role}</div>
+            </div>
+          </div>
+
+          <!-- Navigation Links -->
+          <nav class="admin-nav-links">
+            <a href="/admin/dashboard" class="admin-nav-item">
+              <svg class="admin-nav-icon" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 7v10a2 2 0 002 2h14a2 2 0 002-2V9a2 2 0 00-2-2H5a2 2 0 00-2-2z"></path>
+              </svg>
+              <span>Dashboard</span>
+            </a>
+            
+            <a href="/admin/security" class="admin-nav-item">
+              <svg class="admin-nav-icon" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z"></path>
+              </svg>
+              <span>Seguridad</span>
+            </a>
+            
+            <a href="/admin/analytics" class="admin-nav-item">
+              <svg class="admin-nav-icon" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z"></path>
+              </svg>
+              <span>Analytics</span>
+            </a>
+            
+            <a href="/admin/system" class="admin-nav-item active">
+              <svg class="admin-nav-icon" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.065 2.572c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.572 1.065c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.065-2.572c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z"></path>
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"></path>
+              </svg>
+              <span>Sistema</span>
+            </a>
+            
+            <div class="admin-nav-divider"></div>
+            
+            <a href="/admin/users" class="admin-nav-item">
+              <svg class="admin-nav-icon" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4.354a4 4 0 110 5.292M15 21H3v-1a6 6 0 0112 0v1zm0 0h6v-1a6 6 0 00-9-5.197m13.5-9a2.5 2.5 0 11-5 0 2.5 2.5 0 015 0z"></path>
+              </svg>
+              <span>Usuarios</span>
+            </a>
+            
+            <a href="/admin/products" class="admin-nav-item">
+              <svg class="admin-nav-icon" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M20 7l-8-4-8 4m16 0l-8 4m8-4v10l-8 4m0-10L4 7m8 4v10M4 7v10l8 4"></path>
+              </svg>
+              <span>Productos</span>
+            </a>
+            
+            <a href="/admin/orders" class="admin-nav-item">
+              <svg class="admin-nav-icon" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5H7a2 2 0 00-2 2v10a2 2 0 002 2h8a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2m-3 7h3m-3 4h3m-6-4h.01M9 16h.01"></path>
+              </svg>
+              <span>Pedidos</span>
+            </a>
+          </nav>
+
+          <!-- Logout -->
+          <div class="admin-nav-footer">
+            <form action="/admin/logout" method="POST" class="admin-logout-form">
+              <button type="submit" class="admin-nav-item admin-logout-btn">
+                <svg class="admin-nav-icon" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1"></path>
+                </svg>
+                <span>Cerrar Sesión</span>
+              </button>
+            </form>
+          </div>
+        </div>
+      </aside>
+
+      <!-- Main Content -->
+      <main class="admin-main">
+        <!-- Header -->
+        <header class="admin-header">
+          <div class="admin-header-left">
+            <button class="admin-sidebar-toggle" id="sidebarToggle">
+              <svg width="24" height="24" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16"></path>
+              </svg>
+            </button>
+            <h1>Gestión del Sistema</h1>
+          </div>
+          
+          <div class="admin-header-right">
+            <div class="admin-theme-toggle" id="themeToggle"></div>
+            <div class="admin-header-time" id="currentTime"></div>
+          </div>
+        </header>
+
+        <!-- Content -->
+        <div class="admin-content">
+          <!-- System Health Overview -->
+          <section class="admin-system-health">
+            <div class="admin-card">
+              <div class="admin-card-header">
+                <h3 class="admin-card-title">Estado del Sistema</h3>
+                <div class="admin-system-status">
+                  <span class={`admin-status admin-status-${systemData.health.status === 'healthy' ? 'active' : 'inactive'}`}>
+                    <span class="admin-status-dot"></span>
+                    {systemData.health.status === 'healthy' ? 'Saludable' : 'Con problemas'}
+                  </span>
+                </div>
+              </div>
+              
+              <div class="admin-system-overview">
+                <div class="admin-system-info">
+                  <div class="admin-system-item">
+                    <span class="admin-system-label">Tiempo activo:</span>
+                    <span class="admin-system-value">{systemData.health.uptime}</span>
+                  </div>
+                  <div class="admin-system-item">
+                    <span class="admin-system-label">Último reinicio:</span>
+                    <span class="admin-system-value">{systemData.health.lastRestart}</span>
+                  </div>
+                  <div class="admin-system-item">
+                    <span class="admin-system-label">Versión:</span>
+                    <span class="admin-system-value">{systemData.health.version}</span>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </section>
+
+          <!-- Performance Metrics -->
+          <section class="admin-performance-section">
+            <div class="admin-card">
+              <div class="admin-card-header">
+                <h3 class="admin-card-title">Rendimiento del Sistema</h3>
+                <button class="admin-btn admin-btn-secondary" id="refreshMetrics">
+                  <svg width="16" height="16" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15"></path>
+                  </svg>
+                  Actualizar
+                </button>
+              </div>
+              
+              <div class="admin-performance-grid">
+                <div class="admin-performance-item">
+                  <div class="admin-performance-header">
+                    <span class="admin-performance-label">CPU</span>
+                    <span class="admin-performance-value">{systemData.performance.cpuUsage}%</span>
+                  </div>
+                  <div class="admin-progress-bar">
+                    <div class="admin-progress-fill" style={`width: ${systemData.performance.cpuUsage}%; background-color: ${systemData.performance.cpuUsage > 80 ? '#ef4444' : systemData.performance.cpuUsage > 60 ? '#f59e0b' : '#10b981'}`}></div>
+                  </div>
+                </div>
+                
+                <div class="admin-performance-item">
+                  <div class="admin-performance-header">
+                    <span class="admin-performance-label">Memoria</span>
+                    <span class="admin-performance-value">{systemData.performance.memoryUsage}%</span>
+                  </div>
+                  <div class="admin-progress-bar">
+                    <div class="admin-progress-fill" style={`width: ${systemData.performance.memoryUsage}%; background-color: ${systemData.performance.memoryUsage > 80 ? '#ef4444' : systemData.performance.memoryUsage > 60 ? '#f59e0b' : '#10b981'}`}></div>
+                  </div>
+                </div>
+                
+                <div class="admin-performance-item">
+                  <div class="admin-performance-header">
+                    <span class="admin-performance-label">Disco</span>
+                    <span class="admin-performance-value">{systemData.performance.diskUsage}%</span>
+                  </div>
+                  <div class="admin-progress-bar">
+                    <div class="admin-progress-fill" style={`width: ${systemData.performance.diskUsage}%; background-color: ${systemData.performance.diskUsage > 80 ? '#ef4444' : systemData.performance.diskUsage > 60 ? '#f59e0b' : '#10b981'}`}></div>
+                  </div>
+                </div>
+                
+                <div class="admin-performance-item">
+                  <div class="admin-performance-header">
+                    <span class="admin-performance-label">Red (Entrada)</span>
+                    <span class="admin-performance-value">{systemData.performance.networkIn} KB/s</span>
+                  </div>
+                </div>
+                
+                <div class="admin-performance-item">
+                  <div class="admin-performance-header">
+                    <span class="admin-performance-label">Red (Salida)</span>
+                    <span class="admin-performance-value">{systemData.performance.networkOut} KB/s</span>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </section>
+
+          <!-- Services Status -->
+          <section class="admin-services-section">
+            <div class="admin-card">
+              <div class="admin-card-header">
+                <h3 class="admin-card-title">Estado de Servicios</h3>
+                <button class="admin-btn admin-btn-secondary" id="refreshServices">
+                  <svg width="16" height="16" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15"></path>
+                  </svg>
+                  Actualizar
+                </button>
+              </div>
+              
+              <div class="admin-services-grid">
+                {systemData.services.map(service => (
+                  <div class="admin-service-item">
+                    <div class="admin-service-header">
+                      <div class="admin-service-info">
+                        <h4 class="admin-service-name">{service.name}</h4>
+                        <span class="admin-service-port">Puerto: {service.port}</span>
+                      </div>
+                      <span class={`admin-status admin-status-${service.status === 'running' ? 'active' : 'inactive'}`}>
+                        <span class="admin-status-dot"></span>
+                        {service.status === 'running' ? 'Ejecutándose' : 'Detenido'}
+                      </span>
+                    </div>
+                    <div class="admin-service-details">
+                      <span class="admin-service-uptime">Tiempo activo: {service.uptime}</span>
+                    </div>
+                  </div>
+                ))}
+              </div>
+            </div>
+          </section>
+
+          <!-- Database Status -->
+          <section class="admin-database-section">
+            <div class="admin-card">
+              <div class="admin-card-header">
+                <h3 class="admin-card-title">Estado de la Base de Datos</h3>
+                <div class="admin-database-actions">
+                  <button class="admin-btn admin-btn-secondary" id="optimizeDb">
+                    <svg width="16" height="16" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 10V3L4 14h7v7l9-11h-7z"></path>
+                    </svg>
+                    Optimizar
+                  </button>
+                  <button class="admin-btn admin-btn-primary" id="backupDb">
+                    <svg width="16" height="16" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 16a4 4 0 01-.88-7.903A5 5 0 1115.9 6L16 6a5 5 0 011 9.9M9 19l3 3m0 0l3-3m-3 3V10"></path>
+                    </svg>
+                    Backup Manual
+                  </button>
+                </div>
+              </div>
+              
+              <div class="admin-database-info">
+                <div class="admin-database-metrics">
+                  <div class="admin-database-metric">
+                    <span class="admin-database-label">Estado:</span>
+                    <span class={`admin-status admin-status-${systemData.database.status === 'connected' ? 'active' : 'inactive'}`}>
+                      <span class="admin-status-dot"></span>
+                      {systemData.database.status === 'connected' ? 'Conectado' : 'Desconectado'}
+                    </span>
+                  </div>
+                  <div class="admin-database-metric">
+                    <span class="admin-database-label">Conexiones:</span>
+                    <span class="admin-database-value">{systemData.database.connections}/{systemData.database.maxConnections}</span>
+                  </div>
+                  <div class="admin-database-metric">
+                    <span class="admin-database-label">Tiempo promedio de consulta:</span>
+                    <span class="admin-database-value">{systemData.database.queryTime}ms</span>
+                  </div>
+                  <div class="admin-database-metric">
+                    <span class="admin-database-label">Tamaño de la base de datos:</span>
+                    <span class="admin-database-value">{systemData.database.size}</span>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </section>
+
+          <!-- System Logs -->
+          <section class="admin-logs-section">
+            <div class="admin-card">
+              <div class="admin-card-header">
+                <h3 class="admin-card-title">Registros del Sistema</h3>
+                <div class="admin-logs-actions">
+                  <select class="admin-select" id="logLevelFilter">
+                    <option value="">Todos los niveles</option>
+                    <option value="info">Info</option>
+                    <option value="warning">Warning</option>
+                    <option value="error">Error</option>
+                  </select>
+                  <select class="admin-select" id="logServiceFilter">
+                    <option value="">Todos los servicios</option>
+                    <option value="web-server">Web Server</option>
+                    <option value="database">Database</option>
+                    <option value="email">Email</option>
+                    <option value="cache">Cache</option>
+                    <option value="backup">Backup</option>
+                  </select>
+                  <button class="admin-btn admin-btn-secondary" id="refreshLogs">
+                    <svg width="16" height="16" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15"></path>
+                    </svg>
+                    Actualizar
+                  </button>
+                </div>
+              </div>
+              
+              <div class="admin-logs-container">
+                <div class="admin-logs-list" id="logsList">
+                  {systemData.logs.map(log => (
+                    <div class={`admin-log-item admin-log-${log.level}`}>
+                      <div class="admin-log-header">
+                        <span class="admin-log-timestamp">{log.timestamp}</span>
+                        <span class={`admin-log-level admin-log-level-${log.level}`}>{log.level.toUpperCase()}</span>
+                        <span class="admin-log-service">{log.service}</span>
+                      </div>
+                      <div class="admin-log-message">{log.message}</div>
+                      <div class="admin-log-details">{log.details}</div>
+                    </div>
+                  ))}
+                </div>
+              </div>
+            </div>
+          </section>
+
+          <!-- Backup Management -->
+          <section class="admin-backup-section">
+            <div class="admin-card">
+              <div class="admin-card-header">
+                <h3 class="admin-card-title">Gestión de Backups</h3>
+                <div class="admin-backup-actions">
+                  <button class="admin-btn admin-btn-primary" id="createBackup">
+                    <svg width="16" height="16" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6v6m0 0v6m0-6h6m-6 0H6"></path>
+                    </svg>
+                    Crear Backup
+                  </button>
+                  <button class="admin-btn admin-btn-secondary" id="uploadBackup">
+                    <svg width="16" height="16" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 16a4 4 0 01-.88-7.903A5 5 0 1115.9 6L16 6a5 5 0 011 9.9M15 13l-3-3m0 0l-3 3m3-3v12"></path>
+                    </svg>
+                    Subir Backup
+                  </button>
+                </div>
+              </div>
+              
+              <div class="admin-backup-list">
+                <div class="admin-backup-table">
+                  <table class="admin-table">
+                    <thead>
+                      <tr>
+                        <th>Archivo</th>
+                        <th>Tamaño</th>
+                        <th>Fecha</th>
+                        <th>Tipo</th>
+                        <th>Estado</th>
+                        <th>Acciones</th>
+                      </tr>
+                    </thead>
+                    <tbody>
+                      {systemData.backups.map(backup => (
+                        <tr>
+                          <td class="admin-backup-filename">{backup.filename}</td>
+                          <td>{backup.size}</td>
+                          <td>{backup.created}</td>
+                          <td>
+                            <span class={`admin-badge admin-badge-${backup.type === 'automatic' ? 'secondary' : 'primary'}`}>
+                              {backup.type === 'automatic' ? 'Automático' : 'Manual'}
+                            </span>
+                          </td>
+                          <td>
+                            <span class={`admin-status admin-status-${backup.status === 'completed' ? 'active' : 'inactive'}`}>
+                              <span class="admin-status-dot"></span>
+                              {backup.status === 'completed' ? 'Completado' : 'En proceso'}
+                            </span>
+                          </td>
+                          <td>
+                            <div class="admin-backup-actions-cell">
+                              <button class="admin-btn admin-btn-sm admin-btn-secondary" onclick={`downloadBackup('${backup.filename}')`}>
+                                <svg width="16" height="16" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 10v6m0 0l-3-3m3 3l3-3m2 8H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"></path>
+                                </svg>
+                              </button>
+                              <button class="admin-btn admin-btn-sm admin-btn-primary" onclick={`restoreBackup('${backup.filename}')`}>
+                                <svg width="16" height="16" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15"></path>
+                                </svg>
+                              </button>
+                              <button class="admin-btn admin-btn-sm admin-btn-danger" onclick={`deleteBackup('${backup.filename}')`}>
+                                <svg width="16" height="16" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"></path>
+                                </svg>
+                              </button>
+                            </div>
+                          </td>
+                        </tr>
+                      ))}
+                    </tbody>
+                  </table>
+                </div>
+              </div>
+            </div>
+          </section>
+
+          <!-- System Configuration -->
+          <section class="admin-config-section">
+            <div class="admin-card">
+              <div class="admin-card-header">
+                <h3 class="admin-card-title">Configuración del Sistema</h3>
+                <button class="admin-btn admin-btn-primary" id="saveConfig">
+                  <svg width="16" height="16" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7H5a2 2 0 00-2 2v9a2 2 0 002 2h14a2 2 0 002-2V9a2 2 0 00-2-2h-3m-1 4l-3 3m0 0l-3-3m3 3V4"></path>
+                  </svg>
+                  Guardar Configuración
+                </button>
+              </div>
+              
+              <form class="admin-config-form" id="configForm">
+                <div class="admin-config-grid">
+                  <div class="admin-form-group">
+                    <label class="admin-form-label">Nombre del Sitio</label>
+                    <input type="text" class="admin-form-input" value={systemData.config.siteName} name="siteName">
+                  </div>
+                  
+                  <div class="admin-form-group">
+                    <label class="admin-form-label">URL del Sitio</label>
+                    <input type="url" class="admin-form-input" value={systemData.config.siteUrl} name="siteUrl">
+                  </div>
+                  
+                  <div class="admin-form-group">
+                    <label class="admin-form-label">Email del Administrador</label>
+                    <input type="email" class="admin-form-input" value={systemData.config.adminEmail} name="adminEmail">
+                  </div>
+                  
+                  <div class="admin-form-group">
+                    <label class="admin-form-label">Tamaño Máximo de Archivo</label>
+                    <input type="text" class="admin-form-input" value={systemData.config.maxFileSize} name="maxFileSize">
+                  </div>
+                  
+                  <div class="admin-form-group">
+                    <label class="admin-form-label">Tiempo de Sesión</label>
+                    <input type="text" class="admin-form-input" value={systemData.config.sessionTimeout} name="sessionTimeout">
+                  </div>
+                  
+                  <div class="admin-form-group">
+                    <label class="admin-form-label">Frecuencia de Backup</label>
+                    <select class="admin-form-select" name="backupFrequency">
+                      <option value="hourly" {systemData.config.backupFrequency === 'hourly' ? 'selected' : ''}>Cada hora</option>
+                      <option value="daily" {systemData.config.backupFrequency === 'daily' ? 'selected' : ''}>Diario</option>
+                      <option value="weekly" {systemData.config.backupFrequency === 'weekly' ? 'selected' : ''}>Semanal</option>
+                      <option value="monthly" {systemData.config.backupFrequency === 'monthly' ? 'selected' : ''}>Mensual</option>
+                    </select>
+                  </div>
+                </div>
+                
+                <div class="admin-config-toggles">
+                  <div class="admin-toggle-group">
+                    <label class="admin-toggle-label">
+                      <input type="checkbox" class="admin-toggle-input" name="maintenanceMode" {systemData.config.maintenanceMode ? 'checked' : ''}>
+                      <span class="admin-toggle-slider"></span>
+                      Modo de Mantenimiento
+                    </label>
+                  </div>
+                  
+                  <div class="admin-toggle-group">
+                    <label class="admin-toggle-label">
+                      <input type="checkbox" class="admin-toggle-input" name="debugMode" {systemData.config.debugMode ? 'checked' : ''}>
+                      <span class="admin-toggle-slider"></span>
+                      Modo Debug
+                    </label>
+                  </div>
+                  
+                  <div class="admin-toggle-group">
+                    <label class="admin-toggle-label">
+                      <input type="checkbox" class="admin-toggle-input" name="cacheEnabled" {systemData.config.cacheEnabled ? 'checked' : ''}>
+                      <span class="admin-toggle-slider"></span>
+                      Cache Habilitado
+                    </label>
+                  </div>
+                </div>
+              </form>
+            </div>
+          </section>
+        </div>
+      </main>
+    </div>
+  </div>
+
+  <style>
+    /* System page specific styles */
+    .admin-content {
+      padding: var(--admin-spacing-xl);
+      max-width: 1400px;
+      margin: 0 auto;
+      display: flex;
+      flex-direction: column;
+      gap: var(--admin-spacing-xl);
+    }
+
+    /* System Health */
+    .admin-system-overview {
+      padding: var(--admin-spacing-lg);
+    }
+
+    .admin-system-info {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+      gap: var(--admin-spacing-lg);
+    }
+
+    .admin-system-item {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: var(--admin-spacing-md);
+      background-color: var(--admin-bg-tertiary);
+      border-radius: var(--admin-radius-md);
+    }
+
+    .admin-system-label {
+      font-weight: 500;
+      color: var(--admin-text-secondary);
+    }
+
+    .admin-system-value {
+      font-weight: 600;
+      color: var(--admin-text-primary);
+    }
+
+    .admin-system-status {
+      display: flex;
+      align-items: center;
+      gap: var(--admin-spacing-sm);
+    }
+
+    /* Performance Metrics */
+    .admin-performance-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+      gap: var(--admin-spacing-lg);
+      padding: var(--admin-spacing-lg);
+    }
+
+    .admin-performance-item {
+      padding: var(--admin-spacing-lg);
+      background-color: var(--admin-bg-tertiary);
+      border-radius: var(--admin-radius-lg);
+      border: 1px solid var(--admin-border-light);
+    }
+
+    .admin-performance-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: var(--admin-spacing-md);
+    }
+
+    .admin-performance-label {
+      font-weight: 500;
+      color: var(--admin-text-secondary);
+    }
+
+    .admin-performance-value {
+      font-weight: 600;
+      color: var(--admin-text-primary);
+      font-size: var(--admin-font-size-lg);
+    }
+
+    .admin-progress-bar {
+      width: 100%;
+      height: 8px;
+      background-color: var(--admin-bg-secondary);
+      border-radius: var(--admin-radius-full);
+      overflow: hidden;
+    }
+
+    .admin-progress-fill {
+      height: 100%;
+      transition: width var(--admin-transition-normal);
+      border-radius: var(--admin-radius-full);
+    }
+
+    /* Services */
+    .admin-services-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+      gap: var(--admin-spacing-lg);
+      padding: var(--admin-spacing-lg);
+    }
+
+    .admin-service-item {
+      padding: var(--admin-spacing-lg);
+      background-color: var(--admin-bg-tertiary);
+      border-radius: var(--admin-radius-lg);
+      border: 1px solid var(--admin-border-light);
+    }
+
+    .admin-service-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: flex-start;
+      margin-bottom: var(--admin-spacing-md);
+    }
+
+    .admin-service-name {
+      font-size: var(--admin-font-size-lg);
+      font-weight: 600;
+      color: var(--admin-text-primary);
+      margin: 0;
+    }
+
+    .admin-service-port {
+      font-size: var(--admin-font-size-sm);
+      color: var(--admin-text-muted);
+    }
+
+    .admin-service-uptime {
+      font-size: var(--admin-font-size-sm);
+      color: var(--admin-text-secondary);
+    }
+
+    /* Database */
+    .admin-database-actions {
+      display: flex;
+      gap: var(--admin-spacing-sm);
+    }
+
+    .admin-database-info {
+      padding: var(--admin-spacing-lg);
+    }
+
+    .admin-database-metrics {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+      gap: var(--admin-spacing-lg);
+    }
+
+    .admin-database-metric {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: var(--admin-spacing-md);
+      background-color: var(--admin-bg-tertiary);
+      border-radius: var(--admin-radius-md);
+    }
+
+    .admin-database-label {
+      font-weight: 500;
+      color: var(--admin-text-secondary);
+    }
+
+    .admin-database-value {
+      font-weight: 600;
+      color: var(--admin-text-primary);
+    }
+
+    /* Logs */
+    .admin-logs-actions {
+      display: flex;
+      gap: var(--admin-spacing-sm);
+      align-items: center;
+    }
+
+    .admin-logs-container {
+      max-height: 500px;
+      overflow-y: auto;
+    }
+
+    .admin-logs-list {
+      padding: var(--admin-spacing-lg);
+    }
+
+    .admin-log-item {
+      padding: var(--admin-spacing-md);
+      border-left: 4px solid;
+      margin-bottom: var(--admin-spacing-md);
+      background-color: var(--admin-bg-tertiary);
+      border-radius: 0 var(--admin-radius-md) var(--admin-radius-md) 0;
+    }
+
+    .admin-log-info {
+      border-left-color: var(--admin-info);
+    }
+
+    .admin-log-warning {
+      border-left-color: var(--admin-warning);
+    }
+
+    .admin-log-error {
+      border-left-color: var(--admin-danger);
+    }
+
+    .admin-log-header {
+      display: flex;
+      gap: var(--admin-spacing-md);
+      align-items: center;
+      margin-bottom: var(--admin-spacing-xs);
+    }
+
+    .admin-log-timestamp {
+      font-size: var(--admin-font-size-sm);
+      color: var(--admin-text-muted);
+      font-family: monospace;
+    }
+
+    .admin-log-level {
+      font-size: var(--admin-font-size-xs);
+      font-weight: 600;
+      padding: 2px 6px;
+      border-radius: var(--admin-radius-sm);
+      text-transform: uppercase;
+    }
+
+    .admin-log-level-info {
+      background-color: var(--admin-info);
+      color: white;
+    }
+
+    .admin-log-level-warning {
+      background-color: var(--admin-warning);
+      color: white;
+    }
+
+    .admin-log-level-error {
+      background-color: var(--admin-danger);
+      color: white;
+    }
+
+    .admin-log-service {
+      font-size: var(--admin-font-size-sm);
+      color: var(--admin-text-secondary);
+      background-color: var(--admin-bg-secondary);
+      padding: 2px 8px;
+      border-radius: var(--admin-radius-sm);
+    }
+
+    .admin-log-message {
+      font-weight: 500;
+      color: var(--admin-text-primary);
+      margin-bottom: var(--admin-spacing-xs);
+    }
+
+    .admin-log-details {
+      font-size: var(--admin-font-size-sm);
+      color: var(--admin-text-muted);
+      font-family: monospace;
+    }
+
+    /* Backup */
+    .admin-backup-actions {
+      display: flex;
+      gap: var(--admin-spacing-sm);
+    }
+
+    .admin-backup-list {
+      padding: var(--admin-spacing-lg);
+    }
+
+    .admin-backup-table {
+      overflow-x: auto;
+    }
+
+    .admin-backup-filename {
+      font-family: monospace;
+      font-size: var(--admin-font-size-sm);
+    }
+
+    .admin-backup-actions-cell {
+      display: flex;
+      gap: var(--admin-spacing-xs);
+    }
+
+    /* Configuration */
+    .admin-config-form {
+      padding: var(--admin-spacing-lg);
+    }
+
+    .admin-config-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+      gap: var(--admin-spacing-lg);
+      margin-bottom: var(--admin-spacing-xl);
+    }
+
+    .admin-config-toggles {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+      gap: var(--admin-spacing-lg);
+    }
+
+    .admin-toggle-group {
+      padding: var(--admin-spacing-md);
+      background-color: var(--admin-bg-tertiary);
+      border-radius: var(--admin-radius-md);
+    }
+
+    .admin-toggle-label {
+      display: flex;
+      align-items: center;
+      gap: var(--admin-spacing-md);
+      cursor: pointer;
+      font-weight: 500;
+      color: var(--admin-text-primary);
+    }
+
+    .admin-toggle-input {
+      display: none;
+    }
+
+    .admin-toggle-slider {
+      position: relative;
+      width: 50px;
+      height: 24px;
+      background-color: var(--admin-bg-secondary);
+      border-radius: var(--admin-radius-full);
+      transition: background-color var(--admin-transition-fast);
+    }
+
+    .admin-toggle-slider::before {
+      content: '';
+      position: absolute;
+      top: 2px;
+      left: 2px;
+      width: 20px;
+      height: 20px;
+      background-color: white;
+      border-radius: 50%;
+      transition: transform var(--admin-transition-fast);
+    }
+
+    .admin-toggle-input:checked + .admin-toggle-slider {
+      background-color: var(--admin-primary);
+    }
+
+    .admin-toggle-input:checked + .admin-toggle-slider::before {
+      transform: translateX(26px);
+    }
+
+    /* Responsive Design */
+    @media (max-width: 1024px) {
+      .admin-performance-grid,
+      .admin-services-grid,
+      .admin-database-metrics,
+      .admin-config-grid {
+        grid-template-columns: 1fr;
+      }
+    }
+
+    @media (max-width: 768px) {
+      .admin-content {
+        padding: var(--admin-spacing-md);
+      }
+      
+      .admin-logs-actions,
+      .admin-database-actions,
+      .admin-backup-actions {
+        flex-direction: column;
+        align-items: stretch;
+      }
+      
+      .admin-log-header {
+        flex-direction: column;
+        align-items: flex-start;
+      }
+      
+      .admin-backup-actions-cell {
+        flex-direction: column;
+      }
+    }
+  </style>
+
+  <script>
+    // Theme toggle functionality
+    const themeToggle = document.getElementById('themeToggle');
+    const body = document.body;
+    
+    const savedTheme = localStorage.getItem('admin-theme');
+    if (savedTheme) {
+      body.setAttribute('data-theme', savedTheme);
+    }
+    
+    themeToggle.addEventListener('click', () => {
+      const currentTheme = body.getAttribute('data-theme');
+      const newTheme = currentTheme === 'dark' ? 'light' : 'dark';
+      
+      body.setAttribute('data-theme', newTheme);
+      localStorage.setItem('admin-theme', newTheme);
+    });
+    
+    // Sidebar toggle functionality
+    const sidebarToggle = document.getElementById('sidebarToggle');
+    const sidebar = document.getElementById('adminSidebar');
+    
+    sidebarToggle.addEventListener('click', () => {
+      sidebar.classList.toggle('mobile-open');
+    });
+    
+    // Current time display
+    function updateTime() {
+      const now = new Date();
+      const timeString = now.toLocaleString('es-ES', {
+        year: 'numeric',
+        month: '2-digit',
+        day: '2-digit',
+        hour: '2-digit',
+        minute: '2-digit',
+        second: '2-digit'
+      });
+      document.getElementById('currentTime').textContent = timeString;
+    }
+    
+    updateTime();
+    setInterval(updateTime, 1000);
+    
+    // Refresh functionality
+    document.getElementById('refreshMetrics').addEventListener('click', () => {
+      // In production, fetch new metrics from API
+      console.log('Refreshing performance metrics...');
+      alert('Métricas actualizadas');
+    });
+    
+    document.getElementById('refreshServices').addEventListener('click', () => {
+      // In production, fetch new service status from API
+      console.log('Refreshing services status...');
+      alert('Estado de servicios actualizado');
+    });
+    
+    document.getElementById('refreshLogs').addEventListener('click', () => {
+      // In production, fetch new logs from API
+      console.log('Refreshing system logs...');
+      alert('Registros actualizados');
+    });
+    
+    // Database actions
+    document.getElementById('optimizeDb').addEventListener('click', () => {
+      if (confirm('¿Estás seguro de que quieres optimizar la base de datos? Esto puede tomar varios minutos.')) {
+        console.log('Optimizing database...');
+        alert('Optimización de base de datos iniciada');
+      }
+    });
+    
+    document.getElementById('backupDb').addEventListener('click', () => {
+      if (confirm('¿Crear un backup manual de la base de datos?')) {
+        console.log('Creating manual backup...');
+        alert('Backup manual iniciado');
+      }
+    });
+    
+    // Backup actions
+    document.getElementById('createBackup').addEventListener('click', () => {
+      if (confirm('¿Crear un nuevo backup del sistema?')) {
+        console.log('Creating system backup...');
+        alert('Backup del sistema iniciado');
+      }
+    });
+    
+    document.getElementById('uploadBackup').addEventListener('click', () => {
+      const input = document.createElement('input');
+      input.type = 'file';
+      input.accept = '.sql,.gz,.zip';
+      input.onchange = (e) => {
+        const file = e.target.files[0];
+        if (file) {
+          console.log('Uploading backup:', file.name);
+          alert(`Subiendo backup: ${file.name}`);
+        }
+      };
+      input.click();
+    });
+    
+    // Backup table actions
+    window.downloadBackup = function(filename) {
+      console.log('Downloading backup:', filename);
+      alert(`Descargando backup: ${filename}`);
+    };
+    
+    window.restoreBackup = function(filename) {
+      if (confirm(`¿Estás seguro de que quieres restaurar el backup ${filename}? Esto sobrescribirá los datos actuales.`)) {
+        console.log('Restoring backup:', filename);
+        alert(`Restaurando backup: ${filename}`);
+      }
+    };
+    
+    window.deleteBackup = function(filename) {
+      if (confirm(`¿Estás seguro de que quieres eliminar el backup ${filename}?`)) {
+        console.log('Deleting backup:', filename);
+        alert(`Backup eliminado: ${filename}`);
+      }
+    };
+    
+    // Log filtering
+    const logLevelFilter = document.getElementById('logLevelFilter');
+    const logServiceFilter = document.getElementById('logServiceFilter');
+    const logsList = document.getElementById('logsList');
+    
+    function filterLogs() {
+      const levelFilter = logLevelFilter.value;
+      const serviceFilter = logServiceFilter.value;
+      const logItems = logsList.querySelectorAll('.admin-log-item');
+      
+      logItems.forEach(item => {
+        const level = item.classList.contains('admin-log-info') ? 'info' :
+                     item.classList.contains('admin-log-warning') ? 'warning' :
+                     item.classList.contains('admin-log-error') ? 'error' : '';
+        
+        const service = item.querySelector('.admin-log-service').textContent;
+        
+        const matchesLevel = !levelFilter || level === levelFilter;
+        const matchesService = !serviceFilter || service === serviceFilter;
+        
+        item.style.display = matchesLevel && matchesService ? 'block' : 'none';
+      });
+    }
+    
+    logLevelFilter.addEventListener('change', filterLogs);
+    logServiceFilter.addEventListener('change', filterLogs);
+    
+    // Configuration form
+    document.getElementById('saveConfig').addEventListener('click', (e) => {
+      e.preventDefault();
+      const form = document.getElementById('configForm');
+      const formData = new FormData(form);
+      
+      // In production, send to API
+      console.log('Saving configuration:', Object.fromEntries(formData));
+      alert('Configuración guardada exitosamente');
+    });
+    
+    // Auto-refresh metrics every 30 seconds
+    setInterval(() => {
+      // In production, fetch updated metrics
+      console.log('Auto-refreshing metrics...');
+    }, 30000);
+    
+    // Initialize page
+    document.addEventListener('DOMContentLoaded', () => {
+      console.log('System management page loaded');
+    });
+  </script>
+</Layout>

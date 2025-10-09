@@ -1,0 +1,62 @@
+---
+export const prerender = false;
+
+import { destroySession } from '../../utils/auth.js';
+import { logSecurityEvent } from '../../utils/database.js';
+import { getClientIP } from '../../middleware/auth.js';
+
+// Procesar logout
+if (Astro.request.method === 'POST') {
+  try {
+    // Obtener token de sesión
+    const sessionToken = Astro.cookies.get('admin_session')?.value;
+    
+    if (sessionToken) {
+      // Destruir sesión
+      const result = await destroySession(sessionToken);
+      
+      if (result.success) {
+        // Log logout exitoso
+        logSecurityEvent({
+          type: 'SUCCESSFUL_LOGOUT',
+          userId: result.userId,
+          ip: getClientIP(Astro.request),
+          userAgent: Astro.request.headers.get('user-agent'),
+          severity: 'info'
+        });
+      }
+    }
+    
+    // Eliminar cookie de sesión
+    Astro.cookies.delete('admin_session', {
+      path: '/admin'
+    });
+    
+    // Redireccionar al login
+    return Astro.redirect('/admin/login');
+    
+  } catch (error) {
+    console.error('Error en logout:', error);
+    
+    // Log error del sistema
+    logSecurityEvent({
+      type: 'SYSTEM_ERROR',
+      error: error.message,
+      ip: getClientIP(Astro.request),
+      userAgent: Astro.request.headers.get('user-agent'),
+      url: '/admin/logout',
+      severity: 'medium'
+    });
+    
+    // Aún así eliminar la cookie y redireccionar
+    Astro.cookies.delete('admin_session', {
+      path: '/admin'
+    });
+    
+    return Astro.redirect('/admin/login');
+  }
+}
+
+// Si no es POST, redireccionar al dashboard
+return Astro.redirect('/admin/dashboard');
+---

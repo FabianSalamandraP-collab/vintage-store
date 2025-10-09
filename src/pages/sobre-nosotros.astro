@@ -12,28 +12,16 @@ const pageDescription = 'Conoce la historia de Sur Occidente, tu tienda de ropa 
 // Datos del equipo (mock data)
 const teamMembers = [
   {
-    name: 'María González',
-    role: 'Fundadora & Curadora',
-    image: 'https://trae-api-us.mchost.guru/api/ide/v1/text_to_image?prompt=professional%20portrait%20of%20a%20young%20latina%20woman%20with%20vintage%20style%20clothing%2C%20warm%20smile%2C%20red%20background&image_size=square',
-    description: 'Apasionada por la moda vintage con más de 10 años de experiencia curando piezas únicas.'
-  },
-  {
-    name: 'Carlos Ramírez',
-    role: 'Director Creativo',
-    image: 'https://trae-api-us.mchost.guru/api/ide/v1/text_to_image?prompt=professional%20portrait%20of%20a%20young%20latino%20man%20with%20creative%20vintage%20style%2C%20friendly%20expression%2C%20red%20background&image_size=square',
-    description: 'Especialista en tendencias vintage y responsable de la selección de nuestras colecciones.'
+    name: 'Sebastián',
+    role: 'Fundador & Director',
+    image: 'https://trae-api-us.mchost.guru/api/ide/v1/text_to_image?prompt=professional%20portrait%20of%20a%20young%20latino%20man%20with%20vintage%20style%20clothing%2C%20confident%20smile%2C%20red%20background&image_size=square',
+    description: 'Fundador de Sur Occidente, apasionado por la moda vintage auténtica y la curaduría de piezas únicas con historia.'
   }
 ];
 
 
 
-// Estadísticas
-const stats = [
-  { number: '1000+', label: 'Piezas Curadas' },
-  { number: '500+', label: 'Clientes Satisfechos' },
-  { number: '4', label: 'Años de Experiencia' },
-  { number: '100%', label: 'Autenticidad Garantizada' }
-];
+
 ---
 
 <Layout title={pageTitle} description={pageDescription}>
@@ -164,19 +152,7 @@ const stats = [
 
 
 
-    <!-- Estadísticas -->
-    <section class="stats">
-      <div class="container">
-        <div class="stats-grid">
-          {stats.map(stat => (
-            <div class="stat-item">
-              <div class="stat-number">{stat.number}</div>
-              <div class="stat-label">{stat.label}</div>
-            </div>
-          ))}
-        </div>
-      </div>
-    </section>
+
 
     <!-- Equipo -->
     <section class="team">
@@ -426,35 +402,7 @@ const stats = [
   
 
   
-  /* Estadísticas */
-  .stats {
-    padding: 80px 0;
-    background: #dc2626;
-    color: #F5DEB3;
-  }
-  
-  .stats-grid {
-    display: grid;
-    grid-template-columns: repeat(4, 1fr);
-    gap: 40px;
-  }
-  
-  .stat-item {
-    text-align: center;
-  }
-  
-  .stat-number {
-    font-size: 3rem;
-    font-weight: 700;
-    margin-bottom: 8px;
-    line-height: 1;
-  }
-  
-  .stat-label {
-    font-size: 1rem;
-    opacity: 0.9;
-    font-weight: 500;
-  }
+
   
   /* Equipo */
   .team {
@@ -463,10 +411,9 @@ const stats = [
   }
   
   .team-grid {
-    display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
-    gap: 40px;
-    max-width: 800px;
+    display: flex;
+    justify-content: center;
+    max-width: 400px;
     margin: 0 auto;
   }
   
