@@ -1,21 +1,22 @@
 ---
 import type { Category } from '../types';
 import { getAllCategories, getProductStats } from '../lib/database.js';
+import { formatPrice } from '../utils/data.ts';
 
-export interface Props {
-  currentFilter?: ProductFilter;
+interface Props {
+  categories: any[];
+  stats: any;
+  currentFilter: any;
   className?: string;
 }
 
-const { currentFilter = {}, className = '' } = Astro.props;
-const categories = await getAllCategories();
-const stats = await getProductStats();
+const { categories, stats, currentFilter, className = '' } = Astro.props;
 ---
 
-<div class={`product-filter ${className}`}>
+<form class={`product-filter ${className}`}>
   <div class="filter-header">
     <h3>Filtrar Productos</h3>
-    <button class="clear-filters" id="clearFilters">
+    <button type="button" class="clear-filters" id="clearFilters">
       Limpiar filtros
     </button>
   </div>
@@ -66,7 +67,7 @@ const stats = await getProductStats();
             min={stats.priceRange.min}
             max={stats.priceRange.max}
             value={currentFilter.minPrice || ''}
-            placeholder={`$${stats.priceRange.min.toLocaleString()}`}
+            placeholder={formatPrice(stats.priceRange.min)}
           />
         </div>
         
@@ -79,7 +80,7 @@ const stats = await getProductStats();
             min={stats.priceRange.min}
             max={stats.priceRange.max}
             value={currentFilter.maxPrice || ''}
-            placeholder={`$${stats.priceRange.max.toLocaleString()}`}
+            placeholder={formatPrice(stats.priceRange.max)}
           />
         </div>
       </div>
@@ -197,11 +198,11 @@ const stats = await getProductStats();
   </div>
   
   <div class="filter-actions">
-    <button class="apply-filters" id="applyFilters">
+    <button type="button" class="apply-filters" id="applyFilters">
       Aplicar Filtros
     </button>
   </div>
-</div>
+</form>
 
 <style>
   .product-filter {

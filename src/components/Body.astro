@@ -1,5 +1,25 @@
 ---
 // Body.astro: Diseño principal SIN Footer - Footer separado en componente independiente
+import { formatPrice } from '../utils/data';
+
+// Precios en pesos colombianos
+const products = [
+  { name: "VINTAGE JEWEL CASE CD", price: 33600 },
+  { name: "VINTAGE 2LP DELUXE VINYL", price: 294000 },
+  { name: "VINTAGE DELUXE JEWEL CASE CD", price: 75600 },
+  { name: "VINTAGE VINYL 2LP [90210 EDITION]", price: 193200 },
+  { name: "VINTAGE VINYL 2LP [SINCERELY-T EDITION]", price: 193200 },
+  { name: "VINTAGE VINYL 2LP", price: 168000 },
+  { name: "VINTAGE JEWEL CASE CD [EXPANDED EDITION]", price: 58800 },
+  { name: "VINTAGE JEWEL CASE CD", price: 42000 },
+  { name: "VINTAGE COWBOY TEE I", price: 231000 },
+  { name: "VINTAGE COWBOY TEE II", price: 231000 },
+  { name: "VINTAGE CPFM 2015 L/S TEE", price: 357000 },
+  { name: "VINTAGE CPFM TRACK 1 L/S TEE", price: 357000 },
+  { name: "VINTAGE POSTER PACK I", price: 210000 },
+  { name: "VINTAGE POSTER PACK II", price: 210000 },
+  { name: "VINTAGE ZIPPO LIGHTER", price: 273000 }
+];
 ---
 
 <main>
@@ -26,24 +46,24 @@
           <div class="product-image">
             <img src="/api/placeholder/300/300" alt="Producto 1" />
           </div>
-          <h3>VINTAGE JEWEL CASE CD</h3>
-          <p class="price">$7.99</p>
+          <h3>{products[0].name}</h3>
+          <p class="price">{formatPrice(products[0].price)}</p>
         </div>
         
         <div class="product-card">
           <div class="product-image">
             <img src="/api/placeholder/300/300" alt="Producto 2" />
           </div>
-          <h3>VINTAGE 2LP DELUXE VINYL</h3>
-          <p class="price">$69.99</p>
+          <h3>{products[1].name}</h3>
+          <p class="price">{formatPrice(products[1].price)}</p>
         </div>
         
         <div class="product-card">
           <div class="product-image">
             <img src="/api/placeholder/300/300" alt="Producto 3" />
           </div>
-          <h3>VINTAGE DELUXE JEWEL CASE CD</h3>
-          <p class="price">$17.99</p>
+          <h3>{products[2].name}</h3>
+          <p class="price">{formatPrice(products[2].price)}</p>
         </div>
 
         <!-- Fila 2 -->
@@ -51,24 +71,24 @@
           <div class="product-image">
             <img src="/api/placeholder/300/300" alt="Producto 4" />
           </div>
-          <h3>VINTAGE VINYL 2LP [90210 EDITION]</h3>
-          <p class="price">$45.99</p>
+          <h3>{products[3].name}</h3>
+          <p class="price">{formatPrice(products[3].price)}</p>
         </div>
         
         <div class="product-card">
           <div class="product-image">
             <img src="/api/placeholder/300/300" alt="Producto 5" />
           </div>
-          <h3>VINTAGE VINYL 2LP [SINCERELY-T EDITION]</h3>
-          <p class="price">$45.99</p>
+          <h3>{products[4].name}</h3>
+          <p class="price">{formatPrice(products[4].price)}</p>
         </div>
         
         <div class="product-card">
           <div class="product-image">
             <img src="/api/placeholder/300/300" alt="Producto 6" />
           </div>
-          <h3>VINTAGE VINYL 2LP</h3>
-          <p class="price">$39.99</p>
+          <h3>{products[5].name}</h3>
+          <p class="price">{formatPrice(products[5].price)}</p>
         </div>
 
         <!-- Fila 3 -->
@@ -76,24 +96,24 @@
           <div class="product-image">
             <img src="/api/placeholder/300/300" alt="Camiseta 1" />
           </div>
-          <h3>VINTAGE JEWEL CASE CD [EXPANDED EDITION]</h3>
-          <p class="price">$13.98</p>
+          <h3>{products[6].name}</h3>
+          <p class="price">{formatPrice(products[6].price)}</p>
         </div>
         
         <div class="product-card">
           <div class="product-image">
             <img src="/api/placeholder/300/300" alt="Camiseta 2" />
           </div>
-          <h3>VINTAGE JEWEL CASE CD</h3>
-          <p class="price">$9.98</p>
+          <h3>{products[7].name}</h3>
+          <p class="price">{formatPrice(products[7].price)}</p>
         </div>
         
         <div class="product-card">
           <div class="product-image">
             <img src="/api/placeholder/300/300" alt="Camiseta 3" />
           </div>
-          <h3>VINTAGE COWBOY TEE I</h3>
-          <p class="price">$55</p>
+          <h3>{products[8].name}</h3>
+          <p class="price">{formatPrice(products[8].price)}</p>
         </div>
 
         <!-- Fila 4 -->
@@ -101,24 +121,24 @@
           <div class="product-image">
             <img src="/api/placeholder/300/300" alt="Camiseta 4" />
           </div>
-          <h3>VINTAGE COWBOY TEE II</h3>
-          <p class="price">$55</p>
+          <h3>{products[9].name}</h3>
+          <p class="price">{formatPrice(products[9].price)}</p>
         </div>
         
         <div class="product-card">
           <div class="product-image">
             <img src="/api/placeholder/300/300" alt="Camiseta 5" />
           </div>
-          <h3>VINTAGE CPFM 2015 L/S TEE</h3>
-          <p class="price">$85</p>
+          <h3>{products[10].name}</h3>
+          <p class="price">{formatPrice(products[10].price)}</p>
         </div>
         
         <div class="product-card">
           <div class="product-image">
             <img src="/api/placeholder/300/300" alt="Camiseta 6" />
           </div>
-          <h3>VINTAGE CPFM TRACK 1 L/S TEE</h3>
-          <p class="price">$85</p>
+          <h3>{products[11].name}</h3>
+          <p class="price">{formatPrice(products[11].price)}</p>
         </div>
 
         <!-- Última fila con accesorios -->
@@ -126,24 +146,48 @@
           <div class="product-image">
             <img src="/api/placeholder/300/300" alt="Poster Pack 1" />
           </div>
-          <h3>VINTAGE POSTER PACK I</h3>
-          <p class="price">$50</p>
+          <h3>{products[12].name}</h3>
+          <p class="price">{formatPrice(products[12].price)}</p>
         </div>
         
         <div class="product-card">
           <div class="product-image">
             <img src="/api/placeholder/300/300" alt="Poster Pack 2" />
           </div>
-          <h3>VINTAGE POSTER PACK II</h3>
-          <p class="price">$50</p>
+          <h3>{products[13].name}</h3>
+          <p class="price">{formatPrice(products[13].price)}</p>
         </div>
         
         <div class="product-card">
           <div class="product-image">
             <img src="/api/placeholder/300/300" alt="Zippo Lighter" />
           </div>
-          <h3>VINTAGE ZIPPO LIGHTER</h3>
-          <p class="price">$65</p>
+          <h3>{products[14].name}</h3>
+          <p class="price">{formatPrice(products[14].price)}</p>
+        </div>
+        
+        <div class="product-card">
+          <div class="product-image">
+            <img src="/api/placeholder/300/300" alt="Chaqueta Denim Vintage" />
+          </div>
+          <h3>{products[15].name}</h3>
+          <p class="price">{formatPrice(products[15].price)}</p>
+        </div>
+        
+        <div class="product-card">
+          <div class="product-image">
+            <img src="/api/placeholder/300/300" alt="Botas Cowboy Vintage" />
+          </div>
+          <h3>{products[16].name}</h3>
+          <p class="price">{formatPrice(products[16].price)}</p>
+        </div>
+        
+        <div class="product-card">
+          <div class="product-image">
+            <img src="/api/placeholder/300/300" alt="Reloj Vintage Dorado" />
+          </div>
+          <h3>{products[17].name}</h3>
+          <p class="price">{formatPrice(products[17].price)}</p>
         </div>
       </div>
     </section>
@@ -208,12 +252,13 @@
 
   .main-title {
     font-size: clamp(3rem, 8vw, 8rem);
-    font-weight: 900;
+    font-weight: 800;
+    font-style: italic;
     color: #2a1f17;
     text-shadow: 4px 4px 0px rgba(0,0,0,0.3);
     letter-spacing: -0.02em;
     margin: 2rem 0;
-    font-family: 'Arial Black', Arial, sans-serif;
+    font-family: 'Montserrat', Arial, sans-serif;
     text-transform: uppercase;
   }
 

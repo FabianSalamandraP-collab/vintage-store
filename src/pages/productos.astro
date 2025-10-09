@@ -70,6 +70,10 @@ const allProducts = await getAllProducts();
 const filteredProducts = filterProducts(allProducts, currentFilter);
 const categories = await getAllCategories();
 
+// Obtener estadísticas de productos para el filtro
+import { getProductStats } from '../utils/data.ts';
+const productStats = getProductStats();
+
 // Información de la página actual
 const currentCategory = currentFilter.category ? await getCategoryById(currentFilter.category) : null;
 const pageTitle = currentCategory ? `${currentCategory.name} - Productos` : 'Todos los Productos';
@@ -150,7 +154,11 @@ const breadcrumbs = [
         <div class="products-layout">
           <!-- Sidebar con filtros -->
           <aside class="filters-sidebar">
-            <ProductFilter currentFilter={currentFilter} />
+            <ProductFilter 
+              categories={categories}
+              stats={productStats}
+              currentFilter={currentFilter} 
+            />
           </aside>
 
           <!-- Grid de productos -->

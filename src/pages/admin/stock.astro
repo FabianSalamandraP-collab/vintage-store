@@ -3,6 +3,7 @@ export const prerender = false;
 
 import Layout from '../../layouts/Layout.astro';
 import { getAllProducts, updateStock, logStockMovement } from '../../lib/database.js';
+import { formatPrice } from '../../utils/data.ts';
 
 // Verificación de autenticación
 const cookies = Astro.cookies;
@@ -423,7 +424,7 @@ const stockStats = {
           <div class="stat-label">Agotados</div>
         </div>
         <div class="stat-card">
-          <div class="stat-value stat-value-currency">${stockStats.totalValue.toLocaleString()}</div>
+          <div class="stat-value stat-value-currency">{formatPrice(stockStats.totalValue)}</div>
           <div class="stat-label">Valor Total Inventario</div>
         </div>
       </div>
@@ -458,7 +459,7 @@ const stockStats = {
                         {product.stock_status === 'low_stock' ? 'Stock Bajo' : 'Agotado'}
                       </span>
                     </td>
-                    <td>${product.price?.toLocaleString()}</td>
+                    <td>{formatPrice(product.price || 0)}</td>
                     <td>
                       <button class="btn btn-primary btn-small" onclick={`openStockModal('${product.id}', '${product.name}', ${product.stock_quantity || 0})`}>
                         Actualizar Stock
@@ -511,8 +512,8 @@ const stockStats = {
                        product.stock_status === 'out_of_stock' ? 'Agotado' : 'Descontinuado'}
                     </span>
                   </td>
-                  <td>${product.price?.toLocaleString()}</td>
-                  <td>${((product.price || 0) * (product.stock_quantity || 0)).toLocaleString()}</td>
+                  <td>{formatPrice(product.price || 0)}</td>
+                  <td>{formatPrice((product.price || 0) * (product.stock_quantity || 0))}</td>
                   <td>
                     <button class="btn btn-primary btn-small" onclick={`openStockModal('${product.id}', '${product.name}', ${product.stock_quantity || 0})`}>
                       Ajustar

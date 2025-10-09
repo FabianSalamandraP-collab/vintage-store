@@ -2,7 +2,8 @@
 export const prerender = false;
 
 import Layout from '../../layouts/Layout.astro';
-import { getAllProducts, getAllCategories, createProduct, updateProduct, deleteProduct } from '../../lib/database.js';
+import { getAllProducts, createProduct, updateProduct, deleteProduct } from '../../lib/database.js';
+import { formatPrice } from '../../utils/data.ts';
 
 // Verificación de autenticación
 const cookies = Astro.cookies;
@@ -485,7 +486,7 @@ const categories = await getAllCategories();
               <div class="product-details">
                 <div class="detail-item">
                   <span class="detail-label">Precio</span>
-                  <span class="detail-value">${product.price?.toLocaleString()}</span>
+                  <span class="detail-value">{formatPrice(product.price || 0)}</span>
                 </div>
                 <div class="detail-item">
                   <span class="detail-label">Stock</span>

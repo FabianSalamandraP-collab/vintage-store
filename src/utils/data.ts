@@ -5,17 +5,17 @@ import siteConfigData from '../data/site-config.json';
 
 // Obtener todos los productos
 export function getAllProducts(): Product[] {
-  return productsData.products;
+  return productsData.products as Product[];
 }
 
 // Obtener productos destacados
 export function getFeaturedProducts(): Product[] {
-  return productsData.products.filter(product => product.featured);
+  return productsData.products.filter(product => product.featured) as Product[];
 }
 
 // Obtener producto por ID
 export function getProductById(id: string): Product | undefined {
-  return productsData.products.find(product => product.id === id);
+  return productsData.products.find(product => product.id === id) as Product | undefined;
 }
 
 // Obtener todas las categorías
@@ -216,7 +216,7 @@ export function formatPrice(price: number): string {
 
 export function generateWhatsAppURL(product: Product, message?: string): string {
   const phoneNumber = '573001234567'; // Número de WhatsApp de la tienda
-  const baseMessage = message || `¡Hola! Me interesa este producto: ${product.name} - $${product.price.toLocaleString()}`;
+  const baseMessage = message || `¡Hola! Me interesa este producto: ${product.name} - ${formatPrice(product.price)}`;
   const encodedMessage = encodeURIComponent(baseMessage);
   return `https://wa.me/${phoneNumber}?text=${encodedMessage}`;
 }
