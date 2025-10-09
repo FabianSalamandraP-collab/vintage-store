@@ -9,7 +9,9 @@ http://localhost:4321/admin/login
 
 ### Credenciales por Defecto
 - **Usuario:** `admin`
-- **Contraseña:** `admin123`
+- **Contraseña:** Configurada vía variable de entorno `ADMIN_DEFAULT_PASSWORD`
+
+> ⚠️ **IMPORTANTE:** Las credenciales por defecto deben configurarse en el archivo `.env` antes del primer uso.
 
 ## 🛡️ Sistema de Seguridad Implementado
 
@@ -37,24 +39,36 @@ http://localhost:4321/admin/login
 - **User-Agent tracking:** Registro del navegador utilizado
 - **Session ID único:** Cada sesión tiene un identificador único
 
-## 🚀 Cómo Acceder al Panel
+## 🚀 Configuración Inicial
 
-### Paso 1: Iniciar el Servidor
+### Paso 1: Configurar Variables de Entorno
+Crear archivo `.env` basado en `.env.example`:
+```bash
+cp .env.example .env
+```
+
+Configurar las siguientes variables:
+```env
+JWT_SECRET=your-super-secret-jwt-key-here
+ADMIN_DEFAULT_PASSWORD=your-secure-admin-password-here
+```
+
+### Paso 2: Iniciar el Servidor
 ```bash
 npm run dev
 ```
 
-### Paso 2: Navegar al Login
+### Paso 3: Navegar al Login
 Abrir en el navegador: `http://localhost:4321/admin/login`
 
-### Paso 3: Completar el Formulario
+### Paso 4: Completar el Formulario
 1. **Usuario:** Ingresar `admin`
-2. **Contraseña:** Ingresar `admin123`
+2. **Contraseña:** Usar la configurada en `ADMIN_DEFAULT_PASSWORD`
 3. **CAPTCHA:** Solo si aparece (respuesta: `7`)
 4. **Recordar sesión:** Marcar si deseas sesión extendida
 5. **Clic en:** "Acceder al Panel"
 
-### Paso 4: Acceso Exitoso
+### Paso 5: Acceso Exitoso
 Serás redirigido automáticamente a: `http://localhost:4321/admin`
 
 ## ⚠️ Situaciones de Bloqueo
@@ -78,7 +92,7 @@ const SECURITY_CONFIG = {
   lockoutDuration: 15 * 60 * 1000,  // 15 minutos en ms
   sessionTimeout: 30 * 60 * 1000,   // 30 minutos en ms
   requireCaptcha: true,        // CAPTCHA habilitado
-  secretKey: 'sur-occidente-admin-2024'  // Clave secreta
+  secretKey: process.env.JWT_SECRET || 'fallback-key'
 };
 ```
 
@@ -104,10 +118,8 @@ const SECURITY_CONFIG = {
 ## 🛠️ Mantenimiento y Administración
 
 ### Cambiar Contraseña
-1. Editar el archivo: `src/pages/admin/login.astro`
-2. Buscar: `passwordHash` en `SECURITY_CONFIG`
-3. Generar nuevo hash para la nueva contraseña
-4. Actualizar la función `verifyPassword()`
+1. Actualizar la variable `ADMIN_DEFAULT_PASSWORD` en el archivo `.env`
+2. Reiniciar el servidor para aplicar los cambios
 
 ### Ajustar Configuración de Seguridad
 Modificar las constantes en `SECURITY_CONFIG`:
@@ -127,7 +139,7 @@ Modificar las constantes en `SECURITY_CONFIG`:
 #### 1. No puedo acceder
 - ✅ Verificar que el servidor esté corriendo
 - ✅ Confirmar URL correcta: `/admin/login`
-- ✅ Usar credenciales exactas: `admin` / `admin123`
+- ✅ Verificar configuración de variables de entorno
 
 #### 2. Cuenta bloqueada
 - ⏰ Esperar 15 minutos completos
@@ -154,5 +166,5 @@ Para problemas técnicos o dudas sobre el panel de administración:
 ---
 
 **Última actualización:** Enero 2024  
-**Versión del sistema:** 2.0 - Seguridad Mejorada  
+**Versión del sistema:** 2.1 - Seguridad Mejorada con Variables de Entorno  
 **Proyecto:** Vintage Store - Sur Occidente

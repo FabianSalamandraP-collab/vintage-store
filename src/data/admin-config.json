@@ -1,7 +1,7 @@
 {
   "auth": {
-    "passwordHash": "$2a$10$N9qo8uLOickgx2ZMRZoMye",
-    "defaultPassword": "admin123",
+    "passwordHash": "CONFIGURED_VIA_ENV",
+    "defaultPassword": "CONFIGURED_VIA_ENV",
     "sessionTimeout": 1800000,
     "lastPasswordChange": "2024-01-01T00:00:00Z"
   },
@@ -18,9 +18,10 @@
     "enableContactForm": true,
     "enableProductManagement": true
   },
-  "backup": {
-    "lastBackup": "2024-01-15T00:00:00Z",
-    "autoBackup": true,
-    "backupFrequency": "daily"
+  "security": {
+    "maxLoginAttempts": 5,
+    "lockoutDuration": 900000,
+    "requireTwoFactor": false,
+    "sessionSecure": true
   }
 }

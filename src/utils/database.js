@@ -29,12 +29,13 @@ const defaultAdmin = {
 export async function initializeDatabase() {
   if (users.length === 0) {
     // Crear usuario admin por defecto
-    defaultAdmin.password = await hashPassword('admin123');
+    const defaultPassword = process.env.ADMIN_DEFAULT_PASSWORD || 'changeMe123!';
+    defaultAdmin.password = await hashPassword(defaultPassword);
     users.push(defaultAdmin);
     
     console.log('✅ Base de datos inicializada con usuario admin por defecto');
     console.log('📧 Email: admin@suroccidente.com');
-    console.log('🔑 Contraseña: admin123');
+    console.log('🔑 Contraseña: [CONFIGURADA VÍA VARIABLE DE ENTORNO]');
   }
 }
 

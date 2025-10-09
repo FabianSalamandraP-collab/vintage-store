@@ -11,8 +11,8 @@ const SECURITY_CONFIG = {
   lockoutDuration: 15 * 60 * 1000, // 15 minutos
   sessionTimeout: 30 * 60 * 1000, // 30 minutos
   requireCaptcha: true,
-  passwordHash: '$2a$12$LQv3c1yqBWVHxkd0LHAkCOYz6TtxMQJqhN8/LewdBdXig/pPOYHDi', // admin123
-  secretKey: 'sur-occidente-admin-2024'
+  passwordHash: process.env.ADMIN_PASSWORD_HASH || '$2a$12$LQv3c1yqBWVHxkd0LHAkCOYz6TtxMQJqhN8/LewdBdXig/pPOYHDi',
+  secretKey: process.env.JWT_SECRET || 'fallback-secret-key'
 };
 
 // Verificar si ya está logueado
@@ -66,9 +66,9 @@ if (failedAttempts[attemptKey]) {
 
 // Función para hash de contraseña (simulada)
 function verifyPassword(password, hash) {
-  // En producción usar bcrypt real
+  // En producción, usar bcrypt para verificar el hash
   const testHash = crypto.createHash('sha256').update(password + SECURITY_CONFIG.secretKey).digest('hex');
-  return password === 'admin123'; // Simplificado para demo
+  return password === (process.env.ADMIN_DEFAULT_PASSWORD || 'changeMe123!'); // Usar variable de entorno
 }
 
 // Manejar envío del formulario
@@ -413,7 +413,7 @@ if (Astro.request.method === 'POST' && !isLocked) {
 
     <div class="demo-info">
       <div class="demo-title">Contraseña por defecto:</div>
-      <div class="demo-password">admin123</div>
+      <div class="demo-password">[CONFIGURADA VÍA ENV]</div>
     </div>
   </div>
 </Layout>

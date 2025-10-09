@@ -2,11 +2,11 @@ User-agent: *
 Allow: /
 
 # Sitemap
-Sitemap: https://sur-occidente.com/sitemap.xml
+Sitemap: https://suroccidente.com/sitemap.xml
 
-# Disallow admin or private areas (if any)
-# Disallow: /admin/
-# Disallow: /private/
+# Disallow admin or private areas
+Disallow: /admin/
+Disallow: /private/
 
 # Allow all search engines to crawl the site
 # This is a public e-commerce site
@@ -17,6 +17,34 @@ Sitemap: https://sur-occidente.com/sitemap.xml
 # Specific rules for different bots (if needed)
 # User-agent: Googlebot
 # Allow: /
+
+# Security: Block access to sensitive files
+Disallow: /.env
+Disallow: /.env.*
+Disallow: /config/
+Disallow: /logs/
+Disallow: /backup/
+Disallow: /database/
+Disallow: /*.sql
+Disallow: /*.json$
+Disallow: /src/
+Disallow: /node_modules/
+
+# Block common attack vectors
+Disallow: /wp-admin/
+Disallow: /wp-content/
+Disallow: /wp-includes/
+Disallow: /administrator/
+Disallow: /phpmyadmin/
+Disallow: /phpMyAdmin/
+Disallow: /mysql/
+Disallow: /cgi-bin/
+
+# Block file extensions that shouldn't be indexed
+Disallow: /*.log
+Disallow: /*.bak
+Disallow: /*.old
+Disallow: /*.tmp
 
 # User-agent: Bingbot
 # Allow: /
