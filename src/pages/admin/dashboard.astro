@@ -14,13 +14,13 @@ if (!sessionToken) {
 
 // Import real data functions
 import { getSecurityLogs, getAnalytics, getContactSubmissions } from '../../utils/database.js';
-import { getAllProducts } from '../../utils/data.ts';
+import { getAllProducts } from '../../lib/database.js';
 
 // Get real dashboard data from database
 const analytics = getAnalytics();
 const securityLogs = getSecurityLogs(5);
 const contactSubmissions = getContactSubmissions();
-const products = getAllProducts();
+const products = await getAllProducts();
 
 // Calculate real metrics
 const dashboardData = {

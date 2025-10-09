@@ -15,17 +15,17 @@
       "sort_order": 2
     },
     {
-      "id": "accesorios",
-      "name": "Accesorios",
-      "slug": "accesorios",
-      "description": "Accesorios vintage únicos y coleccionables para completar tu look",
+      "id": "cds",
+      "name": "CDs",
+      "slug": "cds",
+      "description": "Discos compactos vintage y ediciones especiales de todos los géneros",
       "sort_order": 3
     },
     {
-      "id": "chaquetas",
-      "name": "Chaquetas",
-      "slug": "chaquetas",
-      "description": "Chaquetas vintage y retro de diferentes estilos y épocas",
+      "id": "sudaderas",
+      "name": "Sudaderas",
+      "slug": "sudaderas",
+      "description": "Sudaderas vintage y retro con diseños únicos",
       "sort_order": 4
     },
     {
@@ -34,6 +34,27 @@
       "slug": "pantalones",
       "description": "Pantalones vintage con estilo urbano y auténtico",
       "sort_order": 5
+    },
+    {
+      "id": "chaquetas",
+      "name": "Chaquetas",
+      "slug": "chaquetas",
+      "description": "Chaquetas vintage y retro de diferentes estilos y épocas",
+      "sort_order": 6
+    },
+    {
+      "id": "gorras",
+      "name": "Gorras",
+      "slug": "gorras",
+      "description": "Gorras vintage y caps retro de diferentes marcas y estilos",
+      "sort_order": 7
+    },
+    {
+      "id": "accesorios",
+      "name": "Accesorios",
+      "slug": "accesorios",
+      "description": "Accesorios vintage únicos y coleccionables para completar tu look",
+      "sort_order": 8
     }
   ]
 }

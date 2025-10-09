@@ -22,6 +22,7 @@
       ],
       "sizes": ["S", "M", "L"],
       "tags": ["vintage", "cowboy", "90s", "americana"],
+      "gender": "unisex",
       "created_at": "2025-01-15T10:00:00Z",
       "updated_at": "2025-01-15T10:00:00Z"
     },
@@ -42,6 +43,7 @@
       ],
       "sizes": ["M", "L", "XL"],
       "tags": ["vintage", "band", "80s", "rock"],
+      "gender": "hombre",
       "created_at": "2025-01-15T10:30:00Z",
       "updated_at": "2025-01-15T10:30:00Z"
     },
@@ -53,6 +55,7 @@
       "category": "vinilos",
       "condition": "Excelente",
       "featured": true,
+      "gender": "unisex",
       "images": [
         {
           "url": "/images/products/vinyl-001-1.jpg",
@@ -73,6 +76,7 @@
       "category": "accesorios",
       "condition": "Bueno",
       "featured": false,
+      "gender": "unisex",
       "images": [
         {
           "url": "/images/products/belt-001-1.jpg",
@@ -93,6 +97,7 @@
       "category": "camisetas",
       "condition": "Muy bueno",
       "featured": true,
+      "gender": "unisex",
       "images": [
         {
           "url": "/images/products/tee-003-1.jpg",
@@ -113,6 +118,7 @@
       "category": "chaquetas",
       "condition": "Muy bueno",
       "featured": true,
+      "gender": "hombre",
       "images": [
         {
           "url": "/images/products/chaqueta-bomber-90s-1.jpg",
@@ -138,6 +144,7 @@
       "category": "camisetas",
       "condition": "Excelente",
       "featured": false,
+      "gender": "hombre",
       "images": [
         {
           "url": "/images/products/camiseta-hip-hop-legends-1.jpg",
@@ -163,6 +170,7 @@
       "category": "vinilos",
       "condition": "Muy bueno",
       "featured": true,
+      "gender": "unisex",
       "images": [
         {
           "url": "/images/products/vinilo-funk-classics-1.jpg",
@@ -188,6 +196,7 @@
       "category": "pantalones",
       "condition": "Bueno",
       "featured": false,
+      "gender": "hombre",
       "images": [
         {
           "url": "/images/products/pantalones-cargo-2000s-1.jpg",
@@ -213,6 +222,7 @@
       "category": "accesorios",
       "condition": "Excelente",
       "featured": false,
+      "gender": "unisex",
       "images": [
         {
           "url": "/images/products/gorra-snapback-retro-1.jpg",
@@ -238,6 +248,7 @@
       "category": "camisetas",
       "condition": "Muy bueno",
       "featured": true,
+      "gender": "unisex",
       "images": [
         {
           "url": "/images/products/camiseta-grunge-90s-1.jpg",
@@ -288,6 +299,7 @@
       "category": "chaquetas",
       "condition": "Bueno",
       "featured": false,
+      "gender": "unisex",
       "images": [
         {
           "url": "/images/products/chaqueta-denim-vintage-1.jpg",
@@ -363,6 +375,7 @@
       "category": "chaquetas",
       "condition": "Muy bueno",
       "featured": true,
+      "gender": "unisex",
       "images": [
         {
           "url": "/images/products/chaqueta-cuero-biker-80s-1.jpg",
@@ -379,6 +392,90 @@
       "tags": ["cuero", "biker", "80s", "cremalleras", "tachuelas"],
       "created_at": "2025-01-26T11:00:00Z",
       "updated_at": "2025-01-26T11:00:00Z"
+    },
+    {
+      "id": "17",
+      "name": "Sudadera Vintage Mujer 90s",
+      "description": "Sudadera vintage para mujer de los 90s con estampado floral. Corte femenino y cómodo.",
+      "price": 65,
+      "category": "sudaderas",
+      "condition": "Muy bueno",
+      "featured": true,
+      "gender": "mujer",
+      "images": [
+        {
+          "url": "/images/products/sudadera-mujer-90s-1.jpg",
+          "alt": "Sudadera Vintage Mujer 90s",
+          "primary": true
+        }
+      ],
+      "sizes": ["S", "M", "L"],
+      "tags": ["sudadera", "mujer", "90s", "floral", "vintage"],
+      "created_at": "2025-01-27T10:00:00Z",
+      "updated_at": "2025-01-27T10:00:00Z"
+    },
+    {
+      "id": "18",
+      "name": "Pantalones Mujer Vintage 80s",
+      "description": "Pantalones de talle alto para mujer estilo 80s. Corte elegante y vintage.",
+      "price": 55,
+      "category": "pantalones",
+      "condition": "Excelente",
+      "featured": false,
+      "gender": "mujer",
+      "images": [
+        {
+          "url": "/images/products/pantalones-mujer-80s-1.jpg",
+          "alt": "Pantalones Mujer Vintage 80s",
+          "primary": true
+        }
+      ],
+      "sizes": ["26", "28", "30", "32"],
+      "tags": ["pantalones", "mujer", "80s", "talle alto", "elegante"],
+      "created_at": "2025-01-27T11:00:00Z",
+      "updated_at": "2025-01-27T11:00:00Z"
+    },
+    {
+      "id": "19",
+      "name": "CD Álbum Pop 2000s",
+      "description": "CD original de álbum pop de los 2000s. Incluye libreto y está en perfecto estado.",
+      "price": 25,
+      "category": "cds",
+      "condition": "Excelente",
+      "featured": false,
+      "gender": "unisex",
+      "images": [
+        {
+          "url": "/images/products/cd-pop-2000s-1.jpg",
+          "alt": "CD Álbum Pop 2000s",
+          "primary": true
+        }
+      ],
+      "sizes": [],
+      "tags": ["cd", "pop", "2000s", "original", "libreto"],
+      "created_at": "2025-01-27T12:00:00Z",
+      "updated_at": "2025-01-27T12:00:00Z"
+    },
+    {
+      "id": "20",
+      "name": "Gorra Vintage Mujer",
+      "description": "Gorra vintage para mujer con detalles bordados. Estilo clásico y femenino.",
+      "price": 30,
+      "category": "gorras",
+      "condition": "Muy bueno",
+      "featured": false,
+      "gender": "mujer",
+      "images": [
+        {
+          "url": "/images/products/gorra-mujer-vintage-1.jpg",
+          "alt": "Gorra Vintage Mujer",
+          "primary": true
+        }
+      ],
+      "sizes": ["Única"],
+      "tags": ["gorra", "mujer", "bordado", "clásico", "femenino"],
+      "created_at": "2025-01-27T13:00:00Z",
+      "updated_at": "2025-01-27T13:00:00Z"
     }
   ]
 }

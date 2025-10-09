@@ -72,6 +72,11 @@ export function filterProducts(products: Product[], filter: ProductFilter): Prod
       }
     }
 
+    // Filtro por género
+    if (filter.gender && product.gender && product.gender !== filter.gender) {
+      return false;
+    }
+
     return true;
   });
 }

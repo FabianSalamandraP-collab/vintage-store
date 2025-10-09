@@ -1,7 +1,7 @@
 ---
 import Layout from '../../layouts/Layout.astro';
 import ProductCard from '../../components/ProductCard.astro';
-import { getProductById, getRelatedProducts, getCategoryById, generateWhatsAppURL, formatPrice } from '../../utils/data';
+import { getProductById, getRelatedProducts, getCategoryById, generateWhatsAppURL, formatPrice } from '../../lib/database.js';
 import type { Product } from '../../types';
 
 // Obtener el ID del producto desde la URL
@@ -12,15 +12,15 @@ if (!id) {
 }
 
 // Obtener el producto
-const product = getProductById(id);
+const product = await getProductById(id);
 
 if (!product) {
-  return Astro.redirect('/productos');
+  return Astro.redirect('/404');
 }
 
 // Obtener información adicional
-const category = getCategoryById(product.category);
-const relatedProducts = getRelatedProducts(product, 4);
+const category = await getCategoryById(product.category);
+const relatedProducts = await getRelatedProducts(product, 4);
 const whatsappUrl = generateWhatsAppURL(product);
 
 // Información para SEO

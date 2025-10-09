@@ -1,0 +1,509 @@
+---
+export const prerender = false;
+
+import Layout from '../../layouts/Layout.astro';
+import { supabase } from '../../lib/supabase.js';
+
+// Verificación de autenticación
+const cookies = Astro.cookies;
+const adminSession = cookies.get('admin_session')?.value;
+
+if (!adminSession) {
+  return Astro.redirect('/admin/login');
+}
+
+// Obtener historial de productos
+let productHistory = [];
+let stockMovements = [];
+
+if (supabase) {
+  try {
+    // Historial de productos con información del producto
+    const { data: historyData, error: historyError } = await supabase
+      .from('product_history')
+      .select(`
+        *,
+        products (
+          name,
+          sku
+        )
+      `)
+      .order('created_at', { ascending: false })
+      .limit(100);
+
+    if (historyError) throw historyError;
+    productHistory = historyData || [];
+
+    // Movimientos de stock con información del producto
+    const { data: movementsData, error: movementsError } = await supabase
+      .from('stock_movements')
+      .select(`
+        *,
+        products (
+          name,
+          sku
+        )
+      `)
+      .order('created_at', { ascending: false })
+      .limit(100);
+
+    if (movementsError) throw movementsError;
+    stockMovements = movementsData || [];
+  } catch (error) {
+    console.error('Error loading history:', error);
+  }
+}
+
+// Combinar y ordenar todos los eventos
+const allEvents = [
+  ...productHistory.map(h => ({
+    ...h,
+    type: 'product_history',
+    timestamp: new Date(h.created_at)
+  })),
+  ...stockMovements.map(m => ({
+    ...m,
+    type: 'stock_movement',
+    timestamp: new Date(m.created_at)
+  }))
+].sort((a, b) => b.timestamp - a.timestamp);
+
+// Función para formatear la fecha
+function formatDate(date) {
+  return new Intl.DateTimeFormat('es-CO', {
+    year: 'numeric',
+    month: 'short',
+    day: 'numeric',
+    hour: '2-digit',
+    minute: '2-digit'
+  }).format(date);
+}
+
+// Función para obtener el icono del evento
+function getEventIcon(event) {
+  if (event.type === 'product_history') {
+    switch (event.action) {
+      case 'created': return '✨';
+      case 'updated': return '✏️';
+      case 'stock_changed': return '📦';
+      case 'status_changed': return '🔄';
+      case 'deleted': return '🗑️';
+      default: return '📝';
+    }
+  } else {
+    switch (event.movement_type) {
+      case 'in': return '📈';
+      case 'out': return '📉';
+      case 'adjustment': return '⚖️';
+      case 'reserved': return '🔒';
+      case 'released': return '🔓';
+      default: return '📊';
+    }
+  }
+}
+
+// Función para obtener la descripción del evento
+function getEventDescription(event) {
+  if (event.type === 'product_history') {
+    const productName = event.products?.name || 'Producto desconocido';
+    switch (event.action) {
+      case 'created':
+        return `Producto "${productName}" creado`;
+      case 'updated':
+        if (event.field_name) {
+          return `Campo "${event.field_name}" actualizado en "${productName}"`;
+        }
+        return `Producto "${productName}" actualizado`;
+      case 'stock_changed':
+        return `Stock de "${productName}" cambió de ${event.old_value} a ${event.new_value}`;
+      case 'status_changed':
+        return `Estado de "${productName}" cambió de ${event.old_value} a ${event.new_value}`;
+      case 'deleted':
+        return `Producto "${productName}" eliminado`;
+      default:
+        return `Acción "${event.action}" en "${productName}"`;
+    }
+  } else {
+    const productName = event.products?.name || 'Producto desconocido';
+    const movementText = event.movement_type === 'in' ? 'Entrada' : 
+                        event.movement_type === 'out' ? 'Salida' : 
+                        event.movement_type === 'adjustment' ? 'Ajuste' :
+                        event.movement_type === 'reserved' ? 'Reserva' :
+                        event.movement_type === 'released' ? 'Liberación' : 'Movimiento';
+    
+    return `${movementText} de ${Math.abs(event.quantity)} unidades en "${productName}" (${event.previous_stock} → ${event.new_stock})`;
+  }
+}
+---
+
+<Layout title="Historial de Cambios - Admin">
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+      background: #f8fafc;
+      color: #334155;
+    }
+
+    .admin-container {
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+    }
+
+    .admin-header {
+      background: white;
+      border-bottom: 1px solid #e2e8f0;
+      padding: 1rem 2rem;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+    }
+
+    .admin-title {
+      font-size: 1.5rem;
+      font-weight: 600;
+      color: #1e293b;
+    }
+
+    .nav-links {
+      display: flex;
+      gap: 1rem;
+    }
+
+    .nav-link {
+      color: #3b82f6;
+      text-decoration: none;
+      padding: 0.5rem 1rem;
+      border-radius: 0.375rem;
+      transition: background 0.2s;
+    }
+
+    .nav-link:hover {
+      background: #f1f5f9;
+    }
+
+    .admin-main {
+      flex: 1;
+      padding: 2rem;
+      max-width: 1200px;
+      margin: 0 auto;
+      width: 100%;
+    }
+
+    .filters {
+      background: white;
+      padding: 1.5rem;
+      border-radius: 0.5rem;
+      box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+      margin-bottom: 2rem;
+      display: flex;
+      gap: 1rem;
+      align-items: center;
+      flex-wrap: wrap;
+    }
+
+    .filter-group {
+      display: flex;
+      flex-direction: column;
+      gap: 0.5rem;
+    }
+
+    .filter-label {
+      font-size: 0.875rem;
+      font-weight: 500;
+      color: #374151;
+    }
+
+    .filter-select {
+      padding: 0.5rem;
+      border: 1px solid #d1d5db;
+      border-radius: 0.375rem;
+      font-size: 0.875rem;
+    }
+
+    .timeline {
+      background: white;
+      border-radius: 0.5rem;
+      box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+      overflow: hidden;
+    }
+
+    .timeline-header {
+      padding: 1.5rem;
+      border-bottom: 1px solid #e2e8f0;
+      background: #f8fafc;
+    }
+
+    .timeline-title {
+      font-size: 1.25rem;
+      font-weight: 600;
+      color: #1e293b;
+    }
+
+    .timeline-content {
+      max-height: 70vh;
+      overflow-y: auto;
+    }
+
+    .timeline-item {
+      display: flex;
+      padding: 1.5rem;
+      border-bottom: 1px solid #f1f5f9;
+      transition: background 0.2s;
+    }
+
+    .timeline-item:hover {
+      background: #f8fafc;
+    }
+
+    .timeline-item:last-child {
+      border-bottom: none;
+    }
+
+    .timeline-icon {
+      flex-shrink: 0;
+      width: 2.5rem;
+      height: 2.5rem;
+      background: #f1f5f9;
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 1.25rem;
+      margin-right: 1rem;
+    }
+
+    .timeline-icon.product { background: #dbeafe; }
+    .timeline-icon.stock { background: #dcfce7; }
+
+    .timeline-content-item {
+      flex: 1;
+    }
+
+    .timeline-description {
+      font-weight: 500;
+      color: #1e293b;
+      margin-bottom: 0.25rem;
+    }
+
+    .timeline-meta {
+      display: flex;
+      gap: 1rem;
+      font-size: 0.875rem;
+      color: #64748b;
+      margin-bottom: 0.5rem;
+    }
+
+    .timeline-details {
+      font-size: 0.875rem;
+      color: #64748b;
+    }
+
+    .timeline-notes {
+      background: #f8fafc;
+      padding: 0.75rem;
+      border-radius: 0.375rem;
+      margin-top: 0.5rem;
+      font-size: 0.875rem;
+      color: #475569;
+      border-left: 3px solid #e2e8f0;
+    }
+
+    .badge {
+      display: inline-block;
+      padding: 0.25rem 0.5rem;
+      border-radius: 0.25rem;
+      font-size: 0.75rem;
+      font-weight: 500;
+    }
+
+    .badge-created { background: #dcfce7; color: #166534; }
+    .badge-updated { background: #dbeafe; color: #1e40af; }
+    .badge-deleted { background: #fef2f2; color: #dc2626; }
+    .badge-stock-in { background: #dcfce7; color: #166534; }
+    .badge-stock-out { background: #fef3c7; color: #92400e; }
+    .badge-stock-adjustment { background: #f3e8ff; color: #7c3aed; }
+
+    .empty-state {
+      text-align: center;
+      padding: 3rem;
+      color: #64748b;
+    }
+
+    .empty-icon {
+      font-size: 3rem;
+      margin-bottom: 1rem;
+    }
+
+    @media (max-width: 768px) {
+      .admin-header {
+        padding: 1rem;
+        flex-direction: column;
+        gap: 1rem;
+      }
+
+      .admin-main {
+        padding: 1rem;
+      }
+
+      .filters {
+        flex-direction: column;
+        align-items: stretch;
+      }
+
+      .timeline-item {
+        padding: 1rem;
+      }
+
+      .timeline-meta {
+        flex-direction: column;
+        gap: 0.25rem;
+      }
+    }
+  </style>
+
+  <div class="admin-container">
+    <!-- Header -->
+    <header class="admin-header">
+      <h1 class="admin-title">Historial de Cambios</h1>
+      <nav class="nav-links">
+        <a href="/admin" class="nav-link">← Panel Principal</a>
+        <a href="/admin/products" class="nav-link">Productos</a>
+        <a href="/admin/stock" class="nav-link">Stock</a>
+        <a href="/admin/logout" class="nav-link">Cerrar Sesión</a>
+      </nav>
+    </header>
+
+    <!-- Main Content -->
+    <main class="admin-main">
+      <!-- Filters -->
+      <div class="filters">
+        <div class="filter-group">
+          <label class="filter-label">Tipo de Evento</label>
+          <select class="filter-select" id="eventTypeFilter">
+            <option value="">Todos los eventos</option>
+            <option value="product_history">Cambios de productos</option>
+            <option value="stock_movement">Movimientos de stock</option>
+          </select>
+        </div>
+        <div class="filter-group">
+          <label class="filter-label">Período</label>
+          <select class="filter-select" id="periodFilter">
+            <option value="">Todo el tiempo</option>
+            <option value="today">Hoy</option>
+            <option value="week">Esta semana</option>
+            <option value="month">Este mes</option>
+          </select>
+        </div>
+      </div>
+
+      <!-- Timeline -->
+      <div class="timeline">
+        <div class="timeline-header">
+          <h2 class="timeline-title">Actividad Reciente</h2>
+        </div>
+        <div class="timeline-content">
+          {allEvents.length > 0 ? (
+            allEvents.map(event => (
+              <div class="timeline-item" data-type={event.type}>
+                <div class={`timeline-icon ${event.type === 'product_history' ? 'product' : 'stock'}`}>
+                  {getEventIcon(event)}
+                </div>
+                <div class="timeline-content-item">
+                  <div class="timeline-description">
+                    {getEventDescription(event)}
+                  </div>
+                  <div class="timeline-meta">
+                    <span>📅 {formatDate(event.timestamp)}</span>
+                    <span>👤 {event.changed_by || event.created_by || 'Sistema'}</span>
+                    {event.products?.sku && <span>🏷️ SKU: {event.products.sku}</span>}
+                  </div>
+                  {event.type === 'product_history' && (
+                    <div class="timeline-details">
+                      <span class={`badge badge-${event.action}`}>
+                        {event.action === 'created' ? 'Creado' :
+                         event.action === 'updated' ? 'Actualizado' :
+                         event.action === 'deleted' ? 'Eliminado' :
+                         event.action === 'stock_changed' ? 'Stock Cambiado' :
+                         event.action}
+                      </span>
+                      {event.field_name && (
+                        <span style="margin-left: 0.5rem;">
+                          Campo: <strong>{event.field_name}</strong>
+                        </span>
+                      )}
+                    </div>
+                  )}
+                  {event.type === 'stock_movement' && (
+                    <div class="timeline-details">
+                      <span class={`badge badge-stock-${event.movement_type}`}>
+                        {event.movement_type === 'in' ? 'Entrada' :
+                         event.movement_type === 'out' ? 'Salida' :
+                         event.movement_type === 'adjustment' ? 'Ajuste' :
+                         event.movement_type}
+                      </span>
+                      <span style="margin-left: 0.5rem;">
+                        Motivo: <strong>{event.reason}</strong>
+                      </span>
+                    </div>
+                  )}
+                  {event.notes && (
+                    <div class="timeline-notes">
+                      💬 {event.notes}
+                    </div>
+                  )}
+                </div>
+              </div>
+            ))
+          ) : (
+            <div class="empty-state">
+              <div class="empty-icon">📋</div>
+              <h3>No hay actividad registrada</h3>
+              <p>Los cambios en productos y movimientos de stock aparecerán aquí.</p>
+            </div>
+          )}
+        </div>
+      </div>
+    </main>
+  </div>
+
+  <script>
+    // Filtros
+    const eventTypeFilter = document.getElementById('eventTypeFilter');
+    const periodFilter = document.getElementById('periodFilter');
+    const timelineItems = document.querySelectorAll('.timeline-item');
+
+    function applyFilters() {
+      const eventType = eventTypeFilter.value;
+      const period = periodFilter.value;
+      const now = new Date();
+
+      timelineItems.forEach(item => {
+        let show = true;
+
+        // Filtro por tipo de evento
+        if (eventType && item.dataset.type !== eventType) {
+          show = false;
+        }
+
+        // Filtro por período (simplificado para demo)
+        if (period && show) {
+          // Aquí podrías implementar la lógica de filtrado por fecha
+          // Por ahora solo mostramos todos
+        }
+
+        item.style.display = show ? 'flex' : 'none';
+      });
+    }
+
+    eventTypeFilter.addEventListener('change', applyFilters);
+    periodFilter.addEventListener('change', applyFilters);
+  </script>
+</Layout>

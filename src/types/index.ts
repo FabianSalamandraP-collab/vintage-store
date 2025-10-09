@@ -17,6 +17,7 @@ export interface Product {
   images: ProductImage[];
   sizes: string[];
   tags: string[];
+  gender?: 'hombre' | 'mujer' | 'unisex';
   created_at: string;
   updated_at: string;
 }
@@ -81,6 +82,7 @@ export interface ProductFilter {
   condition?: string;
   sizes?: string[];
   tags?: string[];
+  gender?: 'hombre' | 'mujer' | 'unisex';
 }
 
 export interface SearchParams {

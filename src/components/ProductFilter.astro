@@ -1,6 +1,6 @@
 ---
-import type { Category, ProductFilter } from '../types';
-import { getAllCategories, getProductStats } from '../utils/data';
+import type { Category } from '../types';
+import { getAllCategories, getProductStats } from '../lib/database.js';
 
 export interface Props {
   currentFilter?: ProductFilter;
@@ -8,8 +8,8 @@ export interface Props {
 }
 
 const { currentFilter = {}, className = '' } = Astro.props;
-const categories = getAllCategories();
-const stats = getProductStats();
+const categories = await getAllCategories();
+const stats = await getProductStats();
 ---
 
 <div class={`product-filter ${className}`}>
@@ -127,6 +127,56 @@ const stats = getProductStats();
     </div>
   </div>
   
+  <!-- Filtro por género -->
+  <div class="filter-section">
+    <h4>Género</h4>
+    <div class="filter-options">
+      <label class="filter-option">
+        <input 
+          type="radio" 
+          name="gender" 
+          value="" 
+          checked={!currentFilter.gender}
+        />
+        <span class="checkmark"></span>
+        <span class="option-text">Todos</span>
+      </label>
+      
+      <label class="filter-option">
+        <input 
+          type="radio" 
+          name="gender" 
+          value="hombre"
+          checked={currentFilter.gender === 'hombre'}
+        />
+        <span class="checkmark"></span>
+        <span class="option-text">Hombre</span>
+      </label>
+      
+      <label class="filter-option">
+        <input 
+          type="radio" 
+          name="gender" 
+          value="mujer"
+          checked={currentFilter.gender === 'mujer'}
+        />
+        <span class="checkmark"></span>
+        <span class="option-text">Mujer</span>
+      </label>
+      
+      <label class="filter-option">
+        <input 
+          type="radio" 
+          name="gender" 
+          value="unisex"
+          checked={currentFilter.gender === 'unisex'}
+        />
+        <span class="checkmark"></span>
+        <span class="option-text">Unisex</span>
+      </label>
+    </div>
+  </div>
+
   <!-- Filtro por tallas -->
   <div class="filter-section">
     <h4>Tallas</h4>
@@ -453,12 +503,14 @@ const stats = getProductStats();
       // Recopilar filtros
       const category = formData.get('category');
       const condition = formData.get('condition');
+      const gender = formData.get('gender');
       const minPrice = formData.get('minPrice');
       const maxPrice = formData.get('maxPrice');
       const sizes = formData.getAll('sizes');
       
       if (category) params.set('category', category);
       if (condition) params.set('condition', condition);
+      if (gender) params.set('gender', gender);
       if (minPrice) params.set('minPrice', minPrice);
       if (maxPrice) params.set('maxPrice', maxPrice);
       if (sizes.length > 0) params.set('sizes', sizes.join(','));
@@ -472,6 +524,7 @@ const stats = getProductStats();
         detail: {
           category,
           condition,
+          gender,
           minPrice: minPrice ? parseFloat(minPrice) : undefined,
           maxPrice: maxPrice ? parseFloat(maxPrice) : undefined,
           sizes

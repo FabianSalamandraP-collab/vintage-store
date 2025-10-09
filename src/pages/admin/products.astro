@@ -1,0 +1,669 @@
+---
+export const prerender = false;
+
+import Layout from '../../layouts/Layout.astro';
+import { getAllProducts, getAllCategories, createProduct, updateProduct, deleteProduct } from '../../lib/database.js';
+
+// Verificación de autenticación
+const cookies = Astro.cookies;
+const adminSession = cookies.get('admin_session')?.value;
+
+if (!adminSession) {
+  return Astro.redirect('/admin/login');
+}
+
+// Manejar acciones POST
+let message = '';
+let messageType = '';
+
+if (Astro.request.method === 'POST') {
+  try {
+    const formData = await Astro.request.formData();
+    const action = formData.get('action');
+
+    if (action === 'create') {
+      const productData = {
+        name: formData.get('name'),
+        description: formData.get('description'),
+        price: parseFloat(formData.get('price')),
+        category_id: formData.get('category_id'),
+        condition: formData.get('condition'),
+        featured: formData.get('featured') === 'on',
+        tags: formData.get('tags') ? formData.get('tags').split(',').map(tag => tag.trim()) : [],
+        is_active: true,
+        stock_quantity: parseInt(formData.get('stock_quantity')) || 1,
+        sku: formData.get('sku') || null
+      };
+
+      await createProduct(productData);
+      message = 'Producto creado exitosamente';
+      messageType = 'success';
+    } 
+    else if (action === 'update') {
+      const productId = formData.get('product_id');
+      const productData = {
+        name: formData.get('name'),
+        description: formData.get('description'),
+        price: parseFloat(formData.get('price')),
+        category_id: formData.get('category_id'),
+        condition: formData.get('condition'),
+        featured: formData.get('featured') === 'on',
+        tags: formData.get('tags') ? formData.get('tags').split(',').map(tag => tag.trim()) : [],
+        stock_quantity: parseInt(formData.get('stock_quantity')) || 0,
+        sku: formData.get('sku') || null
+      };
+
+      await updateProduct(productId, productData);
+      message = 'Producto actualizado exitosamente';
+      messageType = 'success';
+    }
+    else if (action === 'delete') {
+      const productId = formData.get('product_id');
+      await deleteProduct(productId);
+      message = 'Producto eliminado exitosamente';
+      messageType = 'success';
+    }
+  } catch (error) {
+    console.error('Error en operación CRUD:', error);
+    message = 'Error: ' + error.message;
+    messageType = 'error';
+  }
+}
+
+// Cargar datos
+const products = await getAllProducts();
+const categories = await getAllCategories();
+---
+
+<Layout title="Gestión de Productos - Admin">
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+      background: #f8fafc;
+      color: #334155;
+    }
+
+    .admin-container {
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+    }
+
+    .admin-header {
+      background: white;
+      border-bottom: 1px solid #e2e8f0;
+      padding: 1rem 2rem;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+    }
+
+    .admin-title {
+      font-size: 1.5rem;
+      font-weight: 600;
+      color: #1e293b;
+    }
+
+    .nav-links {
+      display: flex;
+      gap: 1rem;
+    }
+
+    .nav-link {
+      color: #3b82f6;
+      text-decoration: none;
+      padding: 0.5rem 1rem;
+      border-radius: 0.375rem;
+      transition: background 0.2s;
+    }
+
+    .nav-link:hover {
+      background: #f1f5f9;
+    }
+
+    .admin-main {
+      flex: 1;
+      padding: 2rem;
+      max-width: 1400px;
+      margin: 0 auto;
+      width: 100%;
+    }
+
+    .message {
+      padding: 1rem;
+      border-radius: 0.5rem;
+      margin-bottom: 1rem;
+    }
+
+    .message.success {
+      background: #dcfce7;
+      color: #166534;
+      border: 1px solid #bbf7d0;
+    }
+
+    .message.error {
+      background: #fef2f2;
+      color: #dc2626;
+      border: 1px solid #fecaca;
+    }
+
+    .actions-bar {
+      display: flex;
+      justify-content: between;
+      align-items: center;
+      margin-bottom: 2rem;
+      gap: 1rem;
+    }
+
+    .btn {
+      padding: 0.75rem 1.5rem;
+      border: none;
+      border-radius: 0.375rem;
+      cursor: pointer;
+      font-size: 0.875rem;
+      font-weight: 500;
+      transition: all 0.2s;
+      text-decoration: none;
+      display: inline-block;
+    }
+
+    .btn-primary {
+      background: #3b82f6;
+      color: white;
+    }
+
+    .btn-primary:hover {
+      background: #2563eb;
+    }
+
+    .btn-secondary {
+      background: #e2e8f0;
+      color: #475569;
+    }
+
+    .btn-secondary:hover {
+      background: #cbd5e1;
+    }
+
+    .btn-danger {
+      background: #ef4444;
+      color: white;
+    }
+
+    .btn-danger:hover {
+      background: #dc2626;
+    }
+
+    .btn-small {
+      padding: 0.5rem 1rem;
+      font-size: 0.75rem;
+    }
+
+    .products-grid {
+      display: grid;
+      gap: 1.5rem;
+      margin-bottom: 2rem;
+    }
+
+    .product-card {
+      background: white;
+      border-radius: 0.5rem;
+      box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+      overflow: hidden;
+    }
+
+    .product-header {
+      padding: 1.5rem;
+      border-bottom: 1px solid #e2e8f0;
+      display: flex;
+      justify-content: space-between;
+      align-items: start;
+    }
+
+    .product-info h3 {
+      font-size: 1.25rem;
+      font-weight: 600;
+      margin-bottom: 0.5rem;
+    }
+
+    .product-meta {
+      color: #64748b;
+      font-size: 0.875rem;
+    }
+
+    .product-actions {
+      display: flex;
+      gap: 0.5rem;
+    }
+
+    .product-body {
+      padding: 1.5rem;
+    }
+
+    .product-description {
+      color: #64748b;
+      margin-bottom: 1rem;
+      line-height: 1.5;
+    }
+
+    .product-details {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+      gap: 1rem;
+    }
+
+    .detail-item {
+      display: flex;
+      flex-direction: column;
+    }
+
+    .detail-label {
+      font-size: 0.75rem;
+      color: #64748b;
+      text-transform: uppercase;
+      font-weight: 600;
+      margin-bottom: 0.25rem;
+    }
+
+    .detail-value {
+      font-weight: 500;
+    }
+
+    .modal {
+      display: none;
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background: rgba(0,0,0,0.5);
+      z-index: 1000;
+    }
+
+    .modal.active {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    .modal-content {
+      background: white;
+      border-radius: 0.5rem;
+      padding: 2rem;
+      max-width: 600px;
+      width: 90%;
+      max-height: 90vh;
+      overflow-y: auto;
+    }
+
+    .modal-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 1.5rem;
+    }
+
+    .modal-title {
+      font-size: 1.25rem;
+      font-weight: 600;
+    }
+
+    .close-btn {
+      background: none;
+      border: none;
+      font-size: 1.5rem;
+      cursor: pointer;
+      color: #64748b;
+    }
+
+    .form-group {
+      margin-bottom: 1rem;
+    }
+
+    .form-label {
+      display: block;
+      margin-bottom: 0.5rem;
+      font-weight: 500;
+      color: #374151;
+    }
+
+    .form-input {
+      width: 100%;
+      padding: 0.75rem;
+      border: 1px solid #d1d5db;
+      border-radius: 0.375rem;
+      font-size: 1rem;
+    }
+
+    .form-input:focus {
+      outline: none;
+      border-color: #3b82f6;
+      box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.1);
+    }
+
+    .form-textarea {
+      resize: vertical;
+      min-height: 100px;
+    }
+
+    .form-checkbox {
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+    }
+
+    .form-checkbox input {
+      width: auto;
+    }
+
+    .form-actions {
+      display: flex;
+      gap: 1rem;
+      justify-content: flex-end;
+      margin-top: 1.5rem;
+    }
+
+    .badge {
+      display: inline-block;
+      padding: 0.25rem 0.75rem;
+      border-radius: 9999px;
+      font-size: 0.75rem;
+      font-weight: 500;
+    }
+
+    .badge-success {
+      background: #dcfce7;
+      color: #166534;
+    }
+
+    .badge-warning {
+      background: #fef3c7;
+      color: #92400e;
+    }
+
+    .badge-danger {
+      background: #fef2f2;
+      color: #dc2626;
+    }
+
+    @media (max-width: 768px) {
+      .admin-header {
+        padding: 1rem;
+        flex-direction: column;
+        gap: 1rem;
+      }
+
+      .admin-main {
+        padding: 1rem;
+      }
+
+      .actions-bar {
+        flex-direction: column;
+        align-items: stretch;
+      }
+
+      .product-header {
+        flex-direction: column;
+        gap: 1rem;
+      }
+
+      .product-actions {
+        align-self: flex-start;
+      }
+    }
+  </style>
+
+  <div class="admin-container">
+    <!-- Header -->
+    <header class="admin-header">
+      <h1 class="admin-title">Gestión de Productos</h1>
+      <nav class="nav-links">
+        <a href="/admin" class="nav-link">← Panel Principal</a>
+        <a href="/admin/stock" class="nav-link">Stock</a>
+        <a href="/admin/history" class="nav-link">Historial</a>
+        <a href="/admin/logout" class="nav-link">Cerrar Sesión</a>
+      </nav>
+    </header>
+
+    <!-- Main Content -->
+    <main class="admin-main">
+      <!-- Message -->
+      {message && (
+        <div class={`message ${messageType}`}>
+          {message}
+        </div>
+      )}
+
+      <!-- Actions Bar -->
+      <div class="actions-bar">
+        <button class="btn btn-primary" onclick="openCreateModal()">
+          + Nuevo Producto
+        </button>
+        <div>
+          <span>Total: {products.length} productos</span>
+        </div>
+      </div>
+
+      <!-- Products Grid -->
+      <div class="products-grid">
+        {products.map(product => (
+          <div class="product-card">
+            <div class="product-header">
+              <div class="product-info">
+                <h3>{product.name}</h3>
+                <div class="product-meta">
+                  <span class={`badge ${product.featured ? 'badge-success' : 'badge-warning'}`}>
+                    {product.featured ? 'Destacado' : 'Normal'}
+                  </span>
+                  <span style="margin-left: 0.5rem;">
+                    {product.categories?.name || product.category}
+                  </span>
+                </div>
+              </div>
+              <div class="product-actions">
+                <button class="btn btn-secondary btn-small" onclick={`openEditModal('${product.id}')`}>
+                  Editar
+                </button>
+                <form method="POST" style="display: inline;" onsubmit="return confirm('¿Estás seguro?')">
+                  <input type="hidden" name="action" value="delete">
+                  <input type="hidden" name="product_id" value={product.id}>
+                  <button type="submit" class="btn btn-danger btn-small">
+                    Eliminar
+                  </button>
+                </form>
+              </div>
+            </div>
+            <div class="product-body">
+              <p class="product-description">{product.description}</p>
+              <div class="product-details">
+                <div class="detail-item">
+                  <span class="detail-label">Precio</span>
+                  <span class="detail-value">${product.price?.toLocaleString()}</span>
+                </div>
+                <div class="detail-item">
+                  <span class="detail-label">Stock</span>
+                  <span class="detail-value">
+                    {product.stock_quantity || 0} unidades
+                    <span class={`badge ${product.stock_status === 'available' ? 'badge-success' : product.stock_status === 'low_stock' ? 'badge-warning' : 'badge-danger'}`} style="margin-left: 0.5rem; font-size: 0.6rem;">
+                      {product.stock_status === 'available' ? 'Disponible' : 
+                       product.stock_status === 'low_stock' ? 'Stock Bajo' : 
+                       product.stock_status === 'out_of_stock' ? 'Agotado' : 'Descontinuado'}
+                    </span>
+                  </span>
+                </div>
+                <div class="detail-item">
+                  <span class="detail-label">Condición</span>
+                  <span class="detail-value">{product.condition}</span>
+                </div>
+                <div class="detail-item">
+                  <span class="detail-label">SKU</span>
+                  <span class="detail-value">{product.sku || 'Sin SKU'}</span>
+                </div>
+                <div class="detail-item">
+                  <span class="detail-label">Tags</span>
+                  <span class="detail-value">{product.tags?.join(', ') || 'Sin tags'}</span>
+                </div>
+                <div class="detail-item">
+                  <span class="detail-label">Creado</span>
+                  <span class="detail-value">
+                    {new Date(product.created_at).toLocaleDateString('es-CO')}
+                  </span>
+                </div>
+              </div>
+            </div>
+          </div>
+        ))}
+      </div>
+
+      {products.length === 0 && (
+        <div style="text-align: center; padding: 3rem; color: #64748b;">
+          <p>No hay productos registrados.</p>
+          <button class="btn btn-primary" onclick="openCreateModal()" style="margin-top: 1rem;">
+            Crear primer producto
+          </button>
+        </div>
+      )}
+    </main>
+  </div>
+
+  <!-- Create/Edit Modal -->
+  <div id="productModal" class="modal">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h2 class="modal-title" id="modalTitle">Nuevo Producto</h2>
+        <button class="close-btn" onclick="closeModal()">&times;</button>
+      </div>
+      
+      <form id="productForm" method="POST">
+        <input type="hidden" name="action" id="formAction" value="create">
+        <input type="hidden" name="product_id" id="productId">
+        
+        <div class="form-group">
+          <label class="form-label">Nombre del Producto</label>
+          <input type="text" class="form-input" name="name" id="productName" required>
+        </div>
+        
+        <div class="form-group">
+          <label class="form-label">Descripción</label>
+          <textarea class="form-input form-textarea" name="description" id="productDescription"></textarea>
+        </div>
+        
+        <div class="form-group">
+          <label class="form-label">Precio</label>
+          <input type="number" class="form-input" name="price" id="productPrice" step="0.01" required>
+        </div>
+        
+        <div class="form-group">
+          <label class="form-label">Cantidad en Stock</label>
+          <input type="number" class="form-input" name="stock_quantity" id="productStock" min="0" value="1">
+        </div>
+        
+        <div class="form-group">
+          <label class="form-label">SKU (Código de Producto)</label>
+          <input type="text" class="form-input" name="sku" id="productSku" placeholder="Opcional">
+        </div>
+        
+        <div class="form-group">
+          <label class="form-label">Categoría</label>
+          <select class="form-input" name="category_id" id="productCategory" required>
+            <option value="">Seleccionar categoría</option>
+            {categories.map(category => (
+              <option value={category.id}>{category.name}</option>
+            ))}
+          </select>
+        </div>
+        
+        <div class="form-group">
+          <label class="form-label">Condición</label>
+          <select class="form-input" name="condition" id="productCondition" required>
+            <option value="nuevo">Nuevo</option>
+            <option value="como-nuevo">Como Nuevo</option>
+            <option value="muy-bueno">Muy Bueno</option>
+            <option value="bueno">Bueno</option>
+            <option value="regular">Regular</option>
+          </select>
+        </div>
+        
+        <div class="form-group">
+          <label class="form-label">Tags (separados por comas)</label>
+          <input type="text" class="form-input" name="tags" id="productTags" placeholder="vintage, retro, clásico">
+        </div>
+        
+        <div class="form-group">
+          <label class="form-checkbox">
+            <input type="checkbox" name="featured" id="productFeatured">
+            Producto destacado
+          </label>
+        </div>
+        
+        <div class="form-actions">
+          <button type="button" class="btn btn-secondary" onclick="closeModal()">
+            Cancelar
+          </button>
+          <button type="submit" class="btn btn-primary" id="submitBtn">
+            Crear Producto
+          </button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <script define:vars={{ products }}>
+    // Funciones del modal
+    function openCreateModal() {
+      document.getElementById('modalTitle').textContent = 'Nuevo Producto';
+      document.getElementById('formAction').value = 'create';
+      document.getElementById('submitBtn').textContent = 'Crear Producto';
+      document.getElementById('productForm').reset();
+      document.getElementById('productModal').classList.add('active');
+    }
+
+    function openEditModal(productId) {
+      const product = products.find(p => p.id === productId);
+      if (!product) return;
+
+      document.getElementById('modalTitle').textContent = 'Editar Producto';
+      document.getElementById('formAction').value = 'update';
+      document.getElementById('productId').value = product.id;
+      document.getElementById('submitBtn').textContent = 'Actualizar Producto';
+      
+      // Llenar formulario
+      document.getElementById('productName').value = product.name || '';
+      document.getElementById('productDescription').value = product.description || '';
+      document.getElementById('productPrice').value = product.price || '';
+      document.getElementById('productStock').value = product.stock_quantity || 1;
+      document.getElementById('productSku').value = product.sku || '';
+      document.getElementById('productCategory').value = product.category_id || product.categories?.id || '';
+      document.getElementById('productCondition').value = product.condition || '';
+      document.getElementById('productTags').value = product.tags?.join(', ') || '';
+      document.getElementById('productFeatured').checked = product.featured || false;
+      
+      document.getElementById('productModal').classList.add('active');
+    }
+
+    function closeModal() {
+      document.getElementById('productModal').classList.remove('active');
+    }
+
+    // Cerrar modal al hacer clic fuera
+    document.getElementById('productModal').addEventListener('click', function(e) {
+      if (e.target === this) {
+        closeModal();
+      }
+    });
+
+    // Cerrar modal con Escape
+    document.addEventListener('keydown', function(e) {
+      if (e.key === 'Escape') {
+        closeModal();
+      }
+    });
+  </script>
+</Layout>

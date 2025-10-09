@@ -2,10 +2,10 @@
 import Layout from '../layouts/Layout.astro';
 import ProductCard from '../components/ProductCard.astro';
 // import SpotifyPlayer from '../components/SpotifyPlayer.astro';
-import { getFeaturedProducts, getSiteConfig } from '../utils/data';
+import { getFeaturedProducts, getSiteConfig } from '../lib/database.js';
 import type { Product } from '../types';
 
-const featuredProducts = getFeaturedProducts();
+const featuredProducts = await getFeaturedProducts();
 const siteConfig = getSiteConfig();
 
 const seoTitle = `${siteConfig.name} | ${siteConfig.description}`;

@@ -2,7 +2,7 @@
 import Layout from '../layouts/Layout.astro';
 import ProductCard from '../components/ProductCard.astro';
 import ProductFilter from '../components/ProductFilter.astro';
-import { getAllProducts, getAllCategories, filterProducts, getCategoryById } from '../utils/data';
+import { getAllProducts, getAllCategories, filterProducts, getCategoryById } from '../lib/database.js';
 import type { ProductFilter as ProductFilterType } from '../types';
 import { sanitizeInput, validateUrlParams, logSecurityEvent } from '../utils/security';
 
@@ -25,6 +25,7 @@ const rawParams = {
 const validationResult = validateUrlParams(rawParams, {
   category: { type: 'string', maxLength: 50, pattern: /^[a-zA-Z0-9-_]+$/ },
   condition: { type: 'string', maxLength: 20, pattern: /^(nuevo|usado|vintage)$/ },
+  gender: { type: 'string', maxLength: 20, pattern: /^(hombre|mujer|unisex)$/ },
   minPrice: { type: 'number', min: 0, max: 1000000 },
   maxPrice: { type: 'number', min: 0, max: 1000000 },
   sizes: { type: 'string', maxLength: 100, pattern: /^[a-zA-Z0-9,-]+$/ },
@@ -46,6 +47,7 @@ if (!validationResult.isValid) {
 const currentFilter: ProductFilterType = {
   category: rawParams.category ? sanitizeInput(rawParams.category, 'text') : undefined,
   condition: rawParams.condition ? sanitizeInput(rawParams.condition, 'text') : undefined,
+  gender: rawParams.gender ? sanitizeInput(rawParams.gender, 'text') : undefined,
   minPrice: rawParams.minPrice ? Math.max(0, Math.min(1000000, parseFloat(rawParams.minPrice))) : undefined,
   maxPrice: rawParams.maxPrice ? Math.max(0, Math.min(1000000, parseFloat(rawParams.maxPrice))) : undefined,
   sizes: rawParams.sizes ? rawParams.sizes.split(',').map(s => sanitizeInput(s.trim(), 'text')).filter(Boolean) : undefined,
@@ -64,12 +66,12 @@ if (currentFilter.minPrice && currentFilter.maxPrice && currentFilter.minPrice >
 }
 
 // Obtener productos filtrados
-const allProducts = getAllProducts();
+const allProducts = await getAllProducts();
 const filteredProducts = filterProducts(allProducts, currentFilter);
-const categories = getAllCategories();
+const categories = await getAllCategories();
 
 // Información de la página actual
-const currentCategory = currentFilter.category ? getCategoryById(currentFilter.category) : null;
+const currentCategory = currentFilter.category ? await getCategoryById(currentFilter.category) : null;
 const pageTitle = currentCategory ? `${currentCategory.name} - Productos` : 'Todos los Productos';
 const pageDescription = currentCategory 
   ? `Descubre nuestra colección de ${currentCategory.name.toLowerCase()}. ${currentCategory.description}`

@@ -1,0 +1,613 @@
+---
+export const prerender = false;
+
+import Layout from '../../layouts/Layout.astro';
+import { getAllProducts, updateStock, logStockMovement } from '../../lib/database.js';
+
+// Verificación de autenticación
+const cookies = Astro.cookies;
+const adminSession = cookies.get('admin_session')?.value;
+
+if (!adminSession) {
+  return Astro.redirect('/admin/login');
+}
+
+// Manejar acciones POST
+let message = '';
+let messageType = '';
+
+if (Astro.request.method === 'POST') {
+  try {
+    const formData = await Astro.request.formData();
+    const action = formData.get('action');
+
+    if (action === 'update_stock') {
+      const productId = formData.get('product_id');
+      const newQuantity = parseInt(formData.get('new_quantity'));
+      const reason = formData.get('reason') || 'adjustment';
+      const notes = formData.get('notes');
+
+      await updateStock(productId, newQuantity, reason, null, notes);
+      message = 'Stock actualizado exitosamente';
+      messageType = 'success';
+    }
+  } catch (error) {
+    console.error('Error en operación de stock:', error);
+    message = 'Error: ' + error.message;
+    messageType = 'error';
+  }
+}
+
+// Cargar productos
+const products = await getAllProducts();
+
+// Filtrar productos con stock bajo o agotado
+const lowStockProducts = products.filter(p => 
+  p.stock_status === 'low_stock' || p.stock_status === 'out_of_stock'
+);
+
+// Estadísticas de stock
+const stockStats = {
+  total: products.length,
+  available: products.filter(p => p.stock_status === 'available').length,
+  lowStock: products.filter(p => p.stock_status === 'low_stock').length,
+  outOfStock: products.filter(p => p.stock_status === 'out_of_stock').length,
+  totalValue: products.reduce((sum, p) => sum + (p.price * (p.stock_quantity || 0)), 0)
+};
+---
+
+<Layout title="Gestión de Stock - Admin">
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+      background: #f8fafc;
+      color: #334155;
+    }
+
+    .admin-container {
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+    }
+
+    .admin-header {
+      background: white;
+      border-bottom: 1px solid #e2e8f0;
+      padding: 1rem 2rem;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+    }
+
+    .admin-title {
+      font-size: 1.5rem;
+      font-weight: 600;
+      color: #1e293b;
+    }
+
+    .nav-links {
+      display: flex;
+      gap: 1rem;
+    }
+
+    .nav-link {
+      color: #3b82f6;
+      text-decoration: none;
+      padding: 0.5rem 1rem;
+      border-radius: 0.375rem;
+      transition: background 0.2s;
+    }
+
+    .nav-link:hover {
+      background: #f1f5f9;
+    }
+
+    .admin-main {
+      flex: 1;
+      padding: 2rem;
+      max-width: 1400px;
+      margin: 0 auto;
+      width: 100%;
+    }
+
+    .message {
+      padding: 1rem;
+      border-radius: 0.5rem;
+      margin-bottom: 1rem;
+    }
+
+    .message.success {
+      background: #dcfce7;
+      color: #166534;
+      border: 1px solid #bbf7d0;
+    }
+
+    .message.error {
+      background: #fef2f2;
+      color: #dc2626;
+      border: 1px solid #fecaca;
+    }
+
+    .stats-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+      gap: 1rem;
+      margin-bottom: 2rem;
+    }
+
+    .stat-card {
+      background: white;
+      padding: 1.5rem;
+      border-radius: 0.5rem;
+      box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+    }
+
+    .stat-value {
+      font-size: 2rem;
+      font-weight: 700;
+      margin-bottom: 0.5rem;
+    }
+
+    .stat-label {
+      color: #64748b;
+      font-size: 0.875rem;
+    }
+
+    .stat-available { color: #059669; }
+    .stat-low { color: #d97706; }
+    .stat-out { color: #dc2626; }
+    .stat-value-currency { color: #3b82f6; }
+
+    .section {
+      background: white;
+      border-radius: 0.5rem;
+      box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+      margin-bottom: 2rem;
+    }
+
+    .section-header {
+      padding: 1.5rem;
+      border-bottom: 1px solid #e2e8f0;
+      display: flex;
+      justify-content: between;
+      align-items: center;
+    }
+
+    .section-title {
+      font-size: 1.25rem;
+      font-weight: 600;
+    }
+
+    .section-content {
+      padding: 1.5rem;
+    }
+
+    .products-table {
+      width: 100%;
+      border-collapse: collapse;
+    }
+
+    .products-table th,
+    .products-table td {
+      padding: 1rem;
+      text-align: left;
+      border-bottom: 1px solid #e2e8f0;
+    }
+
+    .products-table th {
+      background: #f8fafc;
+      font-weight: 600;
+      color: #374151;
+    }
+
+    .products-table tr:hover {
+      background: #f8fafc;
+    }
+
+    .badge {
+      display: inline-block;
+      padding: 0.25rem 0.75rem;
+      border-radius: 9999px;
+      font-size: 0.75rem;
+      font-weight: 500;
+    }
+
+    .badge-success {
+      background: #dcfce7;
+      color: #166534;
+    }
+
+    .badge-warning {
+      background: #fef3c7;
+      color: #92400e;
+    }
+
+    .badge-danger {
+      background: #fef2f2;
+      color: #dc2626;
+    }
+
+    .btn {
+      padding: 0.5rem 1rem;
+      border: none;
+      border-radius: 0.375rem;
+      cursor: pointer;
+      font-size: 0.875rem;
+      font-weight: 500;
+      transition: all 0.2s;
+      text-decoration: none;
+      display: inline-block;
+    }
+
+    .btn-primary {
+      background: #3b82f6;
+      color: white;
+    }
+
+    .btn-primary:hover {
+      background: #2563eb;
+    }
+
+    .btn-small {
+      padding: 0.375rem 0.75rem;
+      font-size: 0.75rem;
+    }
+
+    .modal {
+      display: none;
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background: rgba(0,0,0,0.5);
+      z-index: 1000;
+    }
+
+    .modal.active {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    .modal-content {
+      background: white;
+      border-radius: 0.5rem;
+      padding: 2rem;
+      max-width: 500px;
+      width: 90%;
+    }
+
+    .modal-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 1.5rem;
+    }
+
+    .modal-title {
+      font-size: 1.25rem;
+      font-weight: 600;
+    }
+
+    .close-btn {
+      background: none;
+      border: none;
+      font-size: 1.5rem;
+      cursor: pointer;
+      color: #64748b;
+    }
+
+    .form-group {
+      margin-bottom: 1rem;
+    }
+
+    .form-label {
+      display: block;
+      margin-bottom: 0.5rem;
+      font-weight: 500;
+      color: #374151;
+    }
+
+    .form-input {
+      width: 100%;
+      padding: 0.75rem;
+      border: 1px solid #d1d5db;
+      border-radius: 0.375rem;
+      font-size: 1rem;
+    }
+
+    .form-input:focus {
+      outline: none;
+      border-color: #3b82f6;
+      box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.1);
+    }
+
+    .form-actions {
+      display: flex;
+      gap: 1rem;
+      justify-content: flex-end;
+      margin-top: 1.5rem;
+    }
+
+    .btn-secondary {
+      background: #e2e8f0;
+      color: #475569;
+    }
+
+    .btn-secondary:hover {
+      background: #cbd5e1;
+    }
+
+    .stock-input {
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+    }
+
+    .stock-input input {
+      width: 80px;
+      text-align: center;
+    }
+
+    @media (max-width: 768px) {
+      .admin-header {
+        padding: 1rem;
+        flex-direction: column;
+        gap: 1rem;
+      }
+
+      .admin-main {
+        padding: 1rem;
+      }
+
+      .stats-grid {
+        grid-template-columns: repeat(2, 1fr);
+      }
+
+      .products-table {
+        font-size: 0.875rem;
+      }
+
+      .products-table th,
+      .products-table td {
+        padding: 0.5rem;
+      }
+    }
+  </style>
+
+  <div class="admin-container">
+    <!-- Header -->
+    <header class="admin-header">
+      <h1 class="admin-title">Gestión de Stock</h1>
+      <nav class="nav-links">
+          <a href="/admin" class="nav-link">← Panel Principal</a>
+          <a href="/admin/products" class="nav-link">Productos</a>
+          <a href="/admin/history" class="nav-link">Historial</a>
+          <a href="/admin/logout" class="nav-link">Cerrar Sesión</a>
+        </nav>
+    </header>
+
+    <!-- Main Content -->
+    <main class="admin-main">
+      <!-- Message -->
+      {message && (
+        <div class={`message ${messageType}`}>
+          {message}
+        </div>
+      )}
+
+      <!-- Statistics -->
+      <div class="stats-grid">
+        <div class="stat-card">
+          <div class="stat-value">{stockStats.total}</div>
+          <div class="stat-label">Total Productos</div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-value stat-available">{stockStats.available}</div>
+          <div class="stat-label">Disponibles</div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-value stat-low">{stockStats.lowStock}</div>
+          <div class="stat-label">Stock Bajo</div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-value stat-out">{stockStats.outOfStock}</div>
+          <div class="stat-label">Agotados</div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-value stat-value-currency">${stockStats.totalValue.toLocaleString()}</div>
+          <div class="stat-label">Valor Total Inventario</div>
+        </div>
+      </div>
+
+      <!-- Productos con Stock Bajo -->
+      {lowStockProducts.length > 0 && (
+        <div class="section">
+          <div class="section-header">
+            <h2 class="section-title">⚠️ Productos que Requieren Atención</h2>
+          </div>
+          <div class="section-content">
+            <table class="products-table">
+              <thead>
+                <tr>
+                  <th>Producto</th>
+                  <th>Stock Actual</th>
+                  <th>Estado</th>
+                  <th>Precio</th>
+                  <th>Acciones</th>
+                </tr>
+              </thead>
+              <tbody>
+                {lowStockProducts.map(product => (
+                  <tr>
+                    <td>
+                      <strong>{product.name}</strong>
+                      {product.sku && <div style="color: #64748b; font-size: 0.875rem;">SKU: {product.sku}</div>}
+                    </td>
+                    <td>{product.stock_quantity || 0}</td>
+                    <td>
+                      <span class={`badge ${product.stock_status === 'low_stock' ? 'badge-warning' : 'badge-danger'}`}>
+                        {product.stock_status === 'low_stock' ? 'Stock Bajo' : 'Agotado'}
+                      </span>
+                    </td>
+                    <td>${product.price?.toLocaleString()}</td>
+                    <td>
+                      <button class="btn btn-primary btn-small" onclick={`openStockModal('${product.id}', '${product.name}', ${product.stock_quantity || 0})`}>
+                        Actualizar Stock
+                      </button>
+                    </td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          </div>
+        </div>
+      )}
+
+      <!-- Todos los Productos -->
+      <div class="section">
+        <div class="section-header">
+          <h2 class="section-title">Inventario Completo</h2>
+        </div>
+        <div class="section-content">
+          <table class="products-table">
+            <thead>
+              <tr>
+                <th>Producto</th>
+                <th>Stock</th>
+                <th>Estado</th>
+                <th>Precio</th>
+                <th>Valor Total</th>
+                <th>Acciones</th>
+              </tr>
+            </thead>
+            <tbody>
+              {products.map(product => (
+                <tr>
+                  <td>
+                    <strong>{product.name}</strong>
+                    {product.sku && <div style="color: #64748b; font-size: 0.875rem;">SKU: {product.sku}</div>}
+                  </td>
+                  <td>
+                    <div class="stock-input">
+                      <span>{product.stock_quantity || 0}</span>
+                    </div>
+                  </td>
+                  <td>
+                    <span class={`badge ${
+                      product.stock_status === 'available' ? 'badge-success' : 
+                      product.stock_status === 'low_stock' ? 'badge-warning' : 'badge-danger'
+                    }`}>
+                      {product.stock_status === 'available' ? 'Disponible' : 
+                       product.stock_status === 'low_stock' ? 'Stock Bajo' : 
+                       product.stock_status === 'out_of_stock' ? 'Agotado' : 'Descontinuado'}
+                    </span>
+                  </td>
+                  <td>${product.price?.toLocaleString()}</td>
+                  <td>${((product.price || 0) * (product.stock_quantity || 0)).toLocaleString()}</td>
+                  <td>
+                    <button class="btn btn-primary btn-small" onclick={`openStockModal('${product.id}', '${product.name}', ${product.stock_quantity || 0})`}>
+                      Ajustar
+                    </button>
+                  </td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </main>
+  </div>
+
+  <!-- Stock Update Modal -->
+  <div id="stockModal" class="modal">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h2 class="modal-title">Actualizar Stock</h2>
+        <button class="close-btn" onclick="closeStockModal()">&times;</button>
+      </div>
+      
+      <form method="POST">
+        <input type="hidden" name="action" value="update_stock">
+        <input type="hidden" name="product_id" id="stockProductId">
+        
+        <div class="form-group">
+          <label class="form-label">Producto</label>
+          <input type="text" class="form-input" id="stockProductName" readonly>
+        </div>
+        
+        <div class="form-group">
+          <label class="form-label">Stock Actual</label>
+          <input type="number" class="form-input" id="currentStock" readonly>
+        </div>
+        
+        <div class="form-group">
+          <label class="form-label">Nueva Cantidad</label>
+          <input type="number" class="form-input" name="new_quantity" id="newQuantity" min="0" required>
+        </div>
+        
+        <div class="form-group">
+          <label class="form-label">Motivo</label>
+          <select class="form-input" name="reason" required>
+            <option value="adjustment">Ajuste de Inventario</option>
+            <option value="purchase">Compra/Reposición</option>
+            <option value="sale">Venta</option>
+            <option value="damage">Daño/Pérdida</option>
+            <option value="return">Devolución</option>
+            <option value="correction">Corrección</option>
+          </select>
+        </div>
+        
+        <div class="form-group">
+          <label class="form-label">Notas (Opcional)</label>
+          <textarea class="form-input" name="notes" rows="3" placeholder="Detalles adicionales sobre el cambio..."></textarea>
+        </div>
+        
+        <div class="form-actions">
+          <button type="button" class="btn btn-secondary" onclick="closeStockModal()">
+            Cancelar
+          </button>
+          <button type="submit" class="btn btn-primary">
+            Actualizar Stock
+          </button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <script>
+    function openStockModal(productId, productName, currentStock) {
+      document.getElementById('stockProductId').value = productId;
+      document.getElementById('stockProductName').value = productName;
+      document.getElementById('currentStock').value = currentStock;
+      document.getElementById('newQuantity').value = currentStock;
+      document.getElementById('stockModal').classList.add('active');
+    }
+
+    function closeStockModal() {
+      document.getElementById('stockModal').classList.remove('active');
+    }
+
+    // Cerrar modal al hacer clic fuera
+    document.getElementById('stockModal').addEventListener('click', function(e) {
+      if (e.target === this) {
+        closeStockModal();
+      }
+    });
+
+    // Cerrar modal con Escape
+    document.addEventListener('keydown', function(e) {
+      if (e.key === 'Escape') {
+        closeStockModal();
+      }
+    });
+  </script>
+</Layout>

@@ -359,6 +359,12 @@ const siteUrl = "https://sur-occidente.com";
 		opacity: 0;
 		visibility: hidden;
 		transform: translateY(20px);
+		/* Borde neón sutil para llamar la atención */
+		border: 2px solid rgba(220, 38, 38, 0.6);
+		box-shadow: 
+			0 4px 12px rgba(220, 38, 38, 0.3),
+			0 0 10px rgba(220, 38, 38, 0.4),
+			inset 0 0 10px rgba(220, 38, 38, 0.1);
 	}
 
 	.scroll-to-top.visible {
@@ -370,11 +376,15 @@ const siteUrl = "https://sur-occidente.com";
 	.scroll-to-top:hover {
 		background: #ef4444;
 		transform: translateY(-2px);
-		box-shadow: 0 6px 16px rgba(220, 38, 38, 0.4);
+		box-shadow: 
+			0 6px 16px rgba(220, 38, 38, 0.4),
+			0 0 15px rgba(220, 38, 38, 0.6),
+			inset 0 0 15px rgba(220, 38, 38, 0.2);
+		border-color: rgba(220, 38, 38, 0.8);
 	}
 
 	.scroll-to-top:active {
-		transform: translateY(0);
+		transform: translateY(-1px) scale(0.95);
 	}
 
 	/* Responsive */
