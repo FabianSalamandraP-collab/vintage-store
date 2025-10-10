@@ -64,11 +64,11 @@ if (failedAttempts[attemptKey]) {
   }
 }
 
-// Función para hash de contraseña (simulada)
+// Función para verificar contraseña
 function verifyPassword(password, hash) {
-  // En producción, usar bcrypt para verificar el hash
-  const testHash = crypto.createHash('sha256').update(password + SECURITY_CONFIG.secretKey).digest('hex');
-  return password === (process.env.ADMIN_DEFAULT_PASSWORD || 'changeMe123!'); // Usar variable de entorno
+  // Verificar directamente con la contraseña configurada en .env
+  const configuredPassword = process.env.ADMIN_DEFAULT_PASSWORD || 'admin123';
+  return password === configuredPassword;
 }
 
 // Manejar envío del formulario
