@@ -14,7 +14,7 @@ const teamMembers = [
   {
     name: 'Fabian Salamandra Perea (Cacique)',
     role: 'Fundador & Director',
-    image: '/images/sebastian-founder.jpg',
+    image: '/images/fotofundador.jpg',
     description: 'Fundador de Sur Occidente, apasionado por la moda vintage auténtica y la curaduría de piezas únicas con historia.'
   }
 ];
@@ -38,7 +38,7 @@ const teamMembers = [
         </div>
         <div class="hero-image">
           <img 
-            src="https://trae-api-us.mchost.guru/api/ide/v1/text_to_image?prompt=vintage%20clothing%20store%20interior%20with%20red%20accents%2C%20racks%20of%20vintage%20clothes%2C%20warm%20lighting%2C%20cozy%20atmosphere&image_size=landscape_16_9" 
+            src="/images/placeholder.jpg" 
             alt="Interior de Sur Occidente"
           />
         </div>
@@ -74,7 +74,7 @@ const teamMembers = [
               <div class="artist-card">
                 <div class="artist-image">
                   <img 
-                    src="https://trae-api-us.mchost.guru/api/ide/v1/text_to_image?prompt=young%20colombian%20hip%20hop%20rapper%20artist%20urban%20style%20microphone%20studio%20red%20lighting&image_size=square" 
+                    src="/images/placeholder.jpg" 
                     alt="MC Barrio"
                   />
                   <div class="play-overlay">
@@ -92,7 +92,7 @@ const teamMembers = [
               <div class="artist-card">
                 <div class="artist-image">
                   <img 
-                    src="https://trae-api-us.mchost.guru/api/ide/v1/text_to_image?prompt=colombian%20hip%20hop%20female%20singer%20urban%20fashion%20colorful%20background%20music%20studio&image_size=square" 
+                    src="/images/placeholder.jpg" 
                     alt="La Reina del Sur"
                   />
                   <div class="play-overlay">
@@ -110,7 +110,7 @@ const teamMembers = [
               <div class="artist-card">
                 <div class="artist-image">
                   <img 
-                    src="https://trae-api-us.mchost.guru/api/ide/v1/text_to_image?prompt=colombian%20trap%20artist%20young%20male%20urban%20streetwear%20graffiti%20background%20music%20culture&image_size=square" 
+                    src="/images/placeholder.jpg" 
                     alt="Trap King CO"
                   />
                   <div class="play-overlay">
@@ -128,7 +128,7 @@ const teamMembers = [
               <div class="artist-card">
                 <div class="artist-image">
                   <img 
-                    src="https://trae-api-us.mchost.guru/api/ide/v1/text_to_image?prompt=colombian%20urban%20music%20duo%20male%20female%20modern%20studio%20red%20lighting%20hip%20hop%20style&image_size=square" 
+                    src="/images/placeholder.jpg" 
                     alt="Dúo Urbano"
                   />
                   <div class="play-overlay">
@@ -419,24 +419,40 @@ const teamMembers = [
   
   .team-member {
     text-align: center;
-    background: #fafafa;
-    padding: 40px 30px;
-    border-radius: 16px;
+    background: linear-gradient(135deg, #f8f9fa 0%, #e9ecef 100%);
+    padding: 50px 40px;
+    border-radius: 20px;
     transition: transform 0.3s ease, box-shadow 0.3s ease;
+    border: 1px solid rgba(220, 38, 38, 0.1);
+    position: relative;
+    overflow: hidden;
+  }
+  
+  .team-member::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    height: 4px;
+    background: linear-gradient(90deg, #dc2626, #ef4444, #dc2626);
+    border-radius: 20px 20px 0 0;
   }
   
   .team-member:hover {
-    transform: translateY(-4px);
-    box-shadow: 0 16px 32px rgba(0, 0, 0, 0.1);
+    transform: translateY(-8px);
+    box-shadow: 0 20px 40px rgba(220, 38, 38, 0.15);
   }
   
   .member-image {
-    width: 120px;
-    height: 120px;
-    margin: 0 auto 24px;
+    width: 160px;
+    height: 160px;
+    margin: 0 auto 30px;
     border-radius: 50%;
     overflow: hidden;
-    border: 4px solid #dc2626;
+    border: 5px solid #dc2626;
+    box-shadow: 0 8px 24px rgba(220, 38, 38, 0.2);
+    position: relative;
   }
   
   .member-image img {
@@ -597,13 +613,10 @@ const teamMembers = [
     }
     
     .our-story,
-    .mission-vision,
-    .timeline,
     .team {
       padding: 60px 0;
     }
     
-    .mvv-item,
     .team-member {
       padding: 30px 20px;
     }
