@@ -77,8 +77,8 @@ const faq = [
             src="/clothesSurOccidente.png" 
             alt="Sur Occidente - Bosa, Bogotá" 
             class="hero-logo"
-            width="80"
-            height="80"
+            width="120"
+            height="120"
           />
           <h1 class="hero-title">Contáctanos</h1>
           <p class="hero-subtitle">
@@ -264,6 +264,12 @@ const faq = [
     background: linear-gradient(135deg, #dc2626 0%, #ef4444 100%);
     color: #F5DEB3;
     text-align: center;
+  }
+
+  .hero-logo {
+    margin-bottom: 2rem;
+    object-fit: contain;
+    filter: drop-shadow(4px 4px 12px rgba(0, 0, 0, 0.3));
   }
   
   .hero-title {

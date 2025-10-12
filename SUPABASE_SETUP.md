@@ -1,15 +1,15 @@
-# 🗄️ Configuración de Supabase para Sur Occidente
+# Configuración de Supabase para Sur Occidente
 
 Esta guía te ayudará a configurar Supabase como base de datos para tu tienda vintage.
 
-## 📋 Paso 1: Crear Cuenta en Supabase
+## Paso 1: Crear Cuenta en Supabase
 
 1. Ve a [supabase.com](https://supabase.com)
 2. Haz clic en "Start your project"
 3. Regístrate con GitHub, Google o email
 4. Crea una nueva organización (opcional)
 
-## 🚀 Paso 2: Crear Proyecto
+## Paso 2: Crear Proyecto
 
 1. Haz clic en "New Project"
 2. Selecciona tu organización
@@ -21,7 +21,7 @@ Esta guía te ayudará a configurar Supabase como base de datos para tu tienda v
 4. Haz clic en "Create new project"
 5. Espera 2-3 minutos mientras se crea
 
-## 🔧 Paso 3: Configurar Base de Datos
+## Paso 3: Configurar Base de Datos
 
 ### 3.1 Ejecutar Schema SQL
 1. En tu proyecto de Supabase, ve a **SQL Editor**
@@ -37,7 +37,7 @@ Esta guía te ayudará a configurar Supabase como base de datos para tu tienda v
    - **anon public** key (clave pública)
    - **service_role** key (clave privada - ¡mantén secreta!)
 
-## ⚙️ Paso 4: Configurar Variables de Entorno
+## Paso 4: Configurar Variables de Entorno
 
 1. Crea un archivo `.env` en la raíz del proyecto:
 ```bash
@@ -52,7 +52,7 @@ PUBLIC_SUPABASE_ANON_KEY=tu_clave_anonima_muy_larga_aqui
 SUPABASE_SERVICE_KEY=tu_clave_de_servicio_muy_larga_aqui
 ```
 
-## 📦 Paso 5: Migrar Datos Existentes
+## Paso 5: Migrar Datos Existentes
 
 ### 5.1 Configurar Script de Migración
 1. Edita `migrate-to-supabase.js`
@@ -68,12 +68,12 @@ node migrate-to-supabase.js
 ```
 
 Esto migrará:
-- ✅ Todas las categorías
-- ✅ Todos los productos
-- ✅ Imágenes de productos
-- ✅ Variantes/tallas
+- Todas las categorías
+- Todos los productos
+- Imágenes de productos
+- Variantes/tallas
 
-## 🧪 Paso 6: Probar Conexión
+## Paso 6: Probar Conexión
 
 1. Reinicia el servidor de desarrollo:
 ```bash
@@ -84,7 +84,7 @@ npm run dev
 3. Los productos ahora se cargan desde Supabase
 4. Si hay problemas, automáticamente usa los archivos JSON como respaldo
 
-## 🛡️ Paso 7: Configurar Seguridad (Opcional)
+## Paso 7: Configurar Seguridad (Opcional)
 
 ### 7.1 Configurar Autenticación
 1. Ve a **Authentication** → **Settings**
@@ -97,16 +97,16 @@ npm run dev
 3. Los productos son públicos para lectura
 4. Solo usuarios autenticados pueden modificar
 
-## 📊 Paso 8: Panel de Administración
+## Paso 8: Panel de Administración
 
 Una vez configurado Supabase, tu panel de admin podrá:
-- ✅ Crear productos nuevos
-- ✅ Editar productos existentes
-- ✅ Eliminar productos
-- ✅ Gestionar stock
-- ✅ Ver estadísticas reales
+- Crear productos nuevos
+- Editar productos existentes
+- Eliminar productos
+- Gestionar stock
+- Ver estadísticas reales
 
-## 🔍 Verificación
+## Verificación
 
 ### Comprobar que todo funciona:
 1. **Productos se cargan**: Ve a `/productos`
@@ -115,12 +115,12 @@ Una vez configurado Supabase, tu panel de admin podrá:
 4. **Admin panel**: Ve a `/admin` (después de login)
 
 ### Si algo no funciona:
-- ✅ Verifica las variables de entorno
-- ✅ Revisa la consola del navegador
-- ✅ Comprueba los logs de Supabase
-- ✅ El sistema automáticamente usa JSON como respaldo
+- Verifica las variables de entorno
+- Revisa la consola del navegador
+- Comprueba los logs de Supabase
+- El sistema automáticamente usa JSON como respaldo
 
-## 💡 Consejos
+## Consejos
 
 ### Desarrollo:
 - Usa la clave `anon` para el frontend
@@ -137,7 +137,7 @@ Una vez configurado Supabase, tu panel de admin podrá:
 - Puedes exportar datos desde el dashboard
 - Los archivos JSON siguen funcionando como respaldo
 
-## 🆘 Solución de Problemas
+## Solución de Problemas
 
 ### Error: "Invalid API key"
 - Verifica que copiaste las claves correctamente
@@ -155,10 +155,10 @@ Una vez configurado Supabase, tu panel de admin podrá:
 - Verifica que usas la `service_role` key en el script
 - Comprueba que las tablas existan antes de migrar
 
-## 📞 Soporte
+## Soporte
 
 - **Documentación Supabase**: [docs.supabase.com](https://docs.supabase.com)
 - **Discord Supabase**: Comunidad muy activa
 - **GitHub Issues**: Para problemas específicos del código
 
-¡Listo! Tu tienda ahora tiene una base de datos profesional 🎉
+¡Listo! Tu tienda ahora tiene una base de datos profesional

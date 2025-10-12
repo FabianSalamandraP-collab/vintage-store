@@ -32,13 +32,13 @@ const artists: ArtistData[] = [
     name: "DJ VINTAGE",
     description: "Especialista en música de los 80s-90s",
     tag: "EN VIVO",
-    icon: "🎤"
+    icon: "DJ"
   },
   {
     name: "RETRO BAND", 
     description: "Covers clásicos y originales",
     tag: "PRÓXIMO",
-    icon: "🎸"
+    icon: "BAND"
   }
 ];
 
@@ -51,9 +51,9 @@ const promoData = {
 
 // Datos de redes sociales
 const socialLinks = [
-  { name: "Facebook", icon: "📘", url: "https://facebook.com/suroccidente" },
-  { name: "Instagram", icon: "📷", url: "https://instagram.com/suroccidente" },
-  { name: "TikTok", icon: "🎵", url: "https://tiktok.com/@suroccidente" },
+  { name: "Facebook", icon: "FB", url: "https://facebook.com/suroccidente" },
+  { name: "Instagram", icon: "IG", url: "https://instagram.com/suroccidente" },
+  { name: "TikTok", icon: "TT", url: "https://tiktok.com/@suroccidente" },
   // { name: "Spotify", icon: "🎧", url: "https://open.spotify.com/user/suroccidente" }
 ];
 
@@ -74,7 +74,7 @@ const whatsappNumber: string = "573XXXXXXXXX"; // Reemplazar con número real
     
     <!-- Texto del evento -->
     <div class="banner-text">
-      <h2 class="banner-title" itemprop="name">🎵 EVENTO ESPECIAL</h2>
+      <h2 class="banner-title" itemprop="name">EVENTO ESPECIAL</h2>
 
       <p class="banner-subtitle" itemprop="description">
         Noche de Música Vintage - DJ Sets + Ropa Exclusiva
@@ -106,13 +106,13 @@ const whatsappNumber: string = "573XXXXXXXXX"; // Reemplazar con número real
         rel="noopener noreferrer"
         aria-label="Reservar lugar por WhatsApp"
       >
-        ¡RESERVA TU LUGAR! 🎟️
+        ¡RESERVA TU LUGAR!
       </a>
     </div>
 
     <!-- Imagen del evento -->
     <div class="banner-visual">
-      <!-- ⚠️ Asegúrate de que la imagen esté en la carpeta /public o usa import si está en /assets -->
+      <!-- Asegúrate de que la imagen esté en la carpeta /public o usa import si está en /assets -->
       <img src="/event-banner.jpg" alt="Evento Especial - Vintage Store" itemprop="image" />
     </div>
   </div>
@@ -126,7 +126,7 @@ const whatsappNumber: string = "573XXXXXXXXX"; // Reemplazar con número real
         <div class="artist-card" itemscope itemtype="https://schema.org/Person">
           <div class="artist-image">
             <div class="placeholder-image">{artist.icon}</div>
-            <div class="play-overlay">▶️</div>
+            <div class="play-overlay">PLAY</div>
           </div>
           <div class="artist-info">
             <h3 itemprop="name">{artist.name}</h3>
@@ -138,7 +138,7 @@ const whatsappNumber: string = "573XXXXXXXXX"; // Reemplazar con número real
 
       <!-- Promoción Especial -->
       <div class="promo-card">
-        <div class="promo-icon">🔥</div>
+        <div class="promo-icon">HOT</div>
         <div class="promo-content">
           <h3>{promoData.title}</h3>
           <p>{promoData.description}</p>
@@ -155,7 +155,7 @@ const whatsappNumber: string = "573XXXXXXXXX"; // Reemplazar con número real
   <section class="music-section" aria-label="Música">
     <div class="music-container">
       <div class="music-header">
-        <h2 class="music-title">🎵 Música</h2>
+        <h2 class="music-title">Música</h2>
         <p style="color: #CD853F; margin: 0.5rem 0;">La música que inspira nuestro estilo vintage</p>
       </div>
       

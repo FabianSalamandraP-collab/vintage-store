@@ -33,9 +33,9 @@ export async function initializeDatabase() {
     defaultAdmin.password = await hashPassword(defaultPassword);
     users.push(defaultAdmin);
     
-    console.log('✅ Base de datos inicializada con usuario admin por defecto');
-    console.log('📧 Email: admin@suroccidente.com');
-    console.log('🔑 Contraseña: [CONFIGURADA VÍA VARIABLE DE ENTORNO]');
+    console.log('Base de datos inicializada con usuario admin por defecto');
+    console.log('Email: admin@suroccidente.com');
+    console.log('Contraseña: [CONFIGURADA VÍA VARIABLE DE ENTORNO]');
   }
 }
 

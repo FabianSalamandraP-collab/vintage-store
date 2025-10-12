@@ -1,6 +1,6 @@
-# 📋 Documentación del Panel de Administración - Sur Occidente
+# Documentación del Panel de Administración - Sur Occidente
 
-## 🔐 Acceso al Panel Admin
+## Acceso al Panel Admin
 
 ### URL de Acceso
 ```
@@ -11,9 +11,9 @@ http://localhost:4321/admin/login
 - **Usuario:** `admin`
 - **Contraseña:** Configurada vía variable de entorno `ADMIN_DEFAULT_PASSWORD`
 
-> ⚠️ **IMPORTANTE:** Las credenciales por defecto deben configurarse en el archivo `.env` antes del primer uso.
+> **IMPORTANTE:** Las credenciales por defecto deben configurarse en el archivo `.env` antes del primer uso.
 
-## 🛡️ Sistema de Seguridad Implementado
+## Sistema de Seguridad Implementado
 
 ### Características de Seguridad
 

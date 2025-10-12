@@ -117,8 +117,8 @@ const breadcrumbs = [
             src="/clothesSurOccidente.png" 
             alt="Sur Occidente - Bosa, Bogotá" 
             class="page-logo"
-            width="70"
-            height="70"
+            width="120"
+            height="120"
           />
           <h1>{pageTitle}</h1>
           <p class="page-description">{pageDescription}</p>
@@ -292,6 +292,12 @@ const breadcrumbs = [
     text-align: center;
     max-width: 800px;
     margin: 0 auto;
+  }
+  
+  .page-logo {
+    margin-bottom: 1rem;
+    object-fit: contain;
+    filter: drop-shadow(2px 2px 8px rgba(0, 0, 0, 0.3));
   }
   
   .page-header h1 {

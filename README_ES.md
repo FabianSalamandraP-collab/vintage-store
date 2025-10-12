@@ -1,44 +1,44 @@
 <div align="center">
 
-## 🌍 Language / Idioma
+## Language / Idioma
 
 [English](README.md) | **Español**
 
 ---
 
-# 🎤 S U R   O C C I D E N T E 🎤
+# S U R   O C C I D E N T E
 
-### *"Donde el Vintage se Encuentra con el Ritmo"* 🔥
+### *"Donde el Vintage se Encuentra con el Ritmo"*
 
 [![Astro](https://img.shields.io/badge/Astro-FF5D01?style=for-the-badge&logo=astro&logoColor=white)](https://astro.build)
 [![TypeScript](https://img.shields.io/badge/TypeScript-007ACC?style=for-the-badge&logo=typescript&logoColor=white)](https://typescriptlang.org)
 [![CSS3](https://img.shields.io/badge/CSS3-1572B6?style=for-the-badge&logo=css3&logoColor=white)](https://www.w3.org/Style/CSS/)
 
-*Directo desde Bosa, Bogotá* 🇨🇴
+*Directo desde Bosa, Bogotá*
 
 </div>
 
 ---
 
-## 🎯 ¿Cuál es la Onda?
+## ¿Cuál es la Onda?
 
-**¡Óyeme bien!** Sur Occidente no es solo otra tienda vintage - somos un **movimiento cultural** 🌊. Traemos ese espíritu auténtico del hip hop al juego vintage, sirviendo ropa fresca con historia y ritmos que mueven el alma.
+**¡Óyeme bien!** Sur Occidente no es solo otra tienda vintage - somos un **movimiento cultural**. Traemos ese espíritu auténtico del hip hop al juego vintage, sirviendo ropa fresca con historia y ritmos que mueven el alma.
 
-### 🔥 La Misión
+### La Misión
 
 > *"Lo mantenemos real - piezas vintage auténticas con historias que contar, respaldadas por ritmos que nunca pasan de moda."*
 
 ---
 
-## 🔥 Características que Pegan Distinto
+## Características que Pegan Distinto
 
-### 👕 **Colección Vintage** - *Piezas con Alma*
+### **Colección Vintage** - *Piezas con Alma*
 - **Ropa vintage auténtica** de los 80s, 90s y más allá
 - **Camisetas de bandas, camisas vaqueras, ropa surf** - todos los clásicos
 - **Discos de vinilo** para los verdaderos conocedores
 - **Accesorios hechos a mano** con esa artesanía de la vieja escuela
 
-### 🎨 **Diseño Fresco** - *Limpio pero con Carácter*
+### **Diseño Fresco** - *Limpio pero con Carácter*
 - **Esquema de colores rojo y hueso** - audaz pero elegante
 - **Diseño responsivo** que funciona en todos los dispositivos
 - **UI inspirada en hip hop** con estándares web modernos
@@ -46,42 +46,42 @@
 
 ---
 
-## 🏗️ La Arquitectura
+## La Arquitectura
 
 ```text
 vintage-store/
-├── 🎨 src/
-│   ├── 🎨 components/
-│   │   ├── ProductCard.astro      # 👕 Vitrina de productos
-│   │   ├── Header.astro           # 🏠 Centro de navegación
-│   │   ├── Footer.astro           # 📍 Contacto y redes
-│   │   └── ContactForm.astro      # 📝 Formulario de contacto
-│   ├── 📄 pages/
-│   │   ├── index.astro            # 🏡 La puerta principal
-│   │   ├── productos.astro        # 🛍️ La colección
-│   │   ├── producto/[id].astro    # 👀 Detalles del producto
-│   │   └── contacto.astro         # 📞 Ponte en contacto
-│   ├── 🛠️ utils/
-│   │   └── helpers.ts             # 🔧 Funciones utilitarias
-│   └── 📊 data/
-│       ├── products.json          # 👕 El inventario
-│       └── site-config.json       # ⚙️ Configuración del sitio
-└── 🌐 public/
-    └── clothesSurOccidente.png    # 🏷️ El logo
+├── src/
+│   ├── components/
+│   │   ├── ProductCard.astro      # Vitrina de productos
+│   │   ├── Header.astro           # Centro de navegación
+│   │   ├── Footer.astro           # Contacto y redes
+│   │   └── ContactForm.astro      # Formulario de contacto
+│   ├── pages/
+│   │   ├── index.astro            # La puerta principal
+│   │   ├── productos.astro        # La colección
+│   │   ├── producto/[id].astro    # Detalles del producto
+│   │   └── contacto.astro         # Ponte en contacto
+│   ├── utils/
+│   │   └── helpers.ts             # Funciones utilitarias
+│   └── data/
+│       ├── products.json          # El inventario
+│       └── site-config.json       # Configuración del sitio
+└── public/
+    └── clothesSurOccidente.png    # El logo
 ```
 
 ---
 
-## 🎛️ Empezando el Show
+## Empezando el Show
 
-### 🔧 **Requisitos Previos**
+### **Requisitos Previos**
 
 Antes de meterte en el código, asegúrate de tener esto instalado:
 
 - **Node.js** (v18 o superior) - *El motor que mueve el show*
 - **npm** o **yarn** - *Tu gestor de paquetes preferido*
 
-### 🚀 **Instalación**
+### **Instalación**
 
 **Paso 1:** Clona este repo como si estuvieras sampleando un beat clásico
 ```bash
@@ -103,30 +103,30 @@ npm run dev
 yarn dev
 ```
 
-**Paso 4:** Abre `http://localhost:4321` y vibra con el sitio! 🎉
+**Paso 4:** Abre `http://localhost:4321` y vibra con el sitio!
 
-### 🎵 **Comandos**
+### **Comandos**
 
 | Comando | Qué hace |
 |---------|----------|
-| `npm run dev` | 🔥 Inicia el servidor de desarrollo - *donde sucede la magia* |
-| `npm run build` | 📦 Construye para producción - *listo para el mundo* |
-| `npm run preview` | 👀 Vista previa de la construcción - *prueba antes de enviar* |
-| `npm run astro ...` | 🛠️ Ejecuta comandos de Astro CLI - *las herramientas de poder* |
+| `npm run dev` | Inicia el servidor de desarrollo - *donde sucede la magia* |
+| `npm run build` | Construye para producción - *listo para el mundo* |
+| `npm run preview` | Vista previa de la construcción - *prueba antes de enviar* |
+| `npm run astro ...` | Ejecuta comandos de Astro CLI - *las herramientas de poder* |
 
 ---
 
-## 🛠️ El Arsenal Tecnológico
+## El Arsenal Tecnológico
 
 **Mantenemos todo fresco con las últimas herramientas:**
 
-- **🚀 Astro** - *Generación de sitios estáticos con arquitectura de islas*
-- **📱 TypeScript** - *Seguridad de tipos porque no jugamos con bugs*
-- **🎨 CSS3** - *Estilos personalizados con esa estética hip hop*
-- **🔥 JavaScript Moderno** - *Características ES6+ para código limpio y legible*
-- **📱 Diseño Responsivo** - *Enfoque mobile-first para todos los dispositivos*
+- **Astro** - *Generación de sitios estáticos con arquitectura de islas*
+- **TypeScript** - *Seguridad de tipos porque no jugamos con bugs*
+- **CSS3** - *Estilos personalizados con esa estética hip hop*
+- **JavaScript Moderno** - *Características ES6+ para código limpio y legible*
+- **Diseño Responsivo** - *Enfoque mobile-first para todos los dispositivos*
 
-### 🎨 **Sistema de Diseño**
+### **Sistema de Diseño**
 
 - **Paleta de Colores:** Rojo (#dc2626) y Hueso (#F5DEB3) - *Audaz pero elegante*
 - **Tipografía:** Fuentes limpias y legibles con carácter hip hop
@@ -135,11 +135,11 @@ yarn dev
 
 ---
 
-## 🤝 Únete al Crew
+## Únete al Crew
 
 **¡Yo, siempre estamos buscando talento fresco!** Si tienes habilidades y quieres contribuir a la cultura, así es como puedes entrar:
 
-### 🎯 **Cómo Contribuir**
+### **Cómo Contribuir**
 
 1. **Haz fork del repo** - *Hazlo tuyo*
 2. **Crea una rama de feature** - `git checkout -b feature/nueva-feature-genial`
@@ -149,32 +149,32 @@ yarn dev
 6. **Push a tu rama** - `git push origin feature/nueva-feature-genial`
 7. **Abre un Pull Request** - *Muéstranos lo que tienes*
 
-### 📝 **Guías de Contribución**
+### **Guías de Contribución**
 
 - **Estilo de Código:** Sigue los patrones existentes - la consistencia es clave
 - **Mensajes de Commit:** Usa commits convencionales - manténlo profesional
 - **Documentación:** Actualiza la documentación si cambias funcionalidad
 - **Testing:** Asegúrate de que tu código funcione antes de enviar
 
-### 🎯 **Áreas en las que Necesitamos Ayuda**
+### **Áreas en las que Necesitamos Ayuda**
 
-- **👕 Gestión de Productos:** Filtrado avanzado, funcionalidad de búsqueda
-- **🎨 UI/UX:** Responsividad móvil, mejoras de accesibilidad
-- **📱 Rendimiento:** Optimización, lazy loading, estrategias de caché
-- **🌐 Internacionalización:** Soporte para más idiomas
-- **🛒 E-commerce:** Carrito de compras, integración de pagos
+- **Gestión de Productos:** Filtrado avanzado, funcionalidad de búsqueda
+- **UI/UX:** Responsividad móvil, mejoras de accesibilidad
+- **Rendimiento:** Optimización, lazy loading, estrategias de caché
+- **Internacionalización:** Soporte para más idiomas
+- **E-commerce:** Carrito de compras, integración de pagos
 
 ---
 
-## 📞 Conecta con Nosotros
+## Conecta con Nosotros
 
 **Mantente en contacto con la familia Sur Occidente:**
 
-- 📧 **Email:** info@suroccidente.com
-- 📱 **WhatsApp:** +57 300 123 4567
-- 📍 **Ubicación:** Bosa, Bogotá, Colombia
-- 📷 **Instagram:** [@suroccidente](https://instagram.com/suroccidente)
-- 👥 **Facebook:** [Sur Occidente](https://facebook.com/suroccidente)
+- **Email:** info@suroccidente.com
+- **WhatsApp:** +57 300 123 4567
+- **Ubicación:** Bosa, Bogotá, Colombia
+- **Instagram:** [@suroccidente](https://instagram.com/suroccidente)
+- **Facebook:** [Sur Occidente](https://facebook.com/suroccidente)
 
 ---
 

@@ -83,21 +83,21 @@ function formatDate(date) {
 function getEventIcon(event) {
   if (event.type === 'product_history') {
     switch (event.action) {
-      case 'created': return '✨';
-      case 'updated': return '✏️';
-      case 'stock_changed': return '📦';
-      case 'status_changed': return '🔄';
-      case 'deleted': return '🗑️';
-      default: return '📝';
+      case 'created': return 'NEW';
+      case 'updated': return 'UPD';
+      case 'stock_changed': return 'STK';
+      case 'status_changed': return 'CHG';
+      case 'deleted': return 'DEL';
+      default: return 'LOG';
     }
   } else {
     switch (event.movement_type) {
-      case 'in': return '📈';
-      case 'out': return '📉';
-      case 'adjustment': return '⚖️';
-      case 'reserved': return '🔒';
-      case 'released': return '🔓';
-      default: return '📊';
+      case 'in': return 'IN';
+      case 'out': return 'OUT';
+      case 'adjustment': return 'ADJ';
+      case 'reserved': return 'RES';
+      case 'released': return 'REL';
+      default: return 'MOV';
     }
   }
 }
@@ -421,9 +421,9 @@ function getEventDescription(event) {
                     {getEventDescription(event)}
                   </div>
                   <div class="timeline-meta">
-                    <span>📅 {formatDate(event.timestamp)}</span>
-                    <span>👤 {event.changed_by || event.created_by || 'Sistema'}</span>
-                    {event.products?.sku && <span>🏷️ SKU: {event.products.sku}</span>}
+                    <span>Fecha: {formatDate(event.timestamp)}</span>
+                    <span>Usuario: {event.changed_by || event.created_by || 'Sistema'}</span>
+                    {event.products?.sku && <span>SKU: {event.products.sku}</span>}
                   </div>
                   {event.type === 'product_history' && (
                     <div class="timeline-details">
@@ -456,7 +456,7 @@ function getEventDescription(event) {
                   )}
                   {event.notes && (
                     <div class="timeline-notes">
-                      💬 {event.notes}
+                      Notas: {event.notes}
                     </div>
                   )}
                 </div>
@@ -464,7 +464,7 @@ function getEventDescription(event) {
             ))
           ) : (
             <div class="empty-state">
-              <div class="empty-icon">📋</div>
+              <div class="empty-icon">LOG</div>
               <h3>No hay actividad registrada</h3>
               <p>Los cambios en productos y movimientos de stock aparecerán aquí.</p>
             </div>
