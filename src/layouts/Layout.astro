@@ -96,16 +96,34 @@ const siteUrl = "https://sur-occidente.com";
 	<body>
 		<!-- Barras laterales negras -->
 		<div class="sidebar-left">
-			<span class="sidebar-text">SUR OCCIDENTE</span>
-			<span class="sidebar-text">SUR OCCIDENTE</span>
-			<span class="sidebar-text">SUR OCCIDENTE</span>
-			<span class="sidebar-text">SUR OCCIDENTE</span>
+			<span class="sidebar-letter">S</span>
+			<span class="sidebar-letter">U</span>
+			<span class="sidebar-letter">R</span>
+			<span class="sidebar-letter"> </span>
+			<span class="sidebar-letter">O</span>
+			<span class="sidebar-letter">C</span>
+			<span class="sidebar-letter">C</span>
+			<span class="sidebar-letter">I</span>
+			<span class="sidebar-letter">D</span>
+			<span class="sidebar-letter">E</span>
+			<span class="sidebar-letter">N</span>
+			<span class="sidebar-letter">T</span>
+			<span class="sidebar-letter">E</span>
 		</div>
 		<div class="sidebar-right">
-			<span class="sidebar-text">SUR OCCIDENTE</span>
-			<span class="sidebar-text">SUR OCCIDENTE</span>
-			<span class="sidebar-text">SUR OCCIDENTE</span>
-			<span class="sidebar-text">SUR OCCIDENTE</span>
+			<span class="sidebar-letter">S</span>
+			<span class="sidebar-letter">U</span>
+			<span class="sidebar-letter">R</span>
+			<span class="sidebar-letter"> </span>
+			<span class="sidebar-letter">O</span>
+			<span class="sidebar-letter">C</span>
+			<span class="sidebar-letter">C</span>
+			<span class="sidebar-letter">I</span>
+			<span class="sidebar-letter">D</span>
+			<span class="sidebar-letter">E</span>
+			<span class="sidebar-letter">N</span>
+			<span class="sidebar-letter">T</span>
+			<span class="sidebar-letter">E</span>
 		</div>
 		
 		<Header />
@@ -123,9 +141,9 @@ const siteUrl = "https://sur-occidente.com";
 			document.addEventListener('DOMContentLoaded', function() {
 				const scrollToTopBtn = document.getElementById('scrollToTop');
 				
-				// Mostrar/ocultar botón según scroll
+				// Mostrar/ocultar botón según scroll (umbral reducido)
 				window.addEventListener('scroll', function() {
-					if (window.pageYOffset > 300) {
+					if (window.pageYOffset > 100) {
 						scrollToTopBtn.classList.add('visible');
 					} else {
 						scrollToTopBtn.classList.remove('visible');
@@ -226,13 +244,12 @@ const siteUrl = "https://sur-occidente.com";
 		height: 100vh;
 		width: 60px;
 		background: #000;
-		z-index: 1000;
+		z-index: 1;
 		display: flex;
 		flex-direction: column;
 		align-items: center;
-		justify-content: space-evenly;
-		writing-mode: horizontal-tb;
-		text-orientation: mixed;
+		justify-content: space-between; /* Cambiado de space-evenly a space-between para mejor distribución */
+		padding: 40px 0; /* Aumentado el padding para más espacio en los extremos */
 		overflow: hidden;
 	}
 
@@ -244,14 +261,31 @@ const siteUrl = "https://sur-occidente.com";
 		right: 0;
 	}
 
-	.sidebar-text {
-		color: #F5DEB3;
+	/* Letras individuales de las barras laterales - Distribución completa */
+	.sidebar-letter {
+		color: #F5DEB3; /* Color del texto - fácil de cambiar */
+		font-family: 'Arial', sans-serif; /* Fuente - fácil de cambiar */
 		font-weight: bold;
-		font-size: 0.7rem;
-		letter-spacing: 1px;
+		font-size: 1.1rem; /* Aumentado de 0.8rem a 1.1rem para letras más grandes */
 		transform: rotate(90deg);
-		margin: 30px 0;
-		white-space: nowrap;
+		margin: 0;
+		flex-shrink: 0;
+		display: flex;
+		align-items: center;
+		justify-content: center;
+		height: auto;
+		/* Cada letra ocupa el espacio disponible uniformemente */
+		
+		/* Preparado para usar imágenes como texto */
+		/* Para usar una imagen en lugar de texto, descomenta las siguientes líneas:
+		background-image: url('/path/to/your/image.png');
+		background-size: contain;
+		background-repeat: no-repeat;
+		background-position: center;
+		text-indent: -9999px; Oculta el texto cuando uses imagen
+		width: 100px; Ajusta según el tamaño de tu imagen
+		height: 20px; Ajusta según el tamaño de tu imagen
+		*/
 	}
 
 	/* Ajustar el contenido principal para las barras laterales */
@@ -282,6 +316,87 @@ const siteUrl = "https://sur-occidente.com";
 	/* SCROLL SUAVE */
 	html {
 		scroll-behavior: smooth;
+	}
+
+	/* ANIMACIONES DE TRANSICIÓN ENTRE PÁGINAS */
+	body {
+		animation: pageEnter 0.8s cubic-bezier(0.25, 0.46, 0.45, 0.94) forwards;
+		opacity: 0;
+		/* Removido transform: translateY(20px) para evitar scroll automático */
+	}
+
+	@keyframes pageEnter {
+		to {
+			opacity: 1;
+			/* Removido transform: translateY(0) para evitar scroll automático */
+		}
+	}
+
+	/* Animación de salida para enlaces de navegación */
+	.page-transition {
+		transition: all 0.4s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+	}
+
+	/* Efectos de entrada escalonados para contenido */
+	.fade-in {
+		animation: fadeIn 0.8s ease-out forwards;
+		opacity: 0;
+	}
+
+	.fade-in:nth-child(1) { animation-delay: 0.1s; }
+	.fade-in:nth-child(2) { animation-delay: 0.2s; }
+	.fade-in:nth-child(3) { animation-delay: 0.3s; }
+	.fade-in:nth-child(4) { animation-delay: 0.4s; }
+	.fade-in:nth-child(5) { animation-delay: 0.5s; }
+
+	@keyframes fadeIn {
+		to {
+			opacity: 1;
+		}
+	}
+
+	/* Animación de entrada para elementos principales */
+	main {
+		animation: fadeInMain 1s cubic-bezier(0.25, 0.46, 0.45, 0.94) forwards;
+		opacity: 0;
+		animation-delay: 0.2s;
+	}
+
+	@keyframes fadeInMain {
+		to {
+			opacity: 1;
+		}
+	}
+
+	/* Efectos de hover mejorados para elementos interactivos */
+	button, .btn, input[type="submit"] {
+		transition: all 0.3s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+		transform-origin: center;
+	}
+
+	button:hover, .btn:hover, input[type="submit"]:hover {
+		transform: translateY(-2px) scale(1.02);
+		box-shadow: 0 8px 25px rgba(0, 0, 0, 0.15);
+	}
+
+	button:active, .btn:active, input[type="submit"]:active {
+		transform: translateY(0) scale(0.98);
+		transition-duration: 0.1s;
+	}
+
+	/* Animaciones para imágenes */
+	img {
+		transition: all 0.4s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+	}
+
+	img:hover {
+		transform: scale(1.02);
+		filter: brightness(1.05) contrast(1.05);
+	}
+
+	/* Efectos de parallax sutil para elementos de fondo */
+	.parallax-element {
+		transition: transform 0.1s ease-out;
 	}
 
 	/* MEJORAS DE ACCESIBILIDAD */
@@ -359,37 +474,68 @@ const siteUrl = "https://sur-occidente.com";
 		align-items: center;
 		justify-content: center;
 		box-shadow: 0 4px 12px rgba(220, 38, 38, 0.3);
-		transition: all 0.3s ease;
+		transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
 		z-index: 1000;
 		opacity: 0;
 		visibility: hidden;
-		transform: translateY(20px);
+		transform: translateY(30px) scale(0.8);
 		/* Borde neón sutil para llamar la atención */
 		border: 2px solid rgba(220, 38, 38, 0.6);
 		box-shadow: 
 			0 4px 12px rgba(220, 38, 38, 0.3),
 			0 0 10px rgba(220, 38, 38, 0.4),
 			inset 0 0 10px rgba(220, 38, 38, 0.1);
+		/* Animación de pulso sutil */
+		animation: pulse-glow 2s infinite;
+	}
+
+	@keyframes pulse-glow {
+		0%, 100% {
+			box-shadow: 
+				0 4px 12px rgba(220, 38, 38, 0.3),
+				0 0 10px rgba(220, 38, 38, 0.4),
+				inset 0 0 10px rgba(220, 38, 38, 0.1);
+		}
+		50% {
+			box-shadow: 
+				0 4px 16px rgba(220, 38, 38, 0.4),
+				0 0 15px rgba(220, 38, 38, 0.6),
+				inset 0 0 15px rgba(220, 38, 38, 0.2);
+		}
 	}
 
 	.scroll-to-top.visible {
 		opacity: 1;
 		visibility: visible;
-		transform: translateY(0);
+		transform: translateY(0) scale(1);
+		animation: slideInUp 0.5s cubic-bezier(0.4, 0, 0.2, 1);
+	}
+
+	@keyframes slideInUp {
+		from {
+			opacity: 0;
+			transform: translateY(30px) scale(0.8);
+		}
+		to {
+			opacity: 1;
+			transform: translateY(0) scale(1);
+		}
 	}
 
 	.scroll-to-top:hover {
 		background: #ef4444;
-		transform: translateY(-2px);
+		transform: translateY(-3px) scale(1.05);
 		box-shadow: 
-			0 6px 16px rgba(220, 38, 38, 0.4),
-			0 0 15px rgba(220, 38, 38, 0.6),
-			inset 0 0 15px rgba(220, 38, 38, 0.2);
-		border-color: rgba(220, 38, 38, 0.8);
+			0 8px 20px rgba(220, 38, 38, 0.5),
+			0 0 20px rgba(220, 38, 38, 0.7),
+			inset 0 0 20px rgba(220, 38, 38, 0.2);
+		border-color: rgba(220, 38, 38, 0.9);
+		animation: none; /* Detener la animación de pulso al hacer hover */
 	}
 
 	.scroll-to-top:active {
-		transform: translateY(-1px) scale(0.95);
+		transform: translateY(-1px) scale(0.98);
+		transition: all 0.1s ease;
 	}
 
 	/* Responsive */

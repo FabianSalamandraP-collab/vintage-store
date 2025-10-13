@@ -1,542 +1,736 @@
 ---
-// Header.astro - Versión Compacta con SEO Optimizado 2025
+// Header.astro - Componente de encabezado principal
 ---
 
-<!-- Structured Data Schema.org para organización/tienda -->
-<script type="application/ld+json">
-{
-  "@context": "https://schema.org",
-  "@type": "ClothingStore",
-  "name": "Sur Occidente",
-  "description": "Tienda de ropa vintage y segunda mano de alta calidad",
-  "url": "https://tudominio.com",
-  "logo": "https://tudominio.com/clothesSurOccidente.png",
-  "image": "https://tudominio.com/clothesSurOccidente.png",
-  "telephone": "+57-XXX-XXXX",
-  "address": {
-    "@type": "PostalAddress",
-    "streetAddress": "Tu Dirección",
-    "addressLocality": "Bosa",
-    "addressRegion": "Bogotá",
-    "postalCode": "250001",
-    "addressCountry": "CO"
-  },
-  "sameAs": [
-    "https://facebook.com/tutienda",
-    "https://instagram.com/tutienda"
-  ],
-  "hasOfferCatalog": {
-    "@type": "OfferCatalog",
-    "name": "Catálogo de Ropa Vintage",
-    "itemListElement": [
-      {
-        "@type": "Offer",
-        "itemOffered": {
-          "@type": "Product",
-          "name": "Ropa Vintage"
-        }
-      }
-    ]
-  }
-}
-</script>
-
-<!-- Header Semántico HTML5 Compacto -->
-<header role="banner" itemscope itemtype="https://schema.org/WPHeader">
-  <!-- Navegación Principal Semántica -->
-  <nav 
-    class="navbar" 
-    role="navigation" 
-    aria-label="Navegación principal"
-    itemscope 
-    itemtype="https://schema.org/SiteNavigationElement"
-  >
-    <!-- Marca/Logo - Optimizado SEO -->
-    <div class="nav-brand" itemprop="name">
-      <a 
-        href="/" 
-        aria-label="Sur Occidente - Ir al inicio"
-        itemprop="url"
-        rel="home"
-      >
-        <!-- Logo optimizado para SEO con dimensiones compactas -->
+<header class="header header--style-pill" itemscope itemtype="https://schema.org/Organization">
+  <div class="header-container">
+    <!-- Logo separado -->
+    <div class="logo-section">
+      <a href="/" class="logo-link" aria-label="Ir al inicio">
         <img 
           src="/clothesSurOccidente.png" 
-          alt="Sur Occidente - Bosa, Bogotá"
-          class="logo"
-          width="40"
-          height="40"
-          loading="eager"
-          decoding="sync"
+          alt="Sur Occidente Logo" 
+          class="logo-image"
           itemprop="logo"
+          width="100" 
+          height="100"
         />
-        <!-- H1 solo en home, H2 en otras páginas -->
-        <h1 itemprop="name">Sur Occidente</h1>
       </a>
     </div>
-    
-    <!-- Lista de Navegación Semántica -->
-    <ul 
-      class="nav-links" 
-      role="menubar"
-      aria-label="Menú de navegación principal"
-    >
-      <li role="none">
-        <a 
-          href="/" 
-          role="menuitem"
-          aria-current="page"
-          itemprop="url"
-        >
-          <span itemprop="name">Inicio</span>
-        </a>
-      </li>
-      <li role="none">
-        <a 
-          href="/productos" 
-          role="menuitem"
-          itemprop="url"
-          aria-label="Ver todos nuestros productos de ropa vintage"
-        >
-          <span itemprop="name">Productos</span>
-        </a>
-      </li>
-      <li role="none">
-        <a 
-          href="/sobre-nosotros" 
-          role="menuitem"
-          itemprop="url"
-          aria-label="Conoce más sobre Sur Occidente"
-        >
-          <span itemprop="name">Nosotros</span>
-        </a>
-      </li>
-      <li role="none">
-        <a 
-          href="/contacto" 
-          role="menuitem"
-          itemprop="url"
-          aria-label="Contacta con Sur Occidente"
-        >
-          <span itemprop="name">Contacto</span>
-        </a>
-      </li>
-    </ul>
-    
-    <!-- Carrito de Compras Semántico -->
-    <div class="nav-cart">
-      <a 
-        href="/carrito"
-        aria-label="Ver carrito de compras (0 productos)"
-        role="button"
-        itemprop="url"
-        rel="nofollow"
-      >
-        CART
-        <span class="cart-text">Carrito</span>
-        <span class="sr-only">(0 productos)</span>
-      </a>
+
+    <!-- Marca separada -->
+    <div class="brand-section">
+      <img src="/so.png" alt="Sur Occidente" class="brand-name" itemprop="name" />
     </div>
-  </nav>
+
+    <!-- Navegacion principal -->
+    <nav class="main-nav" role="navigation" aria-label="Navegacion principal">
+      <ul class="nav-list">
+        <li class="nav-item">
+          <a href="/" class="nav-link" aria-current="page">Inicio</a>
+        </li>
+        <li class="nav-item">
+          <a href="/productos" class="nav-link">Productos</a>
+        </li>
+        <li class="nav-item">
+          <a href="/sobre-nosotros" class="nav-link">Sobre Nosotros</a>
+        </li>
+        <li class="nav-item">
+          <a href="/contacto" class="nav-link">Contacto</a>
+        </li>
+      </ul>
+    </nav>
+  </div>
 </header>
 
 <style>
-  /* HEADER COMPACTO - Altura reducida significativamente */
-  header {
-    background: linear-gradient(135deg, #000000, #000000);
-    padding: 0.4rem 0; /* Reducido de 1rem a 0.4rem */
+  .header {
+    background-color: #000;
+    color: #fff;
+    padding: 1rem 0;
     position: sticky;
     top: 0;
     z-index: 100;
-    backdrop-filter: blur(10px);
-    border-bottom: 1px solid rgba(245, 222, 179, 0.2);
-    box-shadow: 0 4px 16px rgba(0, 0, 0, 0.2); /* Sombra más sutil */
-    animation: slideDown 0.6s ease-out;
-    
-    /* Optimización CLS (Cumulative Layout Shift) */
-    contain: layout style paint;
-    will-change: transform;
-    min-height: 60px; /* Altura mínima compacta */
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
   }
-  
-  /* Animación optimizada para performance */
-  @keyframes slideDown {
-    from {
-      transform: translate3d(0, -100%, 0);
-      opacity: 0;
-    }
-    to {
-      transform: translate3d(0, 0, 0);
-      opacity: 1;
-    }
-  }
-  
-  .navbar {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
+
+  .header-container {
     max-width: 1200px;
     margin: 0 auto;
-    padding: 0 1.5rem; /* Reducido de 2rem a 1.5rem */
-    gap: 1rem;
-    height: 100%;
-  }
-  
-  .nav-brand a {
-    text-decoration: none;
-    color: #F5DEB3;
+    padding: 0 2.5rem;
     display: flex;
     align-items: center;
-    gap: 0.8rem; /* Reducido de 1rem a 0.8rem */
-    transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
-    padding: 0.3rem; /* Reducido de 0.5rem */
-    border-radius: 6px;
-    outline: none;
+    justify-content: space-between;
+    gap: 2rem;
   }
-  
-  .nav-brand a:focus-visible {
-    outline: 2px solid #F5DEB3; /* Más delgado */
-    outline-offset: 1px;
-  }
-  
-  .nav-brand a:hover {
-    transform: translateY(-1px); /* Movimiento más sutil */
-  }
-  
-  /* 🎯 LOGO COMPACTO - Tamaño optimizado con scale visual */
-  .logo {
-    --logo-size: 75px; /* Tamaño base compacto */
-    --logo-mobile-size: 32px; /* Aún más pequeño en móvil */
-    
-    /* Mantener dimensiones originales para el layout */
-    height: 40px;
-    width: 40px;
-    
-    /* Aplicar scale para aumentar tamaño visual sin afectar layout */
-    transform: scale(1.7);
-    transform-origin: center;
-    
-    object-fit: contain;
-    object-position: center;
-    
+
+  .logo-section {
     flex-shrink: 0;
-    flex-grow: 0;
-    
-    filter: drop-shadow(2px 2px 6px rgba(0, 0, 0, 0.3)); /* Sombra más sutil */
-    transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
-    
-    image-rendering: -webkit-optimize-contrast;
-    image-rendering: optimize-contrast;
   }
-  
-  .logo:hover {
-    transform: scale(1.7) rotate(3deg); /* Efecto más grande en hover */
-    filter: drop-shadow(3px 3px 10px rgba(245, 222, 179, 0.5));
+
+  .logo-link {
+    display: flex;
+    align-items: center;
+    text-decoration: none;
+    color: inherit;
+    transition: all 0.5s cubic-bezier(0.25, 0.46, 0.45, 0.94);
   }
-  
-  /* 🎯 TÍTULO COMPACTO */
-  .nav-brand h1 {
-    margin: 0;
-    font-size: 1.4rem; /* Reducido de 1.8rem */
-    color: #F5DEB3;
-    text-shadow: 1px 1px 3px rgba(0, 0, 0, 0.4);
-    position: relative;
-    transition: all 0.3s ease;
-    font-weight: 600; /* Menos bold */
-    line-height: 1.1;
+
+  .logo-link:hover {
+    transform: translateY(-2px);
   }
-  
-  /* Subrayado animado más delgado */
-  .nav-brand h1::after {
-    content: '';
-    position: absolute;
-    bottom: -3px; /* Más cerca */
-    left: 0;
-    width: 0;
-    height: 1px; /* Más delgado */
-    background: linear-gradient(90deg, #F5DEB3, #CD853F);
-    transition: width 0.4s ease;
+
+  .logo-image {
+    display: block;
+    border-radius: 8px;
+    transition: all 0.6s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+    animation: logoBreath 6s ease-in-out infinite;
+    box-shadow: 0 2px 8px rgba(220, 38, 38, 0.15);
   }
-  
-  .nav-brand:hover h1::after {
-    width: 100%;
+
+  @keyframes logoBreath {
+    0%, 100% {
+      transform: scale(1);
+      opacity: 1;
+      box-shadow: 0 2px 8px rgba(220, 38, 38, 0.15);
+    }
+    50% {
+      transform: scale(1.02);
+      opacity: 0.95;
+      box-shadow: 0 3px 12px rgba(220, 38, 38, 0.2);
+    }
   }
-  
-  /* 🎯 ENLACES DE NAVEGACIÓN COMPACTOS */
-  .nav-links {
+
+  .logo-image:hover {
+    transform: scale(1.05);
+    box-shadow: 0 4px 16px rgba(220, 38, 38, 0.25);
+    border-radius: 10px;
+    opacity: 0.9;
+  }
+
+  .brand-section {
+    flex-shrink: 0;
+  }
+
+  .brand-name {
+    height: 5rem;
+    width: auto;
+    max-width: 400px;
+    object-fit: contain;
+    filter: drop-shadow(0 0 10px rgba(245, 222, 179, 0.3));
+  }
+
+  @keyframes titleGlow {
+    0%, 100% {
+      filter: drop-shadow(0 0 10px rgba(245, 222, 179, 0.3));
+    }
+    50% {
+      filter: drop-shadow(0 0 20px rgba(245, 222, 179, 0.6)) drop-shadow(0 0 30px rgba(245, 222, 179, 0.4));
+    }
+  }
+
+  .main-nav {
+    flex: 1;
+    display: flex;
+    justify-content: flex-end;
+    margin-right: -4rem;
+  }
+
+  .nav-list {
     display: flex;
     list-style: none;
-    gap: 0.3rem; /* Reducido espacio entre elementos */
     margin: 0;
     padding: 0;
+    gap: 2rem;
   }
-  
-  .nav-links li {
-    position: relative;
-    overflow: hidden;
+
+  .nav-item {
+    margin: 0;
   }
-  
-  .nav-links a {
+
+  .nav-link {
     color: #F5DEB3;
     text-decoration: none;
     font-weight: 500;
-    padding: 0.5rem 0.9rem; /* Reducido padding */
-    border-radius: 6px;
+    padding: 0.5rem 1rem;
+    border-radius: 4px;
+    transition: all 0.5s cubic-bezier(0.68, -0.55, 0.265, 1.55);
     position: relative;
-    transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
     overflow: hidden;
-    display: flex;
-    align-items: center;
-    outline: none;
-    min-height: 36px; /* Reducido de 44px */
-    font-size: 0.9rem; /* Texto más pequeño */
+    text-shadow: 0 0 8px rgba(245, 222, 179, 0.3);
   }
-  
-  /* Focus states para accesibilidad */
-  .nav-links a:focus-visible {
-    outline: 2px solid #F5DEB3;
-    outline-offset: 1px;
-    z-index: 1;
+
+  /* Animaciones individuales para cada nav-link */
+  .nav-link:nth-child(1) {
+    animation: navGentle 4s ease-in-out infinite;
   }
-  
-  /* Efecto ondas optimizado */
-  .nav-links a::before {
+
+  .nav-link:nth-child(2) {
+    animation: navSoft 3.5s ease-in-out infinite;
+  }
+
+  .nav-link:nth-child(3) {
+    animation: navSubtle 4.5s ease-in-out infinite;
+  }
+
+  .nav-link:nth-child(4) {
+    animation: navCalm 3.8s ease-in-out infinite;
+  }
+
+  /* Keyframes para Suave Respiración */
+  @keyframes navGentle {
+    0%, 100% {
+      transform: scale(1);
+      text-shadow: 0 0 3px rgba(220, 38, 38, 0.3);
+      opacity: 1;
+    }
+    50% {
+      transform: scale(1.02);
+      text-shadow: 0 0 5px rgba(220, 38, 38, 0.4);
+      opacity: 0.95;
+    }
+  }
+
+  /* Keyframes para Brillo Suave */
+  @keyframes navSoft {
+    0%, 100% {
+      text-shadow: 0 0 2px rgba(220, 38, 38, 0.2);
+      filter: brightness(1);
+    }
+    33% {
+      text-shadow: 0 0 4px rgba(220, 38, 38, 0.35);
+      filter: brightness(1.05);
+    }
+    66% {
+      text-shadow: 0 0 3px rgba(239, 68, 68, 0.3);
+      filter: brightness(1.03);
+    }
+  }
+
+  /* Keyframes para Movimiento Sutil */
+  @keyframes navSubtle {
+    0%, 100% {
+      transform: translateY(0px);
+      text-shadow: 0 0 2px rgba(220, 38, 38, 0.25);
+    }
+    25% {
+      transform: translateY(-1px);
+      text-shadow: 0 0 3px rgba(220, 38, 38, 0.3);
+    }
+    75% {
+      transform: translateY(1px);
+      text-shadow: 0 0 3px rgba(239, 68, 68, 0.3);
+    }
+  }
+
+  /* Keyframes para Calma Tranquila */
+  @keyframes navCalm {
+    0%, 100% {
+      transform: scale(1) rotate(0deg);
+      text-shadow: 0 0 2px rgba(220, 38, 38, 0.2);
+      opacity: 1;
+    }
+    30% {
+      transform: scale(1.01) rotate(0.2deg);
+      text-shadow: 0 0 3px rgba(220, 38, 38, 0.3);
+      opacity: 0.98;
+    }
+    70% {
+      transform: scale(1.01) rotate(-0.2deg);
+      text-shadow: 0 0 3px rgba(239, 68, 68, 0.25);
+      opacity: 0.98;
+    }
+  }
+
+  /* Efectos de línea inferior para todos */
+  .nav-link::before {
+    content: '';
+    position: absolute;
+    bottom: 0;
+    left: 50%;
+    width: 0;
+    height: 2px;
+    background: linear-gradient(90deg, #F5DEB3, #FFD700, #F5DEB3);
+    transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+    transform: translateX(-50%);
+    box-shadow: 0 0 5px rgba(255, 215, 0, 0.5);
+  }
+
+  /* Efectos hover mejorados */
+  .nav-link:hover,
+  .nav-link[aria-current="page"] {
+    background: linear-gradient(135deg, rgba(220, 38, 38, 0.15), rgba(239, 68, 68, 0.08));
+    color: #dc2626;
+    text-shadow: 0 0 8px rgba(220, 38, 38, 0.8), 0 0 15px rgba(239, 68, 68, 0.4);
+    transform: translateY(-2px) scale(1.05);
+    border-radius: 8px;
+    box-shadow: 0 4px 12px rgba(220, 38, 38, 0.2);
+    transition: all 0.3s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+  }
+
+  .nav-link:hover::before,
+  .nav-link[aria-current="page"]::before {
+    width: 100%;
+    height: 2px;
+    box-shadow: 0 0 8px rgba(220, 38, 38, 0.6);
+  }
+
+  /* Efecto de partículas mejorado */
+  .nav-link::after {
     content: '';
     position: absolute;
     top: 50%;
     left: 50%;
     width: 0;
     height: 0;
-    background: radial-gradient(circle, rgba(245, 222, 179, 0.25) 0%, transparent 70%);
-    transition: all 0.5s ease;
-    transform: translate(-50%, -50%);
+    background: radial-gradient(circle, rgba(220, 38, 38, 0.3) 0%, rgba(239, 68, 68, 0.15) 50%, transparent 70%);
     border-radius: 50%;
+    transition: all 0.4s ease-out;
+    transform: translate(-50%, -50%);
+    z-index: -1;
+    opacity: 0;
   }
-  
-  .nav-links a:hover::before {
-    width: 200px; /* Efecto más pequeño */
-    height: 200px;
+
+  .nav-link:hover::after {
+    width: 80px;
+    height: 80px;
+    opacity: 1;
+    animation: gentleGlow 2s ease-in-out infinite;
   }
-  
-  .nav-links a:hover {
-    color: #F5DEB3;
-    transform: translateY(-2px); /* Menos movimiento */
-    box-shadow: 0 4px 12px rgba(245, 222, 179, 0.15); /* Sombra más sutil */
-  }
-  
-  /* Estado actual de página */
-  .nav-links a[aria-current="page"] {
-    background: rgba(245, 222, 179, 0.15);
-    color: #F5DEB3;
-  }
-  
-  /* 🎯 CARRITO COMPACTO - TEMPORALMENTE OCULTO */
-  .nav-cart {
-    display: none; /* Oculto temporalmente para futura pasarela de pagos */
-  }
-  
-  .nav-cart a {
-    background: linear-gradient(135deg, #38363696, #000000);
-    color: #F5DEB3;
-    padding: 0.6rem 1.2rem; /* Reducido padding */
-    border-radius: 20px; /* Menos redondeado */
-    text-decoration: none;
-    font-weight: 600;
-    position: relative;
-    overflow: hidden;
-    transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
-    box-shadow: 0 3px 10px rgba(238, 32, 10, 0.4); /* Sombra más sutil */
-    display: flex;
-    align-items: center;
-    gap: 0.4rem;
-    min-height: 36px; /* Reducido */
-    outline: none;
-    font-size: 0.85rem; /* Texto más pequeño */
-  }
-  
-  .nav-cart a:focus-visible {
-    outline: 2px solid #F5DEB3;
-    outline-offset: 1px;
-  }
-  
-  /* Efecto brillo deslizante */
-  .nav-cart a::before {
-    content: '';
-    position: absolute;
-    top: 0;
-    left: -100%;
-    width: 100%;
-    height: 100%;
-    background: linear-gradient(90deg, transparent, rgba(255,255,255,0.3), transparent);
-    transition: left 0.6s;
-  }
-  
-  .nav-cart a:hover::before {
-    left: 100%;
-  }
-  
-  .nav-cart a:hover {
-    transform: translateY(-2px) scale(1.03); /* Efecto más sutil */
-    box-shadow: 0 8px 20px rgba(220, 38, 38, 0.4);
-    animation: pulse 1s infinite;
-  }
-  
-  @keyframes pulse {
-    0% { 
-      box-shadow: 0 8px 20px rgba(220, 38, 38, 0.4);
+
+  @keyframes gentleGlow {
+    0%, 100% {
+      transform: translate(-50%, -50%) scale(1);
+      opacity: 0.6;
     }
-    50% { 
-      box-shadow: 0 8px 20px #134d70;
-    }
-    100% { 
-      box-shadow: 0 8px 20px rgba(220, 38, 38, 0.4);
+    50% {
+      transform: translate(-50%, -50%) scale(1.1);
+      opacity: 0.8;
     }
   }
-  
-  /* Texto oculto para lectores de pantalla */
-  .sr-only {
-    position: absolute;
-    width: 1px;
-    height: 1px;
-    padding: 0;
-    margin: -1px;
-    overflow: hidden;
-    clip: rect(0, 0, 0, 0);
-    white-space: nowrap;
-    border: 0;
-  }
-  
-  /* 🎯 RESPONSIVE COMPACTO */
+
+  /* Responsive */
   @media (max-width: 768px) {
-    header {
-      min-height: 50px; /* Más pequeño en móvil */
+    .header-container {
+      gap: 1rem;
+      padding: 0 1.5rem;
     }
-    
-    .logo {
-      --logo-size: var(--logo-mobile-size);
+
+    .nav-list {
+      gap: 1rem;
     }
-    
-    .navbar {
-      flex-direction: column;
-      gap: 0.5rem; /* Reducido */
+
+    .nav-link {
+      padding: 0.25rem 0.5rem;
+      font-size: 0.9rem;
+    }
+
+    .brand-name {
+      font-size: 1.25rem;
+    }
+  }
+
+  @media (max-width: 480px) {
+    .header-container {
+      flex-wrap: wrap;
       padding: 0 1rem;
     }
-    
-    .nav-links {
-      gap: 0.2rem;
-      animation: fadeIn 0.8s ease-out 0.3s both;
-      flex-wrap: wrap;
+
+    .main-nav {
+      order: 3;
+      flex-basis: 100%;
       justify-content: center;
+      margin-top: 0.5rem;
+      margin-right: 0; /* reset desplazamiento en móvil */
     }
-    
-    @keyframes fadeIn {
-      from { 
-        opacity: 0; 
-        transform: translateY(15px);
-      }
-      to { 
-        opacity: 1; 
-        transform: translateY(0);
-      }
-    }
-    
-    .nav-brand h1 {
-      font-size: 1.2rem; /* Más pequeño */
-    }
-    
-    .nav-links a {
-      padding: 0.4rem 0.8rem;
-      font-size: 0.8rem;
-      min-height: 32px;
-    }
-    
-    .nav-cart a {
-      padding: 0.5rem 1rem;
-      font-size: 0.8rem;
-      min-height: 32px;
-    }
-  }
-  
-  /* Reducción de movimiento para accesibilidad */
-  @media (prefers-reduced-motion: reduce) {
-    *,
-    *::before,
-    *::after {
-      animation-duration: 0.01ms !important;
-      animation-iteration-count: 1 !important;
-      transition-duration: 0.01ms !important;
-    }
-  }
-  
-  /* Modo alto contraste */
-  @media (prefers-contrast: high) {
-    header {
-      background: #000;
-      border-bottom: 2px solid #fff;
-    }
-    
-    .nav-links a,
-    .nav-brand h1,
-    .nav-cart a {
-      color: #F5DEB3;
-      background: #000;
-    }
-    
-    .nav-links a:hover,
-    .nav-cart a:hover {
-      background: #fff;
-      color: #000;
+
+    .nav-list {
+      gap: 0.5rem;
     }
   }
 </style>
 
-<!-- 
-🚀 OPTIMIZACIONES SEO 2025 IMPLEMENTADAS:
 
-✅ SEMANTIC HTML5:
-- <header>, <nav>, <ul>, <li> semánticos
-- Roles ARIA apropiados (banner, navigation, menubar)
-- Microdata Schema.org integrado
+<style>
+  .header {
+    background-color: #000;
+    color: #fff;
+    padding: 1rem 0;
+    position: sticky;
+    top: 0;
+    z-index: 100;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+  }
 
-✅ STRUCTURED DATA:
-- Schema.org ClothingStore completo
-- Datos de contacto y ubicación
-- Catálogo de productos estructurado
+  .header-container {
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 0 2.5rem;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 2rem;
+  }
 
-✅ ACCESIBILIDAD (A11Y):
-- aria-label y aria-current
-- Focus visible optimizado
-- Screen reader support (.sr-only)
-- Tamaños táctiles mínimos (44px/48px)
-- Soporte reduced-motion
-- Alto contraste
+  .logo-section {
+    flex-shrink: 0;
+  }
 
-✅ PERFORMANCE WEB VITALS:
-- CLS optimizado (contain, dimensions)
-- LCP mejorado (loading="eager")
-- FID optimizado (will-change)
-- transform3d para GPU
+  .logo-link {
+    display: flex;
+    align-items: center;
+    text-decoration: none;
+    color: inherit;
+    transition: all 0.5s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+  }
 
-✅ SEO TÉCNICO:
-- Alt text descriptivo y local
-- Rel attributes apropiados
-- Breadcrumb navigation ready
-- Mobile-first responsive
-- Core Web Vitals optimized
+  .logo-link:hover {
+    transform: translateY(-2px);
+  }
 
-🎯 PRÓXIMOS PASOS RECOMENDADOS:
-1. Agregar breadcrumbs en páginas internas
-2. Implementar Open Graph meta tags
-3. Configurar Google Analytics 4
-4. Añadir sitemap.xml
-5. Configurar robots.txt
-6. Implementar PWA manifest
--->
+  .logo-image {
+    display: block;
+    border-radius: 8px;
+    transition: all 0.6s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+    animation: logoBreath 6s ease-in-out infinite;
+    box-shadow: 0 2px 8px rgba(220, 38, 38, 0.15);
+  }
 
-<!-- INSTRUCCIONES DE USO:
-1. Reemplaza "tudominio.com" con tu dominio real
-2. Actualiza datos de contacto en structured data
-3. Ajusta el aria-current="page" según la página actual
-4. Personaliza colores manteniendo contraste WCAG
-5. Testa con Google Rich Results Test
--->
+  @keyframes logoBreath {
+    0%, 100% {
+      transform: scale(1);
+      opacity: 1;
+      box-shadow: 0 2px 8px rgba(220, 38, 38, 0.15);
+    }
+    50% {
+      transform: scale(1.02);
+      opacity: 0.95;
+      box-shadow: 0 3px 12px rgba(220, 38, 38, 0.2);
+    }
+  }
+
+  .logo-image:hover {
+    transform: scale(1.05);
+    box-shadow: 0 4px 16px rgba(220, 38, 38, 0.25);
+    border-radius: 10px;
+    opacity: 0.9;
+  }
+
+  .brand-section {
+    flex-shrink: 0;
+  }
+
+  .brand-name {
+    height: 5rem;
+    width: auto;
+    max-width: 400px;
+    object-fit: contain;
+    filter: drop-shadow(0 0 10px rgba(245, 222, 179, 0.3));
+  }
+
+  @keyframes titleGlow {
+    0%, 100% {
+      filter: drop-shadow(0 0 10px rgba(245, 222, 179, 0.3));
+    }
+    50% {
+      filter: drop-shadow(0 0 20px rgba(245, 222, 179, 0.6)) drop-shadow(0 0 30px rgba(245, 222, 179, 0.4));
+    }
+  }
+
+  .main-nav {
+    flex: 1;
+    display: flex;
+    justify-content: center;
+  }
+
+  .nav-list {
+    display: flex;
+    list-style: none;
+    margin: 0;
+    padding: 0;
+    gap: 2rem;
+  }
+
+  .nav-item {
+    margin: 0;
+  }
+
+  .nav-link {
+    color: #F5DEB3;
+    text-decoration: none;
+    font-weight: 500;
+    padding: 0.5rem 1rem;
+    border-radius: 4px;
+    transition: all 0.5s cubic-bezier(0.68, -0.55, 0.265, 1.55);
+    position: relative;
+    overflow: hidden;
+    text-shadow: 0 0 8px rgba(245, 222, 179, 0.3);
+  }
+
+  /* Animaciones individuales para cada nav-link */
+  .nav-link:nth-child(1) {
+    animation: navGentle 4s ease-in-out infinite;
+  }
+
+  .nav-link:nth-child(2) {
+    animation: navSoft 3.5s ease-in-out infinite;
+  }
+
+  .nav-link:nth-child(3) {
+    animation: navSubtle 4.5s ease-in-out infinite;
+  }
+
+  .nav-link:nth-child(4) {
+    animation: navCalm 3.8s ease-in-out infinite;
+  }
+
+  /* Keyframes para Suave Respiración */
+  @keyframes navGentle {
+    0%, 100% {
+      transform: scale(1);
+      text-shadow: 0 0 3px rgba(220, 38, 38, 0.3);
+      opacity: 1;
+    }
+    50% {
+      transform: scale(1.02);
+      text-shadow: 0 0 5px rgba(220, 38, 38, 0.4);
+      opacity: 0.95;
+    }
+  }
+
+  /* Keyframes para Brillo Suave */
+  @keyframes navSoft {
+    0%, 100% {
+      text-shadow: 0 0 2px rgba(220, 38, 38, 0.2);
+      filter: brightness(1);
+    }
+    33% {
+      text-shadow: 0 0 4px rgba(220, 38, 38, 0.35);
+      filter: brightness(1.05);
+    }
+    66% {
+      text-shadow: 0 0 3px rgba(239, 68, 68, 0.3);
+      filter: brightness(1.03);
+    }
+  }
+
+  /* Keyframes para Movimiento Sutil */
+  @keyframes navSubtle {
+    0%, 100% {
+      transform: translateY(0px);
+      text-shadow: 0 0 2px rgba(220, 38, 38, 0.25);
+    }
+    25% {
+      transform: translateY(-1px);
+      text-shadow: 0 0 3px rgba(220, 38, 38, 0.3);
+    }
+    75% {
+      transform: translateY(1px);
+      text-shadow: 0 0 3px rgba(239, 68, 68, 0.3);
+    }
+  }
+
+  /* Keyframes para Calma Tranquila */
+  @keyframes navCalm {
+    0%, 100% {
+      transform: scale(1) rotate(0deg);
+      text-shadow: 0 0 2px rgba(220, 38, 38, 0.2);
+      opacity: 1;
+    }
+    30% {
+      transform: scale(1.01) rotate(0.2deg);
+      text-shadow: 0 0 3px rgba(220, 38, 38, 0.3);
+      opacity: 0.98;
+    }
+    70% {
+      transform: scale(1.01) rotate(-0.2deg);
+      text-shadow: 0 0 3px rgba(239, 68, 68, 0.25);
+      opacity: 0.98;
+    }
+  }
+
+  /* Efectos de línea inferior para todos */
+  .nav-link::before {
+    content: '';
+    position: absolute;
+    bottom: 0;
+    left: 50%;
+    width: 0;
+    height: 2px;
+    background: linear-gradient(90deg, #F5DEB3, #FFD700, #F5DEB3);
+    transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+    transform: translateX(-50%);
+    box-shadow: 0 0 5px rgba(255, 215, 0, 0.5);
+  }
+
+  /* Efectos hover mejorados */
+  .nav-link:hover,
+  .nav-link[aria-current="page"] {
+    background: linear-gradient(135deg, rgba(220, 38, 38, 0.15), rgba(239, 68, 68, 0.08));
+    color: #dc2626;
+    text-shadow: 0 0 8px rgba(220, 38, 38, 0.8), 0 0 15px rgba(239, 68, 68, 0.4);
+    transform: translateY(-2px) scale(1.05);
+    border-radius: 8px;
+    box-shadow: 0 4px 12px rgba(220, 38, 38, 0.2);
+    transition: all 0.3s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+  }
+
+  .nav-link:hover::before,
+  .nav-link[aria-current="page"]::before {
+    width: 100%;
+    height: 2px;
+    box-shadow: 0 0 8px rgba(220, 38, 38, 0.6);
+  }
+
+  /* Efecto de partículas mejorado */
+  .nav-link::after {
+    content: '';
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    width: 0;
+    height: 0;
+    background: radial-gradient(circle, rgba(220, 38, 38, 0.3) 0%, rgba(239, 68, 68, 0.15) 50%, transparent 70%);
+    border-radius: 50%;
+    transition: all 0.4s ease-out;
+    transform: translate(-50%, -50%);
+    z-index: -1;
+    opacity: 0;
+  }
+
+  .nav-link:hover::after {
+    width: 80px;
+    height: 80px;
+    opacity: 1;
+    animation: gentleGlow 2s ease-in-out infinite;
+  }
+
+  @keyframes gentleGlow {
+    0%, 100% {
+      transform: translate(-50%, -50%) scale(1);
+      opacity: 0.6;
+    }
+    50% {
+      transform: translate(-50%, -50%) scale(1.1);
+      opacity: 0.8;
+    }
+  }
+
+  /* Responsive */
+  @media (max-width: 768px) {
+    .header-container {
+      gap: 1rem;
+      padding: 0 1.5rem;
+    }
+
+    .nav-list {
+      gap: 1rem;
+    }
+
+    .nav-link {
+      padding: 0.25rem 0.5rem;
+      font-size: 0.9rem;
+    }
+
+    .brand-name {
+      font-size: 1.25rem;
+    }
+  }
+
+  @media (max-width: 480px) {
+    .header-container {
+      flex-wrap: wrap;
+      padding: 0 1rem;
+    }
+
+    .main-nav {
+      order: 3;
+      flex-basis: 100%;
+      justify-content: center;
+      margin-top: 0.5rem;
+    }
+
+    .nav-list {
+      gap: 0.5rem;
+    }
+  }
+</style>
+
+
+<style>
+  /* Variantes de estilos para los nav-links */
+  /* PILL */
+  .header--style-pill .nav-link {
+    border: 1.5px solid #F5DEB3;
+    border-radius: 9999px;
+    padding: 0.5rem 1rem;
+    background: transparent;
+    color: #F5DEB3;
+    box-shadow: none;
+  }
+  .header--style-pill .nav-link::before {
+    width: 0 !important;
+    height: 0 !important;
+    opacity: 0 !important;
+    box-shadow: none !important;
+  }
+  .header--style-pill .nav-link::after {
+    width: 0 !important;
+    height: 0 !important;
+    opacity: 0 !important;
+    box-shadow: none !important;
+  }
+  .header--style-pill .nav-link:hover,
+  .header--style-pill .nav-link[aria-current="page"] {
+    background: #F5DEB3;
+    color: #1a1a1a;
+    transform: translateY(-2px);
+    box-shadow: 0 6px 16px rgba(245, 222, 179, 0.35);
+    border-radius: 9999px;
+  }
+
+  /* UNDERLINE */
+  .header--style-underline .nav-link {
+    background: transparent;
+    box-shadow: none;
+    color: #F5DEB3;
+  }
+  .header--style-underline .nav-link:hover,
+  .header--style-underline .nav-link[aria-current="page"] {
+    background: transparent;
+    color: #F5DEB3;
+    transform: translateY(-1px);
+    box-shadow: none;
+  }
+  .header--style-underline .nav-link::before {
+    height: 2px;
+    width: 0;
+    background: linear-gradient(90deg, #F5DEB3, #FFD700, #F5DEB3);
+    box-shadow: 0 0 5px rgba(255, 215, 0, 0.5);
+  }
+  .header--style-underline .nav-link:hover::before,
+  .header--style-underline .nav-link[aria-current="page"]::before {
+    width: 100%;
+  }
+  .header--style-underline .nav-link::after {
+    width: 0;
+    height: 0;
+    opacity: 0;
+  }
+
+  /* NEON */
+  .header--style-neon .nav-link {
+    background: transparent;
+    color: #F5DEB3;
+    border-radius: 6px;
+    text-shadow: 0 0 6px rgba(245, 222, 179, 0.6), 0 0 12px rgba(255, 215, 0, 0.4);
+    box-shadow: none;
+  }
+  .header--style-neon .nav-link:hover,
+  .header--style-neon .nav-link[aria-current="page"] {
+    background: rgba(255, 215, 0, 0.08);
+    color: #FFD700;
+    box-shadow: 0 0 12px rgba(255, 215, 0, 0.35), inset 0 0 8px rgba(255, 215, 0, 0.25);
+    transform: translateY(-2px) scale(1.03);
+  }
+</style>

@@ -10,7 +10,7 @@
   },
   "dependencies": {
     "@supabase/supabase-js": "^2.74.0",
-    "astro": "^5.13.2",
+    "astro": "^5.14.4",
     "bcryptjs": "^3.0.2",
     "cookie": "^1.0.2",
     "jsonwebtoken": "^9.0.2"

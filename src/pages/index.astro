@@ -20,67 +20,68 @@ const seoKeywords = siteConfig.seo.keywords;
   ogImage="/images/og-home.jpg"
 >
   <!-- Hero Section -->
-  <section class="hero">
-    <div class="hero-content">
+  <section class="hero fade-in">
+    <div class="hero-content fade-in">
       <!-- Logo en la página principal -->
-      <div class="hero-logo">
+      <div class="hero-logo fade-in">
         <img 
           src="/clothesSurOccidente.png" 
           alt="Sur Occidente - Bosa, Bogotá" 
           class="hero-logo-img"
-          width="160"
-          height="160"
+          width="220"
+          height="220"
+          loading="eager"
+          decoding="sync"
+          style="display: block !important; visibility: visible !important; opacity: 1 !important; width: 220px !important; height: 220px !important; object-fit: contain !important;"
         />
       </div>
       
-      <h1 class="hero-title">SUR OCCIDENTE</h1>
-      <p class="hero-subtitle">
+      <img src="/so.png" alt="SUR OCCIDENTE" class="hero-title fade-in" />
+      <p class="hero-subtitle fade-in">
         Descubre piezas únicas de ropa vintage, vinilos clásicos y accesorios retro. 
         Cada artículo cuenta una historia y define tu estilo personal.
       </p>
       
 
       
-      <div class="hero-actions">
-        <a href="/productos" class="btn btn-primary">
-          Explorar Productos
+      <div class="hero-actions fade-in">
+        <a href="/productos" class="btn btn-image" aria-label="Explorar Productos">
+          <img src="/explora.png" alt="Explorar Productos" />
         </a>
-        <a href="https://wa.me/573001234567?text=¡Hola!%20Me%20interesa%20conocer%20más%20sobre%20Sur%20Occidente" 
-           class="btn btn-secondary" 
-           target="_blank" 
-           rel="noopener noreferrer">
-          <svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor">
-            <path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 01-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 01-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 012.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0012.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 005.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893A11.821 11.821 0 0020.885 3.488"/>
-          </svg>
-          Contactar WhatsApp
+        <a href="https://wa.me/573001234567?text=¡Hola!%20Me%20interesa%20conocer%20más%20sobre%20Sur%20Occidente"
+           class="btn btn-image"
+           target="_blank"
+           rel="noopener noreferrer"
+           aria-label="Contactar WhatsApp">
+          <img src="/wapp.png" alt="Contactar WhatsApp" />
         </a>
       </div>
     </div>
     
     <div class="hero-image">
-      <img src="/images/placeholder.jpg" 
+      <img src="/prueba01.jpg" 
            alt="Tienda de ropa vintage Sur Occidente" 
            loading="eager" />
     </div>
   </section>
 
   <!-- Featured Products Section -->
-  <section class="featured-products">
+  <section class="featured-products fade-in">
     <div class="container">
-      <div class="section-header">
+      <div class="section-header fade-in">
         <h2 class="section-title">Productos Destacados</h2>
         <p class="section-subtitle">
           Descubre nuestras piezas más populares y únicas
         </p>
       </div>
       
-      <div class="products-grid">
+      <div class="products-grid fade-in">
         {featuredProducts.map((product: Product) => (
           <ProductCard product={product} />
         ))}
       </div>
       
-      <div class="section-footer">
+      <div class="section-footer fade-in">
         <a href="/productos" class="btn btn-outline">
           Ver Todos los Productos
         </a>
@@ -89,16 +90,16 @@ const seoKeywords = siteConfig.seo.keywords;
   </section>
 
   <!-- Categories Section -->
-  <section class="categories">
+  <section class="categories fade-in">
     <div class="container">
-      <div class="section-header">
+      <div class="section-header fade-in">
         <h2 class="section-title">Nuestras Categorías</h2>
         <p class="section-subtitle">
           Explora nuestra colección organizada por categorías
         </p>
       </div>
       
-      <div class="categories-grid">
+      <div class="categories-grid fade-in">
         <a href="/productos?categoria=camisetas" class="category-card">
           <div class="category-image">
             <img src="/images/placeholder.jpg" 
@@ -296,17 +297,24 @@ const seoKeywords = siteConfig.seo.keywords;
 <style>
   /* Hero Section */
   .hero {
-    background: linear-gradient(135deg, #dc2626 0%, #ef4444 100%);
+    background: 
+      linear-gradient(135deg, rgba(220, 38, 38, 0.4) 0%, rgba(239, 68, 68, 0.4) 100%),
+      url('/Fondograffiti.png');
+    background-size: cover;
+    background-position: center 40%;
+    background-repeat: no-repeat;
+    background-attachment: fixed;
     color: #F5DEB3;
-    padding: 4rem 2rem;
+    padding: 2rem 2rem 4rem 2rem;
     display: grid;
     grid-template-columns: 1fr 1fr;
     gap: 3rem;
     align-items: center;
     justify-items: center;
-    min-height: 70vh;
+    min-height: 60vh;
     max-width: 1400px;
     margin: 0 auto;
+    margin-top: -2rem;
   }
   
   .hero-content {
@@ -320,40 +328,66 @@ const seoKeywords = siteConfig.seo.keywords;
     padding: 2rem;
   }
 
-  /* Estilos para el logo del hero */
+  /* Estilos para el logo del hero - SIN ANIMACIONES */
   .hero-logo {
     margin-bottom: 2rem;
-    animation: logoFloat 3s ease-in-out infinite;
+    display: flex !important;
+    justify-content: center !important;
+    align-items: center !important;
+    z-index: 999 !important;
+    position: relative !important;
+    width: 100% !important;
+    height: auto !important;
+    min-height: 200px !important;
   }
 
   .hero-logo-img {
-    width: 160px;
-    height: 160px;
-    object-fit: contain;
-    filter: drop-shadow(4px 4px 12px rgba(0, 0, 0, 0.3));
-    transition: all 0.4s ease;
-    transform: scale(1.1);
+    width: 220px !important;
+    height: 220px !important;
+    object-fit: contain !important;
+    display: block !important;
+    max-width: 100% !important;
+    visibility: visible !important;
+    opacity: 1 !important;
+    animation: logoFloat 4s ease-in-out infinite, logoGlow 3s ease-in-out infinite;
+    transition: transform 0.3s ease;
   }
 
   .hero-logo-img:hover {
-    transform: scale(1.3) rotate(10deg);
-    filter: drop-shadow(6px 6px 20px rgba(245, 222, 179, 0.6));
+    transform: scale(1.1) rotate(5deg);
+    animation-play-state: paused;
   }
 
   @keyframes logoFloat {
     0%, 100% {
-      transform: translateY(0px);
+      transform: translateY(0px) rotate(0deg);
+    }
+    25% {
+      transform: translateY(-10px) rotate(2deg);
     }
     50% {
-      transform: translateY(-10px);
+      transform: translateY(-5px) rotate(0deg);
+    }
+    75% {
+      transform: translateY(-15px) rotate(-2deg);
+    }
+  }
+
+  @keyframes logoGlow {
+    0%, 100% {
+      filter: drop-shadow(0 0 10px rgba(245, 222, 179, 0.3));
+    }
+    50% {
+      filter: drop-shadow(0 0 25px rgba(245, 222, 179, 0.6)) drop-shadow(0 0 35px rgba(255, 215, 0, 0.4));
     }
   }
   
   .hero-title {
-    font-size: 3rem;
-    font-weight: 700;
+    height: 6rem;
+    width: auto;
+    max-width: 500px;
+    object-fit: contain;
     margin-bottom: 1rem;
-    line-height: 1.2;
   }
   
   .brand-name {
@@ -379,12 +413,16 @@ const seoKeywords = siteConfig.seo.keywords;
   }
   
   .hero-actions {
-    display: flex;
+    display: flex !important;
     gap: 1rem;
     flex-wrap: wrap;
     justify-content: center;
     align-items: center;
-    margin-top: 1rem;
+    margin-top: 2rem;
+    z-index: 10;
+    position: relative;
+    visibility: visible !important;
+    opacity: 1 !important;
   }
   
   .hero-image {
@@ -401,11 +439,13 @@ const seoKeywords = siteConfig.seo.keywords;
     object-fit: cover;
     border-radius: 12px;
     box-shadow: 0 20px 40px rgba(0,0,0,0.2);
+    transform: translateY(-24px);
+    transition: transform 0.3s ease;
   }
   
   /* Buttons */
   .btn {
-    display: inline-flex;
+    display: inline-flex !important;
     align-items: center;
     gap: 0.5rem;
     padding: 0.875rem 1.5rem;
@@ -414,6 +454,10 @@ const seoKeywords = siteConfig.seo.keywords;
     font-weight: 600;
     transition: all 0.3s ease;
     border: 2px solid transparent;
+    visibility: visible !important;
+    opacity: 1 !important;
+    z-index: 10;
+    position: relative;
   }
   
   .btn-primary {
@@ -424,6 +468,28 @@ const seoKeywords = siteConfig.seo.keywords;
   .btn-primary:hover {
     background: #f8f9fa;
     transform: translateY(-2px);
+  }
+
+  /* Botón con imagen */
+  .btn-image {
+    background: transparent;
+    border: none;
+    padding: 0;
+    box-shadow: none;
+    outline: none;
+  }
+  .btn-image img {
+    height: 120px;
+    width: auto;
+    display: block;
+    object-fit: contain;
+    border-radius: 0;
+    box-shadow: none;
+  }
+
+  /* Explora más grande específicamente */
+  .hero-actions .btn-image[href="/productos"] img {
+    height: 148px;
   }
   
   .btn-secondary {

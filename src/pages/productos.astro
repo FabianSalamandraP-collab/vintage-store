@@ -92,7 +92,7 @@ const breadcrumbs = [
 <Layout title={pageTitle} description={pageDescription}>
   <main class="products-page">
     <!-- Breadcrumbs -->
-    <nav class="breadcrumbs">
+    <nav class="breadcrumbs fade-in">
       <div class="container">
         <ol class="breadcrumb-list">
           {breadcrumbs.map((item, index) => (
@@ -110,21 +110,21 @@ const breadcrumbs = [
     </nav>
 
     <!-- Header de la página -->
-    <section class="page-header">
+    <section class="page-header fade-in">
       <div class="container">
-        <div class="header-content">
+        <div class="header-content fade-in">
           <img 
             src="/clothesSurOccidente.png" 
             alt="Sur Occidente - Bosa, Bogotá" 
-            class="page-logo"
+            class="page-logo fade-in"
             width="120"
             height="120"
           />
-          <h1>{pageTitle}</h1>
-          <p class="page-description">{pageDescription}</p>
+          <h1 class="fade-in">{pageTitle}</h1>
+          <p class="page-description fade-in">{pageDescription}</p>
           
           <!-- Barra de búsqueda -->
-          <div class="search-bar">
+          <div class="search-bar fade-in">
             <form class="search-form" id="searchForm">
               <div class="search-input-group">
                 <input 
@@ -149,11 +149,11 @@ const breadcrumbs = [
     </section>
 
     <!-- Contenido principal -->
-    <section class="products-content">
+    <section class="products-content fade-in">
       <div class="container">
-        <div class="products-layout">
+        <div class="products-layout fade-in">
           <!-- Sidebar con filtros -->
-          <aside class="filters-sidebar">
+          <aside class="filters-sidebar fade-in">
             <ProductFilter 
               categories={categories}
               stats={productStats}
@@ -162,9 +162,9 @@ const breadcrumbs = [
           </aside>
 
           <!-- Grid de productos -->
-          <div class="products-main">
+          <div class="products-main fade-in">
             <!-- Información de resultados -->
-            <div class="results-info">
+            <div class="results-info fade-in">
               <div class="results-count">
                 <span class="count">{filteredProducts.length}</span>
                 <span class="text">
@@ -186,14 +186,14 @@ const breadcrumbs = [
 
             <!-- Grid de productos -->
             {filteredProducts.length > 0 ? (
-              <div class="products-grid" id="productsGrid">
+              <div class="products-grid fade-in" id="productsGrid">
                 {filteredProducts.map(product => (
                   <ProductCard product={product} />
                 ))}
               </div>
             ) : (
-              <div class="no-products">
-                <div class="no-products-content">
+              <div class="no-products fade-in">
+                <div class="no-products-content fade-in">
                   <svg width="64" height="64" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
                     <circle cx="11" cy="11" r="8"></circle>
                     <path d="m21 21-4.35-4.35"></path>
@@ -283,7 +283,13 @@ const breadcrumbs = [
   
   /* Header de la página */
   .page-header {
-    background: linear-gradient(135deg, #dc2626 0%, #ef4444 100%);
+    background: 
+      linear-gradient(135deg, rgba(220, 38, 38, 0.4) 0%, rgba(239, 68, 68, 0.4) 100%),
+      url('/Fondograffiti.png');
+    background-size: cover;
+    background-position: center 40%;
+    background-repeat: no-repeat;
+    background-attachment: fixed;
     color: #F5DEB3;
     padding: 40px 0;
   }
