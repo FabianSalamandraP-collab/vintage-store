@@ -38,10 +38,338 @@
         <li class="nav-item">
           <a href="/contacto" class="nav-link">Contacto</a>
         </li>
+        <li class="nav-item wishlist-nav">
+          <a href="#" id="wishlist-trigger" class="nav-link wishlist-link" aria-label="Favoritos" aria-expanded="false" aria-controls="wishlist-panel">
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true" class="wishlist-icon">
+              <path d="M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5 2 6 4 4 6.5 4c1.74 0 3.41 1.01 4.22 2.58C12.09 5.01 13.76 4 15.5 4 18 4 20 6 20 8.5c0 3.78-3.4 6.86-8.55 11.54L12 21.35z"/>
+            </svg>
+            <span class="wishlist-count" id="wishlist-count">0</span>
+          </a>
+        </li>
       </ul>
     </nav>
   </div>
 </header>
+
+<!-- Wishlist Panel -->
+<div id="wishlist-panel" class="wishlist-panel" role="dialog" aria-modal="false" aria-labelledby="wishlist-title" hidden>
+  <div class="wishlist-panel-header">
+    <h3 id="wishlist-title">Favoritos</h3>
+    <button class="wishlist-close-btn" aria-label="Cerrar favoritos">&times;</button>
+  </div>
+  <div class="wishlist-panel-body">
+    <ul id="wishlist-items" class="wishlist-items"></ul>
+    <div id="wishlist-empty" class="wishlist-empty">No tienes favoritos aún.</div>
+  </div>
+  <div class="wishlist-panel-footer">
+    <div class="wishlist-total">
+      <span>Total</span>
+      <strong id="wishlist-total">$0</strong>
+    </div>
+    <div class="wishlist-actions">
+      <button id="wishlist-clear" class="wishlist-clear-btn">Vaciar</button>
+    </div>
+  </div>
+</div>
+
+<script is:inline>
+(function(){
+  const trigger = document.getElementById('wishlist-trigger');
+  const panel = document.getElementById('wishlist-panel');
+  const formatCOP = (price) => new Intl.NumberFormat('es-CO',{style:'currency',currency:'COP',minimumFractionDigits:0,maximumFractionDigits:0}).format(Number(price||0));
+  const escapeHTML = (str) => String(str||'').replace(/[&<>"']/g, s => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[s]));
+  function renderWishlistPanel(){
+    if (!panel) return;
+    const list = window.getWishlist ? window.getWishlist() : [];
+    const itemsEl = panel.querySelector('#wishlist-items');
+    const emptyEl = panel.querySelector('#wishlist-empty');
+    const totalEl = panel.querySelector('#wishlist-total');
+    let total = 0;
+    itemsEl.innerHTML = list.map(item => {
+      total += Number(item.price||0);
+      const name = escapeHTML(item.name);
+      const price = formatCOP(item.price);
+      const url = item.url || '#';
+      const image = item.image || '/images/placeholder.svg';
+      return `
+        <li class="wishlist-item">
+          <a href="${url}" class="wishlist-item-image">
+            <img src="${image}" alt="${name}" loading="lazy" />
+          </a>
+          <div class="wishlist-item-info">
+            <a href="${url}" class="wishlist-item-name">${name}</a>
+            <div class="wishlist-item-price">${price}</div>
+          </div>
+          <button class="wishlist-remove-btn" data-product-id="${item.id}" aria-label="Quitar de favoritos">Quitar</button>
+        </li>
+      `;
+    }).join('');
+    totalEl.textContent = formatCOP(total);
+    emptyEl.style.display = list.length ? 'none' : 'block';
+    const cntEl = document.getElementById('wishlist-count');
+    if (cntEl) cntEl.textContent = String(list.length);
+  }
+  function openWishlistPanel(){
+    if (!panel || !trigger) return;
+    panel.hidden = false;
+    trigger.setAttribute('aria-expanded','true');
+    renderWishlistPanel();
+    panel.querySelector('.wishlist-close-btn')?.focus();
+    document.addEventListener('click', handleOutsideClick, { capture: true });
+    document.addEventListener('keydown', handleEsc);
+  }
+  function closeWishlistPanel(){
+    if (!panel || !trigger) return;
+    panel.hidden = true;
+    trigger.setAttribute('aria-expanded','false');
+    document.removeEventListener('click', handleOutsideClick, { capture: true });
+    document.removeEventListener('keydown', handleEsc);
+  }
+  function toggleWishlistPanel(){ panel?.hidden ? openWishlistPanel() : closeWishlistPanel(); }
+  function handleOutsideClick(e){
+    const target = e.target;
+    if (!(target instanceof Node)) return;
+    if (!panel?.contains(target) && !trigger?.contains(target)){ closeWishlistPanel(); }
+  }
+  function handleEsc(e){ if (e.key === 'Escape') closeWishlistPanel(); }
+
+  trigger?.addEventListener('click', (e) => { e.preventDefault(); toggleWishlistPanel(); });
+  panel?.addEventListener('click', (e) => {
+    const closeBtn = (e.target instanceof Element) ? e.target.closest('.wishlist-close-btn') : null;
+    if (closeBtn){ closeWishlistPanel(); return; }
+    const removeBtn = (e.target instanceof Element) ? e.target.closest('.wishlist-remove-btn') : null;
+    if (removeBtn){
+      const id = removeBtn.getAttribute('data-product-id') || '';
+      if (window.toggleWishlist) {
+        window.toggleWishlist({ id });
+      }
+      renderWishlistPanel();
+    }
+  });
+  document.getElementById('wishlist-clear')?.addEventListener('click', () => {
+    const list = window.getWishlist ? window.getWishlist() : [];
+    list.forEach(item => window.toggleWishlist && window.toggleWishlist({ id: item.id }));
+    renderWishlistPanel();
+  });
+
+  window.addEventListener('wishlist:change', (ev) => {
+    renderWishlistPanel();
+    const icon = document.querySelector('.wishlist-icon');
+    if (icon) {
+      icon.classList.add('heartbeat');
+      setTimeout(() => icon.classList.remove('heartbeat'), 700);
+    }
+  });
+
+  document.addEventListener('DOMContentLoaded', () => { renderWishlistPanel(); });
+})();
+</script>
+
+<style>
+  .wishlist-panel[hidden] { display: none; }
+  .wishlist-panel {
+    position: fixed;
+    top: 72px;
+    right: 2rem;
+    width: 360px;
+    max-height: 70vh;
+    background: #fff;
+    color: #111;
+    border-radius: 12px;
+    box-shadow: 0 12px 30px rgba(0,0,0,0.25);
+    border: 1px solid rgba(0,0,0,0.08);
+    overflow: hidden;
+    z-index: 1000;
+  }
+  .wishlist-panel-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 12px 16px;
+    background: #000;
+    color: #fff;
+  }
+  .wishlist-close-btn {
+    background: transparent;
+    border: none;
+    color: #fff;
+    font-size: 20px;
+    cursor: pointer;
+  }
+  .wishlist-panel-body {
+    padding: 8px 0;
+    max-height: 48vh;
+    overflow: auto;
+  }
+  .wishlist-items { list-style: none; margin: 0; padding: 0; }
+  .wishlist-item {
+    display: grid;
+    grid-template-columns: 56px 1fr auto;
+    gap: 12px;
+    align-items: center;
+    padding: 8px 16px;
+    border-bottom: 1px solid rgba(0,0,0,0.06);
+  }
+  .wishlist-item-image img {
+    width: 56px;
+    height: 56px;
+    object-fit: cover;
+    border-radius: 8px;
+  }
+  .wishlist-item-name {
+    font-weight: 600;
+    color: #111;
+  }
+  .wishlist-item-price {
+    color: #dc2626;
+    font-weight: 700;
+    font-size: 0.95rem;
+  }
+  .wishlist-remove-btn {
+    background: #f3f4f6;
+    color: #374151;
+    border: none;
+    border-radius: 8px;
+    padding: 6px 10px;
+    cursor: pointer;
+  }
+  .wishlist-remove-btn:hover {
+    background: #e5e7eb;
+  }
+  .wishlist-empty {
+    padding: 16px;
+    text-align: center;
+    color: #6b7280;
+  }
+  .wishlist-panel-footer {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 12px 16px;
+    background: #fafafa;
+    border-top: 1px solid rgba(0,0,0,0.06);
+  }
+  .wishlist-total span { color: #6b7280; }
+  .wishlist-total strong { color: #111; }
+  .wishlist-clear-btn {
+    background: #fff;
+    color: #dc2626;
+    border: 1px solid #dc2626;
+    border-radius: 8px;
+    padding: 6px 12px;
+    cursor: pointer;
+  }
+  .wishlist-clear-btn:hover {
+    background: #dc2626;
+    color: #fff;
+  }
+  @media (max-width: 768px) {
+    .wishlist-panel { right: 1rem; width: calc(100% - 2rem); top: 64px; }
+    .wishlist-item { grid-template-columns: 56px 1fr; }
+    .wishlist-remove-btn { margin-top: 6px; }
+  }
+</style>
+
+<script is:inline>
+(function(){
+  const KEY = 'wishlist';
+  function getWishlist(){
+    try { return JSON.parse(localStorage.getItem(KEY) || '[]'); } catch(e){ return []; }
+  }
+  function saveWishlist(list){ localStorage.setItem(KEY, JSON.stringify(list)); }
+  function updateWishlistCount(){
+    const el = document.getElementById('wishlist-count');
+    if (!el) return;
+    el.textContent = String(getWishlist().length);
+  }
+  function refreshWishlistUI(){
+    const list = getWishlist();
+    const ids = new Set(list.map(i => i.id));
+    document.querySelectorAll('.wishlist-btn[data-product-id]').forEach(btn => {
+      const id = btn.getAttribute('data-product-id');
+      const active = id && ids.has(id);
+      btn.classList.toggle('active', !!active);
+      btn.setAttribute('aria-pressed', active ? 'true' : 'false');
+      const label = active ? 'Quitar de favoritos' : 'Agregar a favoritos';
+      btn.setAttribute('aria-label', label);
+    });
+  }
+  function toggleWishlist(item){
+    const list = getWishlist();
+    const idx = list.findIndex(i => i.id === item.id);
+    let action;
+    if (idx >= 0){ list.splice(idx, 1); action = 'remove'; }
+    else { list.push(item); action = 'add'; }
+    saveWishlist(list);
+    updateWishlistCount();
+    refreshWishlistUI();
+    window.dispatchEvent(new CustomEvent('wishlist:change', { detail: { action, item } }));
+  }
+  window.toggleWishlist = toggleWishlist;
+  window.getWishlist = getWishlist;
+
+  document.addEventListener('click', (e) => {
+    const target = e.target instanceof Element ? e.target.closest('.wishlist-btn') : null;
+    if (!target) return;
+    const item = {
+      id: target.getAttribute('data-product-id'),
+      name: target.getAttribute('data-product-name'),
+      price: Number(target.getAttribute('data-product-price')),
+      image: target.getAttribute('data-product-image'),
+      url: target.getAttribute('data-product-url') || ''
+    };
+    toggleWishlist(item);
+  });
+
+  window.addEventListener('storage', (ev) => {
+    if (ev.key === KEY){
+      updateWishlistCount();
+      refreshWishlistUI();
+    }
+  });
+
+  document.addEventListener('DOMContentLoaded', () => {
+    updateWishlistCount();
+    refreshWishlistUI();
+  });
+})();
+</script>
+
+<style>
+  .wishlist-link { display: inline-flex; align-items: center; gap: 8px; }
+  .wishlist-icon {
+    color: #dc2626;
+    width: 18px;
+    height: 18px;
+    display: inline-block;
+    vertical-align: middle;
+    transform-origin: center;
+    will-change: transform;
+  }
+  /* Clase temporal para animar el corazón sin afectar el layout */
+  .wishlist-icon.heartbeat { animation: heartBeat 600ms ease; }
+  @keyframes heartBeat {
+    0% { transform: scale(1); }
+    30% { transform: scale(1.25); }
+    50% { transform: scale(0.95); }
+    70% { transform: scale(1.15); }
+    100% { transform: scale(1); }
+  }
+  .wishlist-count {
+    background: #dc2626;
+    color: #fff;
+    border-radius: 9999px;
+    padding: 2px 6px;
+    font-size: 0.75rem;
+    min-width: 20px;
+    min-height: 20px;
+    line-height: 1;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    text-align: center;
+  }
+</style>
 
 <style>
   .header {
@@ -138,6 +466,7 @@
 
   .nav-list {
     display: flex;
+    align-items: center;
     list-style: none;
     margin: 0;
     padding: 0;
