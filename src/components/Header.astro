@@ -152,7 +152,14 @@
     renderWishlistPanel();
   });
 
-  window.addEventListener('wishlist:change', () => { renderWishlistPanel(); });
+  window.addEventListener('wishlist:change', (ev) => {
+    renderWishlistPanel();
+    const icon = document.querySelector('.wishlist-icon');
+    if (icon) {
+      icon.classList.add('heartbeat');
+      setTimeout(() => icon.classList.remove('heartbeat'), 700);
+    }
+  });
 
   document.addEventListener('DOMContentLoaded', () => { renderWishlistPanel(); });
 })();
@@ -329,8 +336,25 @@
 </script>
 
 <style>
-  .wishlist-link { display: inline-flex; align-items: center; gap: 6px; }
-  .wishlist-icon { color: #dc2626; }
+  .wishlist-link { display: inline-flex; align-items: center; gap: 8px; }
+  .wishlist-icon {
+    color: #dc2626;
+    width: 18px;
+    height: 18px;
+    display: inline-block;
+    vertical-align: middle;
+    transform-origin: center;
+    will-change: transform;
+  }
+  /* Clase temporal para animar el corazón sin afectar el layout */
+  .wishlist-icon.heartbeat { animation: heartBeat 600ms ease; }
+  @keyframes heartBeat {
+    0% { transform: scale(1); }
+    30% { transform: scale(1.25); }
+    50% { transform: scale(0.95); }
+    70% { transform: scale(1.15); }
+    100% { transform: scale(1); }
+  }
   .wishlist-count {
     background: #dc2626;
     color: #fff;
@@ -338,6 +362,11 @@
     padding: 2px 6px;
     font-size: 0.75rem;
     min-width: 20px;
+    min-height: 20px;
+    line-height: 1;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
     text-align: center;
   }
 </style>
@@ -437,6 +466,7 @@
 
   .nav-list {
     display: flex;
+    align-items: center;
     list-style: none;
     margin: 0;
     padding: 0;
