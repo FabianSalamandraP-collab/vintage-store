@@ -15,7 +15,7 @@ const primaryImage = product.images.find(img => img.primary) || product.images[0
 
 <article class={`product-card ${className}`}>
   <div class="product-image-container">
-    <a href={`/producto/${product.id}`} class="product-link">
+    <a href={generateWhatsAppURL(product, 'Hola, quiero este producto')} target="_blank" rel="noopener noreferrer" class="product-link">
       <img 
         src={primaryImage?.url || '/images/placeholder.svg'} 
         alt={primaryImage?.alt || product.name}
@@ -30,7 +30,7 @@ const primaryImage = product.images.find(img => img.primary) || product.images[0
     <div class="product-actions">
       <button 
         class="whatsapp-btn"
-        onclick={`window.open('${generateWhatsAppURL(product, 'Me interesa este producto')}', '_blank')`}
+        onclick={`window.open('${generateWhatsAppURL(product, 'Hola, quiero este producto')}', '_blank')`}
         title="Contactar por WhatsApp"
       >
         <svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor">
@@ -69,7 +69,7 @@ const primaryImage = product.images.find(img => img.primary) || product.images[0
     </div>
     
     <h3 class="product-name">
-      <a href={`/producto/${product.id}`}>{product.name}</a>
+      <a href={generateWhatsAppURL(product, 'Hola, quiero este producto')} target="_blank" rel="noopener noreferrer">{product.name}</a>
     </h3>
     
     <p class="product-condition">{product.condition}</p>

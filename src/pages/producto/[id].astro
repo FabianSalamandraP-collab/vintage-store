@@ -1,7 +1,7 @@
 ---
 import Layout from '../../layouts/Layout.astro';
 import ProductCard from '../../components/ProductCard.astro';
-import { getProductById, getRelatedProducts, getCategoryById, generateWhatsAppURL, formatPrice } from '../../lib/database.js';
+import { getProductById, getRelatedProducts, getCategoryBySlug, generateWhatsAppURL, formatPrice } from '../../lib/database.js';
 import type { Product } from '../../types';
 
 // Obtener el ID del producto desde la URL
@@ -19,7 +19,7 @@ if (!product) {
 }
 
 // Obtener información adicional
-const category = await getCategoryById(product.category);
+const category = await getCategoryBySlug(product.category);
 const relatedProducts = await getRelatedProducts(product, 4);
 const whatsappUrl = generateWhatsAppURL(product);
 
@@ -31,7 +31,7 @@ const pageDescription = `${product.description} - ${formatPrice(product.price)} 
 const breadcrumbs = [
   { name: 'Inicio', url: '/' },
   { name: 'Productos', url: '/productos' },
-  ...(category ? [{ name: category.name, url: `/productos?category=${category.id}` }] : []),
+  ...(category ? [{ name: category.name, url: `/productos?category=${category.slug}` }] : []),
   { name: product.name, url: `/producto/${product.id}` }
 ];
 ---
@@ -70,8 +70,8 @@ const breadcrumbs = [
           <div class="product-gallery">
             <div class="main-image">
               <img 
-                src={product.images[0]} 
-                alt={product.name}
+                src={product.images[0]?.url || '/images/placeholder.jpg'} 
+                alt={product.images[0]?.alt || product.name}
                 id="mainImage"
                 class="main-img"
               />
@@ -87,10 +87,10 @@ const breadcrumbs = [
                 {product.images.map((image, index) => (
                   <button 
                     class={`thumbnail ${index === 0 ? 'active' : ''}`}
-                    data-image={image}
+                    data-image={image.url}
                     data-index={index}
                   >
-                    <img src={image} alt={`${product.name} - Vista ${index + 1}`} />
+                    <img src={image.url} alt={image.alt || `${product.name} - Vista ${index + 1}`} />
                   </button>
                 ))}
               </div>

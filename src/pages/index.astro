@@ -7,6 +7,7 @@ import type { Product } from '../types';
 
 const featuredProducts = await getFeaturedProducts();
 const siteConfig = getSiteConfig();
+const whatsappPhone = String(siteConfig?.contact?.whatsapp || '').replace(/[^0-9]/g, '');
 
 const seoTitle = `${siteConfig.name} | ${siteConfig.description}`;
 const seoDescription = `Descubre ${siteConfig.name}, tu tienda de ropa vintage en línea. Encuentra piezas únicas de los años 80, 90 y 2000. Camisetas vintage, vinilos clásicos y accesorios retro. ¡Envíos a toda Colombia!`;
@@ -48,7 +49,7 @@ const seoKeywords = siteConfig.seo.keywords;
         <a href="/productos" class="btn btn-image" aria-label="Explorar Productos">
           <img src="/explora.png" alt="Explorar Productos" />
         </a>
-        <a href="https://wa.me/573001234567?text=¡Hola!%20Me%20interesa%20conocer%20más%20sobre%20Sur%20Occidente"
+        <a href={`https://wa.me/${whatsappPhone}?text=${encodeURIComponent('¡Hola! Me interesa conocer más sobre Sur Occidente')}`}
            class="btn btn-image"
            target="_blank"
            rel="noopener noreferrer"
@@ -100,7 +101,7 @@ const seoKeywords = siteConfig.seo.keywords;
       </div>
       
       <div class="categories-grid fade-in">
-        <a href="/productos?categoria=camisetas" class="category-card">
+        <a href="/productos?category=camisetas" class="category-card">
           <div class="category-image">
             <img src="/images/placeholder.jpg" 
                  alt="Camisetas Vintage" 
@@ -282,7 +283,7 @@ const seoKeywords = siteConfig.seo.keywords;
           <a href="/contacto" class="btn btn-primary">
             Contáctanos
           </a>
-          <a href={`https://wa.me/${siteConfig.contact.whatsapp}`} 
+          <a href={`https://wa.me/${whatsappPhone}`} 
              class="btn btn-secondary" 
              target="_blank" 
              rel="noopener noreferrer">

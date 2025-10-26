@@ -4,6 +4,9 @@ export interface Props {
 }
 
 const { className = '' } = Astro.props;
+import { getSiteConfig } from '../lib/database.js';
+const siteConfig = getSiteConfig();
+const whatsappPhone = String(siteConfig?.contact?.whatsapp || '').replace(/[^\d]/g,'');
 ---
 
 <!-- Importar utilidades de seguridad -->
@@ -597,7 +600,7 @@ const { className = '' } = Astro.props;
         whatsappMessage += `Mi email: ${email}`;
       }
       
-      const whatsappUrl = `https://wa.me/573001234567?text=${encodeURIComponent(whatsappMessage)}`;
+      const whatsappUrl = `https://wa.me/${whatsappPhone}?text=${encodeURIComponent(whatsappMessage)}`;
       window.open(whatsappUrl, '_blank');
       
       logSecurityEvent('WHATSAPP_CONTACT', { hasMessage: !!message });

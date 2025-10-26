@@ -2,8 +2,11 @@
 export const prerender = false;
 
 import Layout from '../../layouts/Layout.astro';
-import { getAllProducts, createProduct, updateProduct, deleteProduct, getAllCategories } from '../../lib/database.js';
+import { getAllProducts, getAllProductsAdmin, createProduct, updateProduct, deleteProduct, getAllCategories } from '../../lib/database.js';
 import { formatPrice } from '../../utils/data.ts';
+import { supabaseAdmin } from '../../lib/supabase.js'
+import { Buffer } from 'node:buffer'
+const STORAGE_BUCKET = 'product-images'
 
 // Verificación de autenticación
 const cookies = Astro.cookies;
@@ -36,7 +39,33 @@ if (Astro.request.method === 'POST') {
         sku: formData.get('sku') || null
       };
 
-      await createProduct(productData);
+      const createdProduct = await createProduct(productData);
+
+      // Subir imagen si se adjunta
+      const file = formData.get('image');
+      const imageAlt = formData.get('image_alt') || productData.name || ''
+      if (file && file.size && file.size > 0 && supabaseAdmin) {
+        try { await supabaseAdmin.storage.createBucket(STORAGE_BUCKET, { public: true }) } catch {}
+        const safeName = String(file.name || 'image').replace(/[^a-zA-Z0-9.\-_]/g, '_')
+        const path = `products/${createdProduct.id}/${Date.now()}_${safeName}`
+        const buffer = Buffer.from(await file.arrayBuffer())
+        const uploadRes = await supabaseAdmin.storage.from(STORAGE_BUCKET).upload(path, buffer, { contentType: file.type || 'image/jpeg' })
+        if (uploadRes.error) throw uploadRes.error
+        const { data: pub } = supabaseAdmin.storage.from(STORAGE_BUCKET).getPublicUrl(path)
+        const publicUrl = pub?.publicUrl
+        let sortOrder = 0; let isPrimary = true
+        const { data: existing } = await supabaseAdmin.from('product_images').select('id').eq('product_id', createdProduct.id)
+        if (existing && existing.length > 0) { sortOrder = existing.length; isPrimary = false }
+        const { error: imgInsertErr } = await supabaseAdmin.from('product_images').insert({
+          product_id: createdProduct.id,
+          url: publicUrl,
+          alt_text: imageAlt,
+          is_primary: isPrimary,
+          sort_order: sortOrder
+        })
+        if (imgInsertErr) throw imgInsertErr
+      }
+
       message = 'Producto creado exitosamente';
       messageType = 'success';
     } 
@@ -53,8 +82,60 @@ if (Astro.request.method === 'POST') {
         stock_quantity: parseInt(formData.get('stock_quantity')) || 0,
         sku: formData.get('sku') || null
       };
+    }
+    else if (action === 'mark_sold') {
+      const productId = formData.get('product_id');
+      const productData = {
+        status: 'sold',
+        stock_quantity: 0,
+        stock_status: 'out_of_stock'
+      };
 
       await updateProduct(productId, productData);
+      message = 'Producto marcado como vendido';
+      messageType = 'success';
+    }
+    else if (action === 'mark_available') {
+      const productId = formData.get('product_id');
+      const stockQuantity = parseInt(formData.get('stock_quantity')) || 1;
+      const productData = {
+        status: 'active',
+        stock_quantity: stockQuantity,
+        stock_status: stockQuantity > 0 ? 'available' : 'out_of_stock'
+      };
+
+      await updateProduct(productId, productData);
+      message = 'Producto marcado como disponible';
+      messageType = 'success';
+    }
+    else if (action === 'update') {
+
+      const updatedProduct = await updateProduct(productId, productData);
+
+      // Subir imagen nueva si se adjunta en edición
+      const file = formData.get('image');
+      const imageAlt = formData.get('image_alt') || updatedProduct?.name || ''
+      if (file && file.size && file.size > 0 && supabaseAdmin) {
+        try { await supabaseAdmin.storage.createBucket(STORAGE_BUCKET, { public: true }) } catch {}
+        const safeName = String(file.name || 'image').replace(/[^a-zA-Z0-9.\-_]/g, '_')
+        const path = `products/${productId}/${Date.now()}_${safeName}`
+        const buffer = Buffer.from(await file.arrayBuffer())
+        const uploadRes = await supabaseAdmin.storage.from(STORAGE_BUCKET).upload(path, buffer, { contentType: file.type || 'image/jpeg' })
+        if (uploadRes.error) throw uploadRes.error
+        const { data: pub } = supabaseAdmin.storage.from(STORAGE_BUCKET).getPublicUrl(path)
+        const publicUrl = pub?.publicUrl
+        const { data: existing } = await supabaseAdmin.from('product_images').select('id').eq('product_id', productId)
+        const sortOrder = (existing?.length || 0)
+        const { error: imgInsertErr } = await supabaseAdmin.from('product_images').insert({
+          product_id: productId,
+          url: publicUrl,
+          alt_text: imageAlt,
+          is_primary: false,
+          sort_order: sortOrder
+        })
+        if (imgInsertErr) throw imgInsertErr
+      }
+
       message = 'Producto actualizado exitosamente';
       messageType = 'success';
     }
@@ -72,7 +153,7 @@ if (Astro.request.method === 'POST') {
 }
 
 // Cargar datos
-const products = await getAllProducts();
+const products = await getAllProductsAdmin();
 const categories = await getAllCategories();
 ---
 
@@ -472,6 +553,27 @@ const categories = await getAllCategories();
                 <button class="btn btn-secondary btn-small" onclick={`openEditModal('${product.id}')`}>
                   Editar
                 </button>
+                
+                {/* Status Management Buttons */}
+                {product.status !== 'sold' ? (
+                  <form method="POST" style="display: inline;" onsubmit="return confirm('¿Marcar como vendido?')">
+                    <input type="hidden" name="action" value="mark_sold">
+                    <input type="hidden" name="product_id" value={product.id}>
+                    <button type="submit" class="btn btn-warning btn-small" title="Marcar como vendido">
+                      📦 Vendido
+                    </button>
+                  </form>
+                ) : (
+                  <form method="POST" style="display: inline;" onsubmit="return confirm('¿Marcar como disponible?')">
+                    <input type="hidden" name="action" value="mark_available">
+                    <input type="hidden" name="product_id" value={product.id}>
+                    <input type="hidden" name="stock_quantity" value="1">
+                    <button type="submit" class="btn btn-success btn-small" title="Marcar como disponible">
+                      ✅ Disponible
+                    </button>
+                  </form>
+                )}
+                
                 <form method="POST" style="display: inline;" onsubmit="return confirm('¿Estás seguro?')">
                   <input type="hidden" name="action" value="delete">
                   <input type="hidden" name="product_id" value={product.id}>
@@ -496,6 +598,16 @@ const categories = await getAllCategories();
                       {product.stock_status === 'available' ? 'Disponible' : 
                        product.stock_status === 'low_stock' ? 'Stock Bajo' : 
                        product.stock_status === 'out_of_stock' ? 'Agotado' : 'Descontinuado'}
+                    </span>
+                  </span>
+                </div>
+                <div class="detail-item">
+                  <span class="detail-label">Estado</span>
+                  <span class="detail-value">
+                    <span class={`badge ${product.status === 'sold' ? 'badge-danger' : product.status === 'reserved' ? 'badge-warning' : 'badge-success'}`} style="font-size: 0.7rem;">
+                      {product.status === 'sold' ? '📦 VENDIDO' : 
+                       product.status === 'reserved' ? '⏳ RESERVADO' : 
+                       product.status === 'inactive' ? '❌ INACTIVO' : '✅ ACTIVO'}
                     </span>
                   </span>
                 </div>
@@ -542,7 +654,7 @@ const categories = await getAllCategories();
         <button class="close-btn" onclick="closeModal()">&times;</button>
       </div>
       
-      <form id="productForm" method="POST">
+      <form id="productForm" method="POST" enctype="multipart/form-data">
         <input type="hidden" name="action" id="formAction" value="create">
         <input type="hidden" name="product_id" id="productId">
         
@@ -603,6 +715,16 @@ const categories = await getAllCategories();
             Producto destacado
           </label>
         </div>
+
+        <div class="form-group">
+          <label class="form-label">Imagen principal</label>
+          <input type="file" class="form-input" name="image" id="productImage" accept="image/*">
+        </div>
+
+        <div class="form-group">
+          <label class="form-label">Alt de la imagen</label>
+          <input type="text" class="form-input" name="image_alt" id="productImageAlt" placeholder="Descripción corta">
+        </div>
         
         <div class="form-actions">
           <button type="button" class="btn btn-secondary" onclick="closeModal()">
@@ -623,11 +745,12 @@ const categories = await getAllCategories();
       document.getElementById('formAction').value = 'create';
       document.getElementById('submitBtn').textContent = 'Crear Producto';
       document.getElementById('productForm').reset();
+      const altEl = document.getElementById('productImageAlt'); if (altEl) altEl.value = '';
       document.getElementById('productModal').classList.add('active');
     }
 
     function openEditModal(productId) {
-      const product = products.find(p => p.id === productId);
+      const product = products.find(p => String(p.id) === String(productId));
       if (!product) return;
 
       document.getElementById('modalTitle').textContent = 'Editar Producto';
@@ -645,6 +768,7 @@ const categories = await getAllCategories();
       document.getElementById('productCondition').value = product.condition || '';
       document.getElementById('productTags').value = product.tags?.join(', ') || '';
       document.getElementById('productFeatured').checked = product.featured || false;
+      const altEl = document.getElementById('productImageAlt'); if (altEl) altEl.value = product.name || '';
       
       document.getElementById('productModal').classList.add('active');
     }
@@ -662,9 +786,13 @@ const categories = await getAllCategories();
 
     // Cerrar modal con Escape
     document.addEventListener('keydown', function(e) {
-      if (e.key === 'Escape') {
-        closeModal();
-      }
-    });
-  </script>
-</Layout>
+       if (e.key === 'Escape') {
+         closeModal();
+       }
+     });
+
+     // Expose functions globally for inline handlers
+     window.openEditModal = openEditModal;
+     window.openCreateModal = openCreateModal;
+   </script>
+ </Layout>

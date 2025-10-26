@@ -1,4 +1,7 @@
 ---
+import { getSiteConfig } from '../lib/database.js';
+const siteConfig = getSiteConfig();
+const whatsappPhone = String(siteConfig?.contact?.whatsapp || '').replace(/[^\d]/g,'');
 // Header.astro - Componente de encabezado principal
 ---
 
@@ -89,8 +92,12 @@
       total += Number(item.price||0);
       const name = escapeHTML(item.name);
       const price = formatCOP(item.price);
-      const url = item.url || '#';
+      const phone = `${whatsappPhone}`;
       const image = item.image || '/images/placeholder.svg';
+      const origin = window.location.origin.replace(/\/$/, '');
+      const imageAbs = image.startsWith('http') ? image : origin + (image.startsWith('/') ? '' : '/') + image;
+      const whatsappText = encodeURIComponent(`Hola, quiero este producto\n${name}${imageAbs ? `\nImagen: ${imageAbs}` : ''}`);
+      const url = `https://wa.me/${phone}?text=${whatsappText}`;
       return `
         <li class="wishlist-item">
           <a href="${url}" class="wishlist-item-image">
@@ -108,6 +115,11 @@
     emptyEl.style.display = list.length ? 'none' : 'block';
     const cntEl = document.getElementById('wishlist-count');
     if (cntEl) cntEl.textContent = String(list.length);
+    
+    // Verificar estado de productos después de renderizar
+    if (list.length > 0 && window.checkProductStatus) {
+      setTimeout(() => window.checkProductStatus(), 100);
+    }
   }
   function openWishlistPanel(){
     if (!panel || !trigger) return;
@@ -133,7 +145,7 @@
   }
   function handleEsc(e){ if (e.key === 'Escape') closeWishlistPanel(); }
 
-  trigger?.addEventListener('click', (e) => { e.preventDefault(); toggleWishlistPanel(); });
+  trigger?.addEventListener('click', (e) => { e.preventDefault(); toggleWishlistPanel(); if (!panel?.hidden) { checkProductStatus(); } });
   panel?.addEventListener('click', (e) => {
     const closeBtn = (e.target instanceof Element) ? e.target.closest('.wishlist-close-btn') : null;
     if (closeBtn){ closeWishlistPanel(); return; }
@@ -263,10 +275,48 @@
     background: #dc2626;
     color: #fff;
   }
+  @media (max-width: 1024px) {
+    .wishlist-panel { right: 1.5rem; width: 320px; top: 68px; }
+  }
+
   @media (max-width: 768px) {
-    .wishlist-panel { right: 1rem; width: calc(100% - 2rem); top: 64px; }
+    .wishlist-panel { left: 1rem; right: 1rem; width: auto; top: 64px; }
     .wishlist-item { grid-template-columns: 56px 1fr; }
     .wishlist-remove-btn { margin-top: 6px; }
+  }
+
+  @media (max-width: 480px) {
+    .wishlist-panel { left: 0.75rem; right: 0.75rem; top: 60px; }
+  }
+
+  /* Estilos para productos no disponibles */
+  .wishlist-btn.unavailable {
+    opacity: 0.6;
+    cursor: not-allowed;
+  }
+  .wishlist-btn.unavailable:hover {
+    opacity: 0.6;
+  }
+  .wishlist-item.unavailable {
+    opacity: 0.7;
+    background-color: #fef2f2;
+  }
+  .wishlist-item.unavailable .wishlist-item-name {
+    position: relative;
+  }
+  .status-badge {
+    display: inline-block;
+    font-size: 0.6rem;
+    font-weight: 700;
+    padding: 2px 6px;
+    border-radius: 4px;
+    margin-left: 8px;
+    text-transform: uppercase;
+  }
+  .status-badge.unavailable {
+    background-color: #fee2e2;
+    color: #dc2626;
+    border: 1px solid #fecaca;
   }
 </style>
 
@@ -305,8 +355,64 @@
     refreshWishlistUI();
     window.dispatchEvent(new CustomEvent('wishlist:change', { detail: { action, item } }));
   }
+  // Función para verificar estado de productos en tiempo real
+  async function checkProductStatus() {
+    const list = getWishlist();
+    if (list.length === 0) return;
+
+    const productIds = list.map(item => item.id);
+    
+    try {
+      const response = await fetch('/api/products/status', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ productIds })
+      });
+
+      if (!response.ok) return;
+
+      const { products } = await response.json();
+      
+      // Actualizar estado visual de productos no disponibles
+      list.forEach(item => {
+        const productStatus = products[item.id];
+        if (productStatus && !productStatus.available) {
+          // Marcar como no disponible en la UI
+          markProductAsUnavailable(item.id, productStatus);
+        }
+      });
+
+    } catch (error) {
+      console.warn('Error checking product status:', error);
+    }
+  }
+
+  function markProductAsUnavailable(productId, status) {
+    // Actualizar botones de wishlist
+    document.querySelectorAll(`.wishlist-btn[data-product-id="${productId}"]`).forEach(btn => {
+      btn.classList.add('unavailable');
+      btn.title = status.status === 'sold' ? 'Producto vendido' : 'Producto no disponible';
+    });
+
+    // Actualizar panel de wishlist si está abierto
+    const wishlistItem = document.querySelector(`.wishlist-item[data-product-id="${productId}"]`);
+    if (wishlistItem) {
+      wishlistItem.classList.add('unavailable');
+      const statusBadge = wishlistItem.querySelector('.status-badge') || document.createElement('span');
+      statusBadge.className = 'status-badge unavailable';
+      statusBadge.textContent = status.status === 'sold' ? 'VENDIDO' : 'NO DISPONIBLE';
+      if (!wishlistItem.querySelector('.status-badge')) {
+        wishlistItem.querySelector('.wishlist-item-name').appendChild(statusBadge);
+      }
+    }
+  }
+
+  // Verificar estado cada 30 segundos
+  setInterval(checkProductStatus, 30000);
+
   window.toggleWishlist = toggleWishlist;
   window.getWishlist = getWishlist;
+  window.checkProductStatus = checkProductStatus;
 
   document.addEventListener('click', (e) => {
     const target = e.target instanceof Element ? e.target.closest('.wishlist-btn') : null;
@@ -448,6 +554,17 @@
     filter: drop-shadow(0 0 10px rgba(245, 222, 179, 0.3));
   }
 
+  /* Escala de marca en tablet/móvil para evitar ocupación excesiva */
+  @media (max-width: 1024px) {
+    .brand-name { height: 4.5rem; max-width: 340px; }
+  }
+  @media (max-width: 768px) {
+    .brand-name { height: 4rem; max-width: 300px; }
+  }
+  @media (max-width: 480px) {
+    .brand-name { height: 3.5rem; max-width: 260px; }
+  }
+
   @keyframes titleGlow {
     0%, 100% {
       filter: drop-shadow(0 0 10px rgba(245, 222, 179, 0.3));
@@ -471,6 +588,31 @@
     margin: 0;
     padding: 0;
     gap: 2rem;
+  }
+
+  /* Ajustes responsive para tablet y móvil (sin afectar desktop) */
+  @media (max-width: 1024px) {
+    .main-nav {
+      justify-content: center;
+      margin-right: 0;
+    }
+    .nav-list {
+      gap: 1rem;
+      flex-wrap: wrap;
+      align-items: center;
+    }
+  }
+
+  @media (max-width: 768px) {
+    .main-nav {
+      justify-content: center;
+      margin-right: 0;
+    }
+    .nav-list {
+      gap: 0.75rem;
+      flex-wrap: wrap;
+      align-items: center;
+    }
   }
 
   .nav-item {

@@ -3,9 +3,9 @@
 /* CSS Variables for Admin Theme */
 :root {
   /* Color Palette */
-  --admin-primary: #2563eb;
-  --admin-primary-dark: #1d4ed8;
-  --admin-primary-light: #3b82f6;
+  --admin-primary: #dc2626;      /* rojo principal del sitio */
+  --admin-primary-dark: #b91c1c; /* rojo oscuro para hover/focus */
+  --admin-primary-light: #ef4444;/* rojo claro para estados suaves */
   --admin-secondary: #64748b;
   --admin-accent: #10b981;
   --admin-warning: #f59e0b;
@@ -100,10 +100,22 @@
   border-right: 1px solid var(--admin-border-light);
   box-shadow: var(--admin-shadow-sm);
   position: fixed;
-  height: 100vh;
+  top: 72px;
+  height: calc(100vh - 72px);
   overflow-y: auto;
   z-index: 40;
   transition: transform var(--admin-transition-normal);
+}
+
+/* Adaptación al Header principal (offset) para sidebar */
+@media (max-width: 1024px) {
+  .admin-sidebar { top: 68px; height: calc(100vh - 68px); }
+}
+@media (max-width: 768px) {
+  .admin-sidebar { top: 64px; height: calc(100vh - 64px); }
+}
+@media (max-width: 480px) {
+  .admin-sidebar { top: 60px; height: calc(100vh - 60px); }
 }
 
 .admin-sidebar.collapsed {
@@ -146,8 +158,19 @@
   justify-content: space-between;
   box-shadow: var(--admin-shadow-sm);
   position: sticky;
-  top: 0;
+  top: 72px;
   z-index: 30;
+}
+
+/* Adaptación al Header principal (offset) y paddings responsivos */
+@media (max-width: 1024px) {
+  .admin-header { top: 68px; }
+}
+@media (max-width: 768px) {
+  .admin-header { padding: var(--admin-spacing-md) 1.5rem; top: 64px; }
+}
+@media (max-width: 480px) {
+  .admin-header { padding: var(--admin-spacing-md) 1rem; top: 60px; }
 }
 
 .admin-header h1 {

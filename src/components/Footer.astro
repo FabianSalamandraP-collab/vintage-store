@@ -59,7 +59,9 @@ const socialLinks = [
 
 // URL de la playlist de Spotify
 // const spotifyPlaylistUrl: string = "https://open.spotify.com/playlist/37i9dQZF1DX0XUsuxWHRQd";
-const whatsappNumber: string = "573XXXXXXXXX"; // Reemplazar con número real
+import { getSiteConfig } from '../lib/database.js';
+const siteConfig = getSiteConfig();
+const whatsappNumber: string = String(siteConfig?.contact?.whatsapp || '').replace(/[^0-9]/g, '');
 ---
 
 <!-- Footer Publicitario Semántico -->
@@ -100,7 +102,7 @@ const whatsappNumber: string = "573XXXXXXXXX"; // Reemplazar con número real
       </div>
 
       <a 
-        href="https://wa.me/573XXXXXXXXX?text=%C2%A1Hola!%20Me%20interesa%20reservar%20un%20lugar%20para%20el%20evento%20especial%20de%20m%C3%BAsica%20vintage"
+        href={`https://wa.me/${whatsappNumber}?text=${encodeURIComponent('¡Hola! Me interesa reservar un lugar para el evento especial de música vintage')}`}
         class="cta-button"
         target="_blank"
         rel="noopener noreferrer"

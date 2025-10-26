@@ -2,8 +2,8 @@
 import Layout from '../../layouts/Layout.astro';
 
 // Check authentication
-const isAuthenticated = Astro.cookies.get('admin-session')?.value === 'authenticated';
-if (!isAuthenticated) {
+const adminSession = Astro.cookies.get('admin_session')?.value;
+if (!adminSession) {
   return Astro.redirect('/admin/login');
 }
 

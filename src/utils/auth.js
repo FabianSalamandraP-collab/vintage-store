@@ -2,7 +2,8 @@ import jwt from 'jsonwebtoken';
 import bcrypt from 'bcryptjs';
 
 // Configuración de JWT
-const JWT_SECRET = process.env.JWT_SECRET || 'sur-occidente-secret-key-2024';
+const isProd = process.env.NODE_ENV === 'production';
+const JWT_SECRET = process.env.JWT_SECRET || (isProd ? (() => { throw new Error('Missing JWT_SECRET in production'); })() : 'dev-secret');
 const JWT_EXPIRES_IN = '24h';
 
 // Configuración de bcrypt

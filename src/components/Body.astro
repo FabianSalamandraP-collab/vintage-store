@@ -1,6 +1,9 @@
 ---
 // Body.astro: Diseño principal SIN Footer - Footer separado en componente independiente
 import { formatPrice } from '../utils/data';
+import { getSiteConfig } from '../lib/database.js';
+const siteConfig = getSiteConfig();
+const whatsappPhone = String(siteConfig?.contact?.whatsapp || '').replace(/[^0-9]/g, '');
 
 // Precios en pesos colombianos
 const products = [
@@ -195,7 +198,7 @@ const products = [
 
   <!-- Botón WhatsApp flotante -->
   <a 
-    href="https://wa.me/573XXXXXXXXX?text=Hola, me interesa conocer más sobre los productos vintage"
+    href={`https://wa.me/${whatsappPhone}?text=${encodeURIComponent('Hola, me interesa conocer más sobre los productos vintage')}`}
     target="_blank"
     rel="noopener noreferrer"
     aria-label="Contactar por WhatsApp"

@@ -4,21 +4,18 @@ import { defineConfig } from 'astro/config';
 // https://astro.build/config
 export default defineConfig({  
   server: {
+    host: true,
+    port: 4321,
     headers: {
       // Content Security Policy
       'Content-Security-Policy': [
         "default-src 'self'",
-        "script-src 'self' 'unsafe-inline' 'unsafe-eval' https://cdn.jsdelivr.net https://unpkg.com",
+        "script-src 'self' 'unsafe-inline' 'unsafe-eval'",
         "style-src 'self' 'unsafe-inline' https://fonts.googleapis.com",
+        "img-src 'self' data: blob:",
         "font-src 'self' https://fonts.gstatic.com",
-        "img-src 'self' data: https: blob:",
-        "connect-src 'self' https://api.whatsapp.com https://trae-api-us.mchost.guru",
-        "media-src 'self'",
-        "object-src 'none'",
-        "base-uri 'self'",
-        "form-action 'self'",
+        "connect-src 'self' https://*.supabase.co",
         "frame-ancestors 'none'",
-        "upgrade-insecure-requests"
       ].join('; '),
       
       // Security Headers

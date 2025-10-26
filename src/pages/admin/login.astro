@@ -4,6 +4,8 @@ export const prerender = false;
 // Sistema de Login Seguro para Admin - Sur Occidente
 import Layout from '../../layouts/Layout.astro';
 import crypto from 'crypto';
+import { verifyPassword as verifyPasswordHash } from '../../utils/auth.js'
+import { loginRateLimit } from '../../middleware/auth.js'
 
 // Configuración de seguridad
 const SECURITY_CONFIG = {
@@ -11,7 +13,7 @@ const SECURITY_CONFIG = {
   lockoutDuration: 15 * 60 * 1000, // 15 minutos
   sessionTimeout: 30 * 60 * 1000, // 30 minutos
   requireCaptcha: true,
-  passwordHash: process.env.ADMIN_PASSWORD_HASH || '$2a$12$LQv3c1yqBWVHxkd0LHAkCOYz6TtxMQJqhN8/LewdBdXig/pPOYHDi',
+  passwordHash: process.env.ADMIN_PASSWORD_HASH || null,
   secretKey: process.env.JWT_SECRET || 'fallback-secret-key'
 };
 
@@ -65,14 +67,27 @@ if (failedAttempts[attemptKey]) {
 }
 
 // Función para verificar contraseña
-function verifyPassword(password, hash) {
-  // Verificar directamente con la contraseña configurada en .env
+async function verifyPassword(password, hash) {
+  // Si hay hash, usar bcryptjs para verificar
+  if (hash) {
+    try {
+      return await verifyPasswordHash(password, hash);
+    } catch (e) {
+      return false;
+    }
+  }
+  // Fallback a contraseña en texto plano solo para desarrollo
   const configuredPassword = process.env.ADMIN_DEFAULT_PASSWORD || 'admin123';
   return password === configuredPassword;
 }
 
 // Manejar envío del formulario
 if (Astro.request.method === 'POST' && !isLocked) {
+  // Rate limit de intentos de login
+  const rl = loginRateLimit(Astro.request);
+  if (rl) {
+    return rl;
+  }
   try {
     const formData = await Astro.request.formData();
     const username = formData.get('username')?.toString();
@@ -85,7 +100,7 @@ if (Astro.request.method === 'POST' && !isLocked) {
       loginError = 'Usuario y contraseña son requeridos';
     } else if (requireCaptcha && (!captcha || captcha !== '7')) {
       loginError = 'CAPTCHA incorrecto';
-    } else if (username === 'admin' && verifyPassword(password, SECURITY_CONFIG.passwordHash)) {
+    } else if (username === 'admin' && await verifyPassword(password, SECURITY_CONFIG.passwordHash)) {
       // Login exitoso
       const sessionData = {
         user: 'admin',
@@ -416,465 +431,4 @@ if (Astro.request.method === 'POST' && !isLocked) {
       <div class="demo-password">[CONFIGURADA VÍA ENV]</div>
     </div>
   </div>
-</Layout>
-              <div class="admin-demo-password">view123</div>
-            </div>
-          </div>
-        </div>
-        
-        <!-- Footer -->
-        <div class="admin-login-footer">
-          <p>&copy; 2024 Vintage Store. Todos los derechos reservados.</p>
-          <div class="admin-login-links">
-            <a href="/">Volver al sitio</a>
-            <a href="/admin/help">Ayuda</a>
-          </div>
-        </div>
-      </div>
-    </div>
-  </div>
-
-  <style>
-    /* Login Page Styles */
-    .admin-login-container {
-      min-height: 100vh;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-      padding: var(--admin-spacing-lg);
-    }
-
-    .admin-login-wrapper {
-      position: relative;
-      width: 100%;
-      max-width: 1200px;
-      display: grid;
-      grid-template-columns: 1fr 1fr;
-      min-height: 600px;
-      background: var(--admin-bg-primary);
-      border-radius: var(--admin-radius-2xl);
-      box-shadow: var(--admin-shadow-2xl);
-      overflow: hidden;
-    }
-
-    .admin-login-bg {
-      position: relative;
-      background: linear-gradient(135deg, var(--admin-primary) 0%, var(--admin-primary-dark) 100%);
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      color: var(--admin-text-inverse);
-    }
-
-    .admin-login-pattern {
-      position: absolute;
-      inset: 0;
-      background-image: 
-        radial-gradient(circle at 25% 25%, rgba(255, 255, 255, 0.1) 0%, transparent 50%),
-        radial-gradient(circle at 75% 75%, rgba(255, 255, 255, 0.1) 0%, transparent 50%),
-        radial-gradient(circle at 75% 25%, rgba(255, 255, 255, 0.05) 0%, transparent 50%),
-        radial-gradient(circle at 25% 75%, rgba(255, 255, 255, 0.05) 0%, transparent 50%);
-      background-size: 200px 200px;
-      animation: float 20s ease-in-out infinite;
-    }
-
-    @keyframes float {
-      0%, 100% { transform: translateY(0px) rotate(0deg); }
-      50% { transform: translateY(-20px) rotate(5deg); }
-    }
-
-    .admin-login-form-container {
-      padding: var(--admin-spacing-2xl);
-      display: flex;
-      flex-direction: column;
-      justify-content: center;
-    }
-
-    .admin-login-header {
-      text-align: center;
-      margin-bottom: var(--admin-spacing-2xl);
-    }
-
-    .admin-login-logo {
-      display: inline-flex;
-      align-items: center;
-      justify-content: center;
-      width: 64px;
-      height: 64px;
-      background: linear-gradient(135deg, var(--admin-primary) 0%, var(--admin-primary-dark) 100%);
-      color: var(--admin-text-inverse);
-      border-radius: var(--admin-radius-xl);
-      margin: 0 auto var(--admin-spacing-lg) auto;
-      box-shadow: var(--admin-shadow-lg);
-    }
-
-    .admin-login-title {
-      font-size: var(--admin-font-size-3xl);
-      font-weight: 700;
-      color: var(--admin-text-primary);
-      margin: 0 0 var(--admin-spacing-sm) 0;
-    }
-
-    .admin-login-subtitle {
-      font-size: var(--admin-font-size-lg);
-      color: var(--admin-text-secondary);
-      margin: 0;
-    }
-
-    .admin-login-form {
-      display: flex;
-      flex-direction: column;
-      gap: var(--admin-spacing-lg);
-    }
-
-    .admin-form-group {
-      display: flex;
-      flex-direction: column;
-      gap: var(--admin-spacing-sm);
-    }
-
-    .admin-form-label {
-      display: flex;
-      align-items: center;
-      gap: var(--admin-spacing-sm);
-      font-weight: 500;
-      color: var(--admin-text-primary);
-      font-size: var(--admin-font-size-sm);
-    }
-
-    .admin-form-input {
-      width: 100%;
-      padding: var(--admin-spacing-md) var(--admin-spacing-lg);
-      border: 2px solid var(--admin-border-light);
-      border-radius: var(--admin-radius-lg);
-      font-size: var(--admin-font-size-md);
-      background-color: var(--admin-bg-secondary);
-      color: var(--admin-text-primary);
-      transition: all var(--admin-transition-fast);
-    }
-
-    .admin-form-input:focus {
-      outline: none;
-      border-color: var(--admin-primary);
-      box-shadow: 0 0 0 3px rgba(99, 102, 241, 0.1);
-      background-color: var(--admin-bg-primary);
-    }
-
-    .admin-password-field {
-      position: relative;
-    }
-
-    .admin-password-toggle {
-      position: absolute;
-      right: var(--admin-spacing-md);
-      top: 50%;
-      transform: translateY(-50%);
-      background: none;
-      border: none;
-      color: var(--admin-text-secondary);
-      cursor: pointer;
-      padding: var(--admin-spacing-sm);
-      border-radius: var(--admin-radius-md);
-      transition: color var(--admin-transition-fast);
-    }
-
-    .admin-password-toggle:hover {
-      color: var(--admin-text-primary);
-    }
-
-    .admin-form-options {
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-    }
-
-    .admin-checkbox-label {
-      display: flex;
-      align-items: center;
-      gap: var(--admin-spacing-sm);
-      cursor: pointer;
-      font-size: var(--admin-font-size-sm);
-      color: var(--admin-text-secondary);
-    }
-
-    .admin-checkbox {
-      display: none;
-    }
-
-    .admin-checkbox-custom {
-      width: 18px;
-      height: 18px;
-      border: 2px solid var(--admin-border-light);
-      border-radius: var(--admin-radius-sm);
-      position: relative;
-      transition: all var(--admin-transition-fast);
-    }
-
-    .admin-checkbox:checked + .admin-checkbox-custom {
-      background-color: var(--admin-primary);
-      border-color: var(--admin-primary);
-    }
-
-    .admin-checkbox:checked + .admin-checkbox-custom::after {
-      content: '';
-      position: absolute;
-      left: 3px;
-      top: 0px;
-      width: 6px;
-      height: 10px;
-      border: solid white;
-      border-width: 0 2px 2px 0;
-      transform: rotate(45deg);
-    }
-
-    .admin-forgot-link {
-      color: var(--admin-primary);
-      text-decoration: none;
-      font-size: var(--admin-font-size-sm);
-      transition: color var(--admin-transition-fast);
-    }
-
-    .admin-forgot-link:hover {
-      color: var(--admin-primary-dark);
-      text-decoration: underline;
-    }
-
-    .admin-login-btn {
-      width: 100%;
-      padding: var(--admin-spacing-lg);
-      background: linear-gradient(135deg, var(--admin-primary) 0%, var(--admin-primary-dark) 100%);
-      color: var(--admin-text-inverse);
-      border: none;
-      border-radius: var(--admin-radius-lg);
-      font-size: var(--admin-font-size-lg);
-      font-weight: 600;
-      cursor: pointer;
-      transition: all var(--admin-transition-fast);
-      position: relative;
-      overflow: hidden;
-    }
-
-    .admin-login-btn:hover {
-      transform: translateY(-2px);
-      box-shadow: var(--admin-shadow-lg);
-    }
-
-    .admin-login-btn:active {
-      transform: translateY(0);
-    }
-
-    .admin-login-btn:disabled {
-      opacity: 0.7;
-      cursor: not-allowed;
-      transform: none;
-    }
-
-    .admin-btn-loading {
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      gap: var(--admin-spacing-sm);
-    }
-
-    .admin-demo-credentials {
-      margin-top: var(--admin-spacing-xl);
-      padding: var(--admin-spacing-lg);
-      background-color: var(--admin-bg-tertiary);
-      border-radius: var(--admin-radius-lg);
-      border: 1px solid var(--admin-border-light);
-    }
-
-    .admin-demo-credentials h3 {
-      font-size: var(--admin-font-size-lg);
-      font-weight: 600;
-      color: var(--admin-text-primary);
-      margin: 0 0 var(--admin-spacing-md) 0;
-      text-align: center;
-    }
-
-    .admin-demo-accounts {
-      display: flex;
-      flex-direction: column;
-      gap: var(--admin-spacing-sm);
-    }
-
-    .admin-demo-account {
-      padding: var(--admin-spacing-md);
-      background-color: var(--admin-bg-primary);
-      border: 1px solid var(--admin-border-light);
-      border-radius: var(--admin-radius-md);
-      cursor: pointer;
-      transition: all var(--admin-transition-fast);
-    }
-
-    .admin-demo-account:hover {
-      border-color: var(--admin-primary);
-      background-color: var(--admin-bg-secondary);
-      transform: translateY(-1px);
-    }
-
-    .admin-demo-role {
-      font-weight: 600;
-      color: var(--admin-primary);
-      font-size: var(--admin-font-size-sm);
-    }
-
-    .admin-demo-email {
-      font-size: var(--admin-font-size-sm);
-      color: var(--admin-text-primary);
-      margin: var(--admin-spacing-xs) 0;
-    }
-
-    .admin-demo-password {
-      font-size: var(--admin-font-size-xs);
-      color: var(--admin-text-secondary);
-      font-family: monospace;
-    }
-
-    .admin-login-footer {
-      margin-top: var(--admin-spacing-xl);
-      text-align: center;
-      padding-top: var(--admin-spacing-lg);
-      border-top: 1px solid var(--admin-border-light);
-    }
-
-    .admin-login-footer p {
-      font-size: var(--admin-font-size-sm);
-      color: var(--admin-text-muted);
-      margin: 0 0 var(--admin-spacing-sm) 0;
-    }
-
-    .admin-login-links {
-      display: flex;
-      justify-content: center;
-      gap: var(--admin-spacing-lg);
-    }
-
-    .admin-login-links a {
-      color: var(--admin-primary);
-      text-decoration: none;
-      font-size: var(--admin-font-size-sm);
-      transition: color var(--admin-transition-fast);
-    }
-
-    .admin-login-links a:hover {
-      color: var(--admin-primary-dark);
-      text-decoration: underline;
-    }
-
-    /* Loading Animation */
-    .admin-loading {
-      width: 16px;
-      height: 16px;
-      border: 2px solid rgba(255, 255, 255, 0.3);
-      border-top: 2px solid white;
-      border-radius: 50%;
-      animation: spin 1s linear infinite;
-    }
-
-    @keyframes spin {
-      0% { transform: rotate(0deg); }
-      100% { transform: rotate(360deg); }
-    }
-
-    /* Responsive Design */
-    @media (max-width: 1024px) {
-      .admin-login-wrapper {
-        grid-template-columns: 1fr;
-        max-width: 500px;
-      }
-      
-      .admin-login-bg {
-        display: none;
-      }
-    }
-
-    @media (max-width: 768px) {
-      .admin-login-container {
-        padding: var(--admin-spacing-md);
-      }
-      
-      .admin-login-form-container {
-        padding: var(--admin-spacing-lg);
-      }
-      
-      .admin-demo-accounts {
-        gap: var(--admin-spacing-xs);
-      }
-    }
-  </style>
-
-  <script>
-    // Wait for DOM to be fully loaded
-    document.addEventListener('DOMContentLoaded', function() {
-      // Get form elements with null checks
-      const passwordInput = document.getElementById('password');
-      const usernameInput = document.getElementById('username');
-      const loginForm = document.querySelector('form');
-      const loginBtn = document.querySelector('.login-btn');
-      
-      // Auto-focus username field if it exists
-      if (usernameInput) {
-        usernameInput.focus();
-      }
-      
-      // Form submission handling
-      if (loginForm && loginBtn) {
-        loginForm.addEventListener('submit', (e) => {
-          // Show loading state
-          loginBtn.textContent = 'Iniciando sesión...';
-          loginBtn.disabled = true;
-          
-          // Re-enable button after a delay in case of errors
-          setTimeout(() => {
-            if (loginBtn.disabled) {
-              loginBtn.textContent = 'Acceder al Panel';
-              loginBtn.disabled = false;
-            }
-          }, 5000);
-        });
-      }
-      
-      // Enter key handling
-      document.addEventListener('keydown', (e) => {
-        if (e.key === 'Enter' && loginBtn && !loginBtn.disabled) {
-          if (loginForm) {
-            loginForm.requestSubmit();
-          }
-        }
-      });
-      
-      // Clear error on input
-      const inputs = document.querySelectorAll('.form-input');
-      inputs.forEach(input => {
-        input.addEventListener('input', () => {
-          const errorMessage = document.querySelector('.error-message');
-          if (errorMessage) {
-            errorMessage.style.display = 'none';
-          }
-        });
-      });
-      
-      // Demo credentials fill function
-      window.fillCredentials = function(username, password) {
-        const usernameField = document.getElementById('username');
-        const passwordField = document.getElementById('password');
-        
-        if (usernameField && passwordField) {
-          usernameField.value = username;
-          passwordField.value = password;
-          
-          // Add visual feedback
-          usernameField.style.borderColor = '#10b981';
-          passwordField.style.borderColor = '#10b981';
-          
-          setTimeout(() => {
-            usernameField.style.borderColor = '';
-            passwordField.style.borderColor = '';
-          }, 2000);
-        }
-      };
-    });
-  </script>
 </Layout>

@@ -1,4 +1,4 @@
-import { supabase } from './supabase.js';
+import { supabase, supabaseAdmin } from './supabase.js';
 import { getAllProducts as getJSONProducts, getProductById as getJSONProductById, getFeaturedProducts as getJSONFeaturedProducts, getAllCategories as getJSONCategories, getCategoryBySlug as getJSONCategoryBySlug, getCategoryById as getJSONCategoryById, getSiteConfig as getJSONSiteConfig, getProductStats as getJSONProductStats, formatPrice, generateWhatsAppURL, generateSlug, filterProducts, searchProducts as searchJSONProducts, sortProducts, paginateProducts, getRelatedProducts as getJSONRelatedProducts } from '../utils/data.ts'
 
 // Función para verificar si Supabase está configurado
@@ -6,7 +6,39 @@ function isSupabaseConfigured() {
   return supabase && process.env.PUBLIC_SUPABASE_URL && process.env.PUBLIC_SUPABASE_ANON_KEY;
 }
 
-// Obtener todos los productos
+// Normalizar registro de Supabase al tipo Product usado en el frontend
+function normalizeProduct(row) {
+  if (!row) return row;
+
+  const images = (row.product_images || [])
+    .map((img) => ({
+      url: img.url,
+      alt: img.alt_text || row.name,
+      primary: !!img.is_primary,
+      _order: typeof img.sort_order === 'number' ? img.sort_order : 0,
+    }))
+    .sort((a, b) => {
+      if (a.primary && !b.primary) return -1;
+      if (!a.primary && b.primary) return 1;
+      return a._order - b._order;
+    })
+    .map(({ _order, ...img }) => img);
+
+  const sizes = Array.isArray(row.product_variants)
+    ? row.product_variants.map((v) => v.size).filter(Boolean)
+    : Array.isArray(row.sizes)
+      ? row.sizes
+      : [];
+
+  return {
+    ...row,
+    category: row.categories?.slug || row.category || row.category_id,
+    images,
+    sizes,
+  };
+}
+
+// Obtener todos los productos (para frontend - excluye vendidos)
 export async function getAllProducts() {
   if (!isSupabaseConfigured()) {
     return getJSONProducts();
@@ -19,7 +51,49 @@ export async function getAllProducts() {
         *,
         product_images (
           id,
-          image_url,
+          url,
+          alt_text,
+          is_primary,
+          sort_order
+        ),
+        product_variants (
+          id,
+          size,
+          stock_quantity,
+          is_available
+        ),
+        categories (
+          id,
+          name,
+          slug
+        )
+      `)
+      .eq('is_active', true)
+      .neq('status', 'sold')
+      .order('created_at', { ascending: false });
+
+    if (error) throw error;
+    return (data || []).map(normalizeProduct);
+  } catch (error) {
+    console.warn('Error fetching products from Supabase, falling back to JSON:', error);
+    return getJSONProducts();
+  }
+}
+
+// Obtener todos los productos para admin (incluye vendidos)
+export async function getAllProductsAdmin() {
+  if (!isSupabaseConfigured()) {
+    return getJSONProducts();
+  }
+
+  try {
+    const { data, error } = await supabase
+      .from('products')
+      .select(`
+        *,
+        product_images (
+          id,
+          url,
           alt_text,
           is_primary,
           sort_order
@@ -40,7 +114,7 @@ export async function getAllProducts() {
       .order('created_at', { ascending: false });
 
     if (error) throw error;
-    return data || [];
+    return (data || []).map(normalizeProduct);
   } catch (error) {
     console.warn('Error fetching products from Supabase, falling back to JSON:', error);
     return getJSONProducts();
@@ -60,7 +134,7 @@ export async function getFeaturedProducts() {
         *,
         product_images (
           id,
-          image_url,
+          url,
           alt_text,
           is_primary,
           sort_order
@@ -82,7 +156,7 @@ export async function getFeaturedProducts() {
       .order('created_at', { ascending: false });
 
     if (error) throw error;
-    return data || [];
+    return (data || []).map(normalizeProduct);
   } catch (error) {
     console.warn('Error fetching featured products from Supabase, falling back to JSON:', error);
     return getJSONFeaturedProducts();
@@ -102,7 +176,7 @@ export async function getProductById(id) {
         *,
         product_images (
           id,
-          image_url,
+          url,
           alt_text,
           is_primary,
           sort_order
@@ -124,7 +198,7 @@ export async function getProductById(id) {
       .single();
 
     if (error) throw error;
-    return data;
+    return normalizeProduct(data);
   } catch (error) {
     console.warn('Error fetching product from Supabase, falling back to JSON:', error);
     return getJSONProductById(id);
@@ -159,7 +233,8 @@ export async function createProduct(productData) {
       dimensions: productData.dimensions
     };
 
-    const { data, error } = await supabase
+    const client = supabaseAdmin || supabase;
+    const { data, error } = await client
       .from('products')
       .insert([productToInsert])
       .select()
@@ -190,22 +265,29 @@ export async function updateProduct(id, productData) {
 
   try {
     const updateData = {
-      name: productData.name,
-      description: productData.description,
-      price: productData.price,
-      category_id: productData.category_id,
-      condition: productData.condition,
-      featured: productData.featured || false,
-      tags: productData.tags || [],
       updated_at: new Date().toISOString()
     };
 
-    // Solo actualizar slug si cambió el nombre
-    if (productData.name) {
+    // Campos opcionales - solo agregar si están presentes
+    if (productData.name !== undefined) {
+      updateData.name = productData.name;
       updateData.slug = generateSlug(productData.name);
     }
+    if (productData.description !== undefined) updateData.description = productData.description;
+    if (productData.price !== undefined) updateData.price = productData.price;
+    if (productData.category_id !== undefined) updateData.category_id = productData.category_id;
+    if (productData.condition !== undefined) updateData.condition = productData.condition;
+    if (productData.featured !== undefined) updateData.featured = productData.featured;
+    if (productData.tags !== undefined) updateData.tags = productData.tags;
+    if (productData.sku !== undefined) updateData.sku = productData.sku;
+    
+    // Campos de stock y estado
+    if (productData.stock_quantity !== undefined) updateData.stock_quantity = productData.stock_quantity;
+    if (productData.stock_status !== undefined) updateData.stock_status = productData.stock_status;
+    if (productData.status !== undefined) updateData.status = productData.status;
 
-    const { data, error } = await supabase
+    const client = supabaseAdmin || supabase;
+    const { data, error } = await client
       .from('products')
       .update(updateData)
       .eq('id', id)
@@ -213,6 +295,14 @@ export async function updateProduct(id, productData) {
       .single();
 
     if (error) throw error;
+
+    // Registrar en historial si hay cambios significativos
+    if (productData.status || productData.stock_quantity !== undefined) {
+      const action = productData.status === 'sold' ? 'marked_as_sold' : 
+                    productData.status === 'active' ? 'marked_as_available' : 'updated';
+      await logProductHistory(id, action, null, null, JSON.stringify(updateData), 'admin');
+    }
+
     return data;
   } catch (error) {
     console.error('Error updating product:', error);
@@ -224,7 +314,8 @@ export async function updateProduct(id, productData) {
 export async function logProductHistory(productId, action, fieldName, oldValue, newValue, changedBy, notes = null) {
   if (supabase) {
     try {
-      const { error } = await supabase
+      const client = supabaseAdmin || supabase;
+      const { error } = await client
         .from('product_history')
         .insert([{
           product_id: productId,
@@ -246,7 +337,8 @@ export async function logProductHistory(productId, action, fieldName, oldValue, 
 export async function logStockMovement(productId, movementType, quantity, previousStock, newStock, reason, referenceId = null, createdBy = 'admin', notes = null) {
   if (supabase) {
     try {
-      const { error } = await supabase
+      const client = supabaseAdmin || supabase;
+      const { error } = await client
         .from('stock_movements')
         .insert([{
           product_id: productId,
@@ -292,7 +384,8 @@ export async function updateStock(productId, newQuantity, reason = 'adjustment',
       }
 
       // Actualizar producto
-      const { data, error } = await supabase
+      const client = supabaseAdmin || supabase;
+      const { data, error } = await client
         .from('products')
         .update({ 
           stock_quantity: newQuantity,
@@ -327,7 +420,8 @@ export async function deleteProduct(productId) {
   if (supabase) {
     try {
       // Soft delete: marcar como inactivo en lugar de eliminar
-      const { data, error } = await supabase
+      const client = supabaseAdmin || supabase;
+      const { data, error } = await client
         .from('products')
         .update({ 
           is_active: false,
@@ -363,7 +457,7 @@ export async function getProductsByCategory(categorySlug) {
         *,
         product_images (
           id,
-          image_url,
+          url,
           alt_text,
           is_primary,
           sort_order
@@ -385,7 +479,7 @@ export async function getProductsByCategory(categorySlug) {
       .order('created_at', { ascending: false });
 
     if (error) throw error;
-    return data || [];
+    return (data || []).map(normalizeProduct);
   } catch (error) {
     console.warn('Error fetching products by category from Supabase, falling back to JSON:', error);
     const allProducts = getJSONProducts();
@@ -407,7 +501,7 @@ export async function searchProducts(query) {
         *,
         product_images (
           id,
-          image_url,
+          url,
           alt_text,
           is_primary,
           sort_order
@@ -429,7 +523,7 @@ export async function searchProducts(query) {
       .order('created_at', { ascending: false });
 
     if (error) throw error;
-    return data || [];
+    return (data || []).map(normalizeProduct);
   } catch (error) {
     console.warn('Error searching products in Supabase, falling back to JSON:', error);
     const allProducts = getJSONProducts();
@@ -524,9 +618,9 @@ export async function getProductStats() {
     let maxPrice = -Infinity;
 
     products.forEach(product => {
-      // Contar por categoría
-      const categoryName = product.categories?.name || product.category;
-      byCategory[categoryName] = (byCategory[categoryName] || 0) + 1;
+      // Contar por categoría usando slug para consistencia
+      const categoryKey = product.categories?.slug || product.category;
+      byCategory[categoryKey] = (byCategory[categoryKey] || 0) + 1;
       
       // Recopilar condiciones
       conditions.add(product.condition);
@@ -571,7 +665,7 @@ export async function getRelatedProducts(product, limit = 4) {
         *,
         product_images (
           id,
-          image_url,
+          url,
           alt_text,
           is_primary,
           sort_order
@@ -589,7 +683,7 @@ export async function getRelatedProducts(product, limit = 4) {
 
     if (error) throw error;
     
-    let relatedProducts = data || [];
+    let relatedProducts = (data || []).map(normalizeProduct);
     
     // Si no hay suficientes productos de la misma categoría, agregar otros
     if (relatedProducts.length < limit) {
@@ -599,7 +693,7 @@ export async function getRelatedProducts(product, limit = 4) {
           *,
           product_images (
             id,
-            image_url,
+            url,
             alt_text,
             is_primary,
             sort_order
@@ -616,7 +710,7 @@ export async function getRelatedProducts(product, limit = 4) {
         .limit(limit - relatedProducts.length);
 
       if (!otherError && otherProducts) {
-        relatedProducts = [...relatedProducts, ...otherProducts];
+        relatedProducts = [...relatedProducts, ...otherProducts.map(normalizeProduct)];
       }
     }
 

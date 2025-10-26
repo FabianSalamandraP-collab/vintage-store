@@ -41,12 +41,12 @@ const { categories, stats, currentFilter, className = '' } = Astro.props;
           <input 
             type="radio" 
             name="category" 
-            value={category.id}
-            checked={currentFilter.category === category.id}
+            value={category.slug}
+            checked={currentFilter.category === category.slug}
           />
           <span class="checkmark"></span>
           <span class="option-text">
-            {category.name} ({stats.byCategory[category.id] || 0})
+            {category.name} ({stats.byCategory[category.slug] || 0})
           </span>
         </label>
       ))}

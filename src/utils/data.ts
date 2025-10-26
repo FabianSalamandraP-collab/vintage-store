@@ -214,11 +214,21 @@ export function formatPrice(price: number): string {
   }).format(price);
 }
 
-export function generateWhatsAppURL(product: Product, message?: string): string {
-  const phoneNumber = '573001234567'; // Número de WhatsApp de la tienda
-  const baseMessage = message || `¡Hola! Me interesa este producto: ${product.name} - ${formatPrice(product.price)}`;
-  const encodedMessage = encodeURIComponent(baseMessage);
-  return `https://wa.me/${phoneNumber}?text=${encodedMessage}`;
+export function generateWhatsAppURL(product: Product, customMessage?: string, originOverride?: string): string {
+  const rawPhone = (siteConfigData as any)?.site?.contact?.whatsapp || '573001234567';
+  const phoneNumber = String(rawPhone).replace(/[^\d]/g, '');
+  const siteUrl = (siteConfigData as any)?.site?.url || '';
+  
+  // Always use production URL for WhatsApp images to avoid localhost issues
+  const originBase = siteUrl;
+  
+  const primaryImage = product.images?.[0];
+  const imageUrl = primaryImage?.url ? `${originBase}${primaryImage.url}` : '';
+  
+  const base = customMessage || 'Hola, quiero este producto';
+  const message = `${base}\n\n${product.name}\nPrecio: ${formatPrice(product.price)}${imageUrl ? `\nImagen: ${imageUrl}` : ''}`;
+  
+  return `https://wa.me/${phoneNumber}?text=${encodeURIComponent(message)}`;
 }
 
 // Obtener categoría por ID
